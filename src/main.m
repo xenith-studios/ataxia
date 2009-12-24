@@ -2,7 +2,7 @@
  * Ataxia Engine Project
  * Copyright (C) 2009  Xenith Studios
  * See COPYING for license details
- * http://ataxia.xenith.org/
+ * http://github.com/xenith/ataxia/
  *
  */
 
