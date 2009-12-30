@@ -1,0 +1,20 @@
+Design document for Ataxia
+
+Ideas:
+
+Document-oriented DB for storage - MongoDB
+Area files in YAML (or similar markup language)
+Objective-C
+ZMP, MCCP?
+Lua or Ruby for scripting
+All commands are scripts except for a few core commands
+
+
+Design for obj-c telnet server:
+
+
+
+
+Design for obj-c mud engine:
+
+
