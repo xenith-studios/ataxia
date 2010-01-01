@@ -10,6 +10,10 @@ Lua or Ruby for scripting
 All commands are scripts except for a few core commands
 
 
+Class notes:
+Singleton classes: Settings, Log
+
+
 Design for obj-c telnet server:
 
 

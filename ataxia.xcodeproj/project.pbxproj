@@ -10,6 +10,8 @@
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
 		8DD76F9F0486AA7600D96B5E /* ataxia.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859EA3029092ED04C91782 /* ataxia.1 */; };
 		980E90D610D7FBFF005CE1CE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 980E90D510D7FBFF005CE1CE /* main.m */; };
+		982F7A9910EDC8F000A19AFD /* settings.m in Sources */ = {isa = PBXBuildFile; fileRef = 982F7A9810EDC8F000A19AFD /* settings.m */; };
+		982F7AE010EDCE9800A19AFD /* log.m in Sources */ = {isa = PBXBuildFile; fileRef = 982F7ADF10EDCE9800A19AFD /* log.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -29,7 +31,11 @@
 		08FB779EFE84155DC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32A70AAB03705E1F00C91783 /* ataxia_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ataxia_Prefix.pch; sourceTree = "<group>"; };
 		8DD76FA10486AA7600D96B5E /* ataxia */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ataxia; sourceTree = BUILT_PRODUCTS_DIR; };
-		980E90D510D7FBFF005CE1CE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = src/main.m; sourceTree = "<group>"; };
+		980E90D510D7FBFF005CE1CE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = source/main.m; sourceTree = "<group>"; };
+		982F7A9810EDC8F000A19AFD /* settings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = settings.m; path = source/settings.m; sourceTree = "<group>"; };
+		982F7A9A10EDC8FD00A19AFD /* settings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = settings.h; path = include/settings.h; sourceTree = "<group>"; };
+		982F7ADE10EDCE9800A19AFD /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = log.h; path = include/log.h; sourceTree = "<group>"; };
+		982F7ADF10EDCE9800A19AFD /* log.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = log.m; path = source/log.m; sourceTree = "<group>"; };
 		C6859EA3029092ED04C91782 /* ataxia.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = ataxia.1; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -59,6 +65,10 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				982F7A9A10EDC8FD00A19AFD /* settings.h */,
+				982F7A9810EDC8F000A19AFD /* settings.m */,
+				982F7ADE10EDCE9800A19AFD /* log.h */,
+				982F7ADF10EDCE9800A19AFD /* log.m */,
 				980E90D510D7FBFF005CE1CE /* main.m */,
 				32A70AAB03705E1F00C91783 /* ataxia_Prefix.pch */,
 			);
@@ -133,6 +143,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				980E90D610D7FBFF005CE1CE /* main.m in Sources */,
+				982F7A9910EDC8F000A19AFD /* settings.m in Sources */,
+				982F7AE010EDCE9800A19AFD /* log.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
