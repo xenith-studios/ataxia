@@ -21,6 +21,5 @@ typedef enum {
    LogLevel level;
 }
 
-+ (Log *)instance;
-+ (void)initialize;
++ (Log *)sharedInstance;
 @end

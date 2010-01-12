@@ -8,43 +8,55 @@
 
 #import "log.h"
 
-
 @implementation Log
 
-static Log * instance = nil;
+static Log *sharedInstance = nil;
 
 #pragma mark -
 #pragma mark class instance methods
+
+- (id)init
+{
+   if (self = [super init]) {
+   }
+   return self;
+}
+
+- (void)dealloc
+{
+   [super dealloc];
+}
 
 #pragma mark -
 #pragma mark Singleton methods
 
 + (void)initialize
 {
-   
+   static BOOL initialized = NO;
+   if(!initialized) {
+      initialized = YES;
+      sharedInstance = [[Log alloc] init];
+   }   
 }
 
-+ (Log *)instance
++ (Log *)sharedInstance
 {
+   if (sharedInstance)
+      return sharedInstance;
+
    @synchronized(self) {
-      if (instance == nil)
-         instance = [[Log alloc] init];
+      if (sharedInstance == nil)
+         sharedInstance = [[Log alloc] init];
    }
-   
-   // Default values
-   
-   return instance;
+   return sharedInstance;
 }
 
 + (id)allocWithZone:(NSZone *)zone
 {
-   if (instance)
-      return instance;
-
    @synchronized(self) {
-      if (instance == nil) {
-         instance = [super allocWithZone:zone];
-         return instance;  // assignment and return on first allocation
+      if (sharedInstance == nil) {
+         sharedInstance = [super allocWithZone:zone];
+         return sharedInstance;  // assignment and return on first allocation
       }
    }
    return nil; // on subsequent allocation attempts return nil

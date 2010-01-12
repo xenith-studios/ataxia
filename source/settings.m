@@ -10,7 +10,7 @@
 
 @implementation Settings
 
-static Settings * sharedInstance = nil;
+static Settings *sharedInstance = nil;
 
 @synthesize port, shutdown;
 
@@ -26,10 +26,16 @@ static Settings * sharedInstance = nil;
    return self;
 }
 
+- (void)dealloc
+{
+   [super dealloc];
+}
+
 - (void)parseArguments:(int)argc:(const char *[])argv
 {
    
 }
+
 - (void)loadConfigFile
 {
    
@@ -47,7 +53,7 @@ static Settings * sharedInstance = nil;
    }
 }
 
-+ (Settings *)instance
++ (Settings *)sharedInstance
 {
    if (sharedInstance)
       return sharedInstance;

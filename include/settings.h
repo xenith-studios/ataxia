@@ -16,8 +16,7 @@
 @property int port;
 @property BOOL shutdown;
 
-+ (Settings *)instance;
-+ (void)initialize;
++ (Settings *)sharedInstance;
 - (void)parseArguments:(int)argc:(const char *[])argv;
 - (void)loadConfigFile;
 @end
