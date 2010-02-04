@@ -42,6 +42,10 @@
 		9843687B111A1C4000860B26 /* lvm.c in Sources */ = {isa = PBXBuildFile; fileRef = 98436859111A1C4000860B26 /* lvm.c */; };
 		9843687C111A1C4000860B26 /* lzio.c in Sources */ = {isa = PBXBuildFile; fileRef = 9843685B111A1C4000860B26 /* lzio.c */; };
 		9843687D111A1C4000860B26 /* print.c in Sources */ = {isa = PBXBuildFile; fileRef = 9843685D111A1C4000860B26 /* print.c */; };
+		985CE3EF111A692F001D1269 /* bson.c in Sources */ = {isa = PBXBuildFile; fileRef = 985CE3E6111A692F001D1269 /* bson.c */; };
+		985CE3F0111A692F001D1269 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 985CE3E8111A692F001D1269 /* md5.c */; };
+		985CE3F1111A692F001D1269 /* mongo.c in Sources */ = {isa = PBXBuildFile; fileRef = 985CE3EB111A692F001D1269 /* mongo.c */; };
+		985CE3F2111A692F001D1269 /* numbers.c in Sources */ = {isa = PBXBuildFile; fileRef = 985CE3ED111A692F001D1269 /* numbers.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -119,6 +123,15 @@
 		9843685B111A1C4000860B26 /* lzio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lzio.c; path = lib/lua51/lzio.c; sourceTree = "<group>"; };
 		9843685C111A1C4000860B26 /* lzio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lzio.h; path = lib/lua51/lzio.h; sourceTree = "<group>"; };
 		9843685D111A1C4000860B26 /* print.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = print.c; path = lib/lua51/print.c; sourceTree = "<group>"; };
+		985CE3E6111A692F001D1269 /* bson.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bson.c; path = lib/mongodb/bson.c; sourceTree = "<group>"; };
+		985CE3E7111A692F001D1269 /* bson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bson.h; path = lib/mongodb/bson.h; sourceTree = "<group>"; };
+		985CE3E8111A692F001D1269 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = md5.c; path = lib/mongodb/md5.c; sourceTree = "<group>"; };
+		985CE3E9111A692F001D1269 /* md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = md5.h; path = lib/mongodb/md5.h; sourceTree = "<group>"; };
+		985CE3EA111A692F001D1269 /* mongo_except.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mongo_except.h; path = lib/mongodb/mongo_except.h; sourceTree = "<group>"; };
+		985CE3EB111A692F001D1269 /* mongo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mongo.c; path = lib/mongodb/mongo.c; sourceTree = "<group>"; };
+		985CE3EC111A692F001D1269 /* mongo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mongo.h; path = lib/mongodb/mongo.h; sourceTree = "<group>"; };
+		985CE3ED111A692F001D1269 /* numbers.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = numbers.c; path = lib/mongodb/numbers.c; sourceTree = "<group>"; };
+		985CE3EE111A692F001D1269 /* platform_hacks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = platform_hacks.h; path = lib/mongodb/platform_hacks.h; sourceTree = "<group>"; };
 		C6859EA3029092ED04C91782 /* ataxia.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = ataxia.1; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -161,6 +174,7 @@
 		08FB779DFE84155DC02AAC07 /* External Frameworks and Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				985CE3E5111A6920001D1269 /* mongodb */,
 				98436826111A1C1800860B26 /* lua51 */,
 				08FB779EFE84155DC02AAC07 /* Foundation.framework */,
 			);
@@ -233,6 +247,22 @@
 				9843685D111A1C4000860B26 /* print.c */,
 			);
 			name = lua51;
+			sourceTree = "<group>";
+		};
+		985CE3E5111A6920001D1269 /* mongodb */ = {
+			isa = PBXGroup;
+			children = (
+				985CE3E6111A692F001D1269 /* bson.c */,
+				985CE3E7111A692F001D1269 /* bson.h */,
+				985CE3E8111A692F001D1269 /* md5.c */,
+				985CE3E9111A692F001D1269 /* md5.h */,
+				985CE3EA111A692F001D1269 /* mongo_except.h */,
+				985CE3EB111A692F001D1269 /* mongo.c */,
+				985CE3EC111A692F001D1269 /* mongo.h */,
+				985CE3ED111A692F001D1269 /* numbers.c */,
+				985CE3EE111A692F001D1269 /* platform_hacks.h */,
+			);
+			name = mongodb;
 			sourceTree = "<group>";
 		};
 		C6859EA2029092E104C91782 /* Documentation */ = {
@@ -319,6 +349,10 @@
 				9843687B111A1C4000860B26 /* lvm.c in Sources */,
 				9843687C111A1C4000860B26 /* lzio.c in Sources */,
 				9843687D111A1C4000860B26 /* print.c in Sources */,
+				985CE3EF111A692F001D1269 /* bson.c in Sources */,
+				985CE3F0111A692F001D1269 /* md5.c in Sources */,
+				985CE3F1111A692F001D1269 /* mongo.c in Sources */,
+				985CE3F2111A692F001D1269 /* numbers.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
