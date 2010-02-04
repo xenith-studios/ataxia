@@ -104,8 +104,8 @@ int main (int argc, const char * argv[]) {
    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
     
    // Settings - parse command-line and load config file
-   [[Settings instance] loadConfigFile];
-   [[Settings instance] parseArguments:argc :argv];
+   [[Settings sharedInstance] loadConfigFile];
+   [[Settings sharedInstance] parseArguments:argc :argv];
 
    // Message queue - initialize
 
