@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
-		8DD76F9F0486AA7600D96B5E /* ataxia.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859EA3029092ED04C91782 /* ataxia.1 */; };
 		980E90D610D7FBFF005CE1CE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 980E90D510D7FBFF005CE1CE /* main.m */; };
 		982F7A9910EDC8F000A19AFD /* settings.m in Sources */ = {isa = PBXBuildFile; fileRef = 982F7A9810EDC8F000A19AFD /* settings.m */; };
 		982F7AE010EDCE9800A19AFD /* log.m in Sources */ = {isa = PBXBuildFile; fileRef = 982F7ADF10EDCE9800A19AFD /* log.m */; };
@@ -55,7 +54,6 @@
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-				8DD76F9F0486AA7600D96B5E /* ataxia.1 in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -132,7 +130,6 @@
 		985CE3EC111A692F001D1269 /* mongo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mongo.h; path = lib/mongodb/mongo.h; sourceTree = "<group>"; };
 		985CE3ED111A692F001D1269 /* numbers.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = numbers.c; path = lib/mongodb/numbers.c; sourceTree = "<group>"; };
 		985CE3EE111A692F001D1269 /* platform_hacks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = platform_hacks.h; path = lib/mongodb/platform_hacks.h; sourceTree = "<group>"; };
-		C6859EA3029092ED04C91782 /* ataxia.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = ataxia.1; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -268,7 +265,6 @@
 		C6859EA2029092E104C91782 /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
-				C6859EA3029092ED04C91782 /* ataxia.1 */,
 			);
 			name = Documentation;
 			sourceTree = "<group>";
@@ -370,8 +366,15 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = ataxia_Prefix.pch;
+				HEADER_SEARCH_PATHS = include/;
 				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					lib/mongodb/,
+					lib/lua51/,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				PRODUCT_NAME = ataxia;
+				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
@@ -383,8 +386,16 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = ataxia_Prefix.pch;
+				HEADER_SEARCH_PATHS = include/;
 				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					lib/mongodb/,
+					lib/lua51/,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				PRODUCT_NAME = ataxia;
+				SDKROOT = macosx10.6;
+				STRINGS_FILE_OUTPUT_ENCODING = "UTF-16";
 			};
 			name = Release;
 		};

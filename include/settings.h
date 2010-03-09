@@ -12,11 +12,13 @@
 @interface Settings : NSObject {
    int port;
    BOOL shutdown;
+   NSString *configFile;
 }
-@property int port;
-@property BOOL shutdown;
+@property (readonly, assign, nonatomic) int port;
+@property (readwrite, assign) BOOL shutdown;
+@property (readonly, copy, nonatomic) NSString *configFile;
 
 + (Settings *)sharedInstance;
-- (void)parseArguments:(int)argc:(const char *[])argv;
-- (void)loadConfigFile;
+- (int)parseArguments:(int)argc:(const char *[])argv;
+- (int)loadConfigFile;
 @end

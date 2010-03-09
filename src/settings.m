@@ -12,7 +12,7 @@
 
 static Settings *sharedInstance = nil;
 
-@synthesize port, shutdown;
+@synthesize port, shutdown, configFile;
 
 #pragma mark -
 #pragma mark class instance methods
@@ -22,6 +22,7 @@ static Settings *sharedInstance = nil;
    if (self = [super init]) {
       port = 0;
       shutdown = NO;
+      configFile = @"./etc/ataxia.conf";
    }
    return self;
 }
@@ -31,14 +32,14 @@ static Settings *sharedInstance = nil;
    [super dealloc];
 }
 
-- (void)parseArguments:(int)argc:(const char *[])argv
+- (int)parseArguments:(int)argc:(const char *[])argv
 {
-   
+   return 1;
 }
 
-- (void)loadConfigFile
+- (int)loadConfigFile
 {
-   
+   return 0;
 }
 
 #pragma mark -

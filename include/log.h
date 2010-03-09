@@ -8,6 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+void LogError(NSString *message);
+void LogWarning(NSString *message);
+void LogInfo(NSString *message);
+void LogNetwork(NSString *message);
+void LogZMP(NSString *message);
+void LogAdmin(NSString *message);
+
 typedef enum {
     LOG_INFO,
     LOG_WARNING,

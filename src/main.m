@@ -9,10 +9,10 @@
 #import <Foundation/Foundation.h>
 #import "settings.h"
 
-void sig_term_handler(int signum) { 
+void signal_handler(int signum) { 
    if ((signum != SIGSEGV) && (signum != SIGBUS) && (signum != SIGIOT)) {
       NSLog(@"Got signal: %i,  NOT setting to default handler.", signum);
-      signal(signum, (&sig_term_handler));
+      signal(signum, (&signal_handler));
    } else {
       NSLog(@"Got signal: %i, setting to default handler.", signum);
       signal(signum, SIG_DFL);
@@ -102,21 +102,45 @@ void sig_term_handler(int signum) {
 
 int main (int argc, const char * argv[]) {
    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    
-   // Settings - parse command-line and load config file
-   [[Settings sharedInstance] loadConfigFile];
-   [[Settings sharedInstance] parseArguments:argc :argv];
 
-   // Message queue - initialize
+   // Print program information
+   printf("Ataxia Engine V0.1 © 2009-2010, Xenith Studios (see AUTHORS)\n"
+            "Ataxia Engine comes with ABSOLUTELY NO WARRANTY; see COPYING for details.\n"
+            "This is free software, and you are welcome to redistribute it\n"
+            "under certain conditions; for details, see the file COPYING.\n\n");
+   
+   // Attempt to parse command line and config file. Exits on error.
+   if ([[Settings sharedInstance] parseArguments:argc :argv]) {
+      fprintf(stderr, "Usage: ataxia [CONFIGFILE] [OPTION]...\n\n"
+      "\n");
+      return 1;
+   }
+   if ([[Settings sharedInstance] loadConfigFile]) {
+      NSLog(@"Failed to load config file: ", [[Settings sharedInstance] configFile]);
+      return 1;
+   }
 
-   // Initialize and start comms server
+   // Initializations
+      // Logging
+      // Driver
+         // comms
+         // chroot
+      // Queues (messages, events, etc)
+      // Lua
     
    // Game loop - while !shutdown
-      // Handle messages (select?)
-      // Check for new connections
-      // Game tick
+      // Handle network messages (push user events) -- NOT NEEDED, HANDLED AUTOMATICALLY BY NETWORKING/SOCKET CLASSES
+      // Handle game updates
+         // Game tick
+         // Time update
+         // Weather update
+         // Entity updates (push events)
+      // Handle pending events
+      // Handle pending messages (network and player)
       // Sleep
 
+   // Cleanup
+   
    [pool drain];
    return 0;
 }
