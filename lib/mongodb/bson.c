@@ -1,5 +1,20 @@
 /* bson.c */
 
+/*    Copyright 2009, 2010 10gen Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 #include "bson.h"
 #include <stdlib.h>
 #include <string.h>
@@ -557,13 +572,13 @@ bson_buffer * bson_append_element( bson_buffer * b, const char * name_or_null, c
     return b;
 }
 
-bson_buffer * bson_append_date( bson_buffer * b , const char * name , const bson_date_t millis ){
+bson_buffer * bson_append_date( bson_buffer * b , const char * name , bson_date_t millis ){
     if ( ! bson_append_estart( b , bson_date , name , 8 ) ) return 0;
     bson_append64( b , &millis );
     return b;
 }
 
-bson_buffer * bson_append_time_t( bson_buffer * b , const char * name , const time_t secs){
+bson_buffer * bson_append_time_t( bson_buffer * b , const char * name , time_t secs){
     return bson_append_date(b, name, (bson_date_t)secs * 1000);
 }
 
