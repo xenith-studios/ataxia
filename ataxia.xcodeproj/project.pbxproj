@@ -50,6 +50,7 @@
 		983E233812051AA6000A1204 /* AsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 983E233712051AA6000A1204 /* AsyncSocket.m */; };
 		983E234812051D16000A1204 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 983E234712051D16000A1204 /* CoreFoundation.framework */; };
 		983E234E12051D4B000A1204 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 983E234D12051D4B000A1204 /* CoreServices.framework */; };
+		9852B7F1120564E7009B5069 /* network.m in Sources */ = {isa = PBXBuildFile; fileRef = 9852B7F0120564E7009B5069 /* network.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -143,6 +144,8 @@
 		983E233712051AA6000A1204 /* AsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AsyncSocket.m; path = src/AsyncSocket.m; sourceTree = "<group>"; };
 		983E234712051D16000A1204 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		983E234D12051D4B000A1204 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		9852B7EF120564DA009B5069 /* network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = network.h; path = include/network.h; sourceTree = "<group>"; };
+		9852B7F0120564E7009B5069 /* network.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = network.m; path = src/network.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,6 +176,8 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				9852B7F0120564E7009B5069 /* network.m */,
+				9852B7EF120564DA009B5069 /* network.h */,
 				983E233712051AA6000A1204 /* AsyncSocket.m */,
 				983E233612051A98000A1204 /* AsyncSocket.h */,
 				983E2335120519C4000A1204 /* NuMongoDB.h */,
@@ -383,6 +388,7 @@
 				983E231C12051789000A1204 /* print.c in Sources */,
 				983E231F1205179B000A1204 /* NuMongoDB.m in Sources */,
 				983E233812051AA6000A1204 /* AsyncSocket.m in Sources */,
+				9852B7F1120564E7009B5069 /* network.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

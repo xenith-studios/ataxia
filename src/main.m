@@ -1,8 +1,8 @@
 /*
  * Ataxia Engine Project
- * Copyright (C) 2009  Xenith Studios
+ * Copyright (C) 2009-2010  Xenith Studios
  * See COPYING for license details
- * http://github.com/xenith/ataxia/
+ * http://github.com/xenith-studios/ataxia/
  *
  */
 
@@ -127,7 +127,8 @@ int main (int argc, const char * argv[]) {
          // chroot
       // Queues (messages, events, etc)
       // Lua
-    
+
+   [[NSRunLoop currentRunLoop] run];
    // Game loop - while !shutdown
       // Handle network messages (push user events) -- NOT NEEDED, HANDLED AUTOMATICALLY BY NETWORKING/SOCKET CLASSES
       // Handle game updates
