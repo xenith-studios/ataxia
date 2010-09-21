@@ -1,5 +1,10 @@
 Code taken from:
 
-NuMongoDB - http://github.com/timburks/NuMongoDB
 libtelnet - http://github.com/elanthis/libtelnet
 Lua - http://www.lua.org/
+GoLua - http://github.com/afitz/golua
+MongoDB - http://www.mongodb.org/
+GoMongo - http://github.com/mikejs/gomongo
+
+A lot of thanks to the forums at MudLab (http://www.mudlab.org/forum/) and Gammon Software Forums
+(http://www.gammon.com.au/forum/)
