@@ -8,6 +8,9 @@ package main
 import (
     "fmt"
     "flag"
+    "os"
+    "syscall"
+    "ataxia/settings"
     //"io"
 )
 
@@ -25,13 +28,38 @@ func init() {
     flag.IntVar(&portFlag, "port", 0, "Main port")
     flag.StringVar(&configFlag, "config file", "data/config.lua", "Config file")
 
+    // Parse the command line
+    flag.Parse()
+
+    // If previous shutdown was not clean, clean up state and environment
+        // Are we recovering from a hotboot? Don't clean up network connections
+
+    // Read configuration file
+
     // Initializations
+        // Environment
         // Settings
         // Logging
         // Queues
         // Database
         // Lua
         // Network
+}
+
+
+// Perform a hotboot
+// Save game and world state, save player state, save player list
+func hotboot() {
+    // Save game state
+    // Save socket and player list
+    os.Exec(os.Args[0], os.Args, os.Environ())
+}
+
+
+// Recover from a hotboot
+// Restore game and world state, restore player list, restore player state
+func restore() {
+    
 }
 
 
@@ -42,10 +70,37 @@ This is free software, and you are welcome to redistribute it
 under certain conditions; for details, see the file COPYING.
 `);
 
-    // Parse the command line
-    flag.Parse()
+    // chroot into the configured directory
+    if settings.Chroot != "" {
+        err := syscall.Chroot(settings.Chroot)
+        if err != 0 {
+            fmt.Fprintln(os.Stderr, "Failed to chroot:", os.Errno(err))
+            os.Exit(err)
+        }        
+    }
+    
+    // Write out pid file
+    pid := fmt.Sprint(os.Getpid())
+    pidfile, err := os.Open(settings.Pidfile, os.O_RDWR|os.O_CREAT, 0666)
+    if pidfile == nil {
+        fmt.Fprintln(os.Stderr, "Error writing pid to file:", err)
+        os.Exit(1)
+    }
+    pidfile.Write([]byte(pid))
+    pidfile.Close()
+    defer os.Remove(settings.Pidfile)
 
-    // chroot
+    // Daemonize if configured
+
+    // Initialize game state
+        // Load database
+        // Load commands
+        // Load scripts
+        // Load world
+        // Load entities
+
+    // Are we recovering from a hotboot?
+        // Restore socket connections
 
     // Main loop
         // Handle network messages (push user events)

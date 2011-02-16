@@ -2,8 +2,8 @@
 #
 set -e
 
-DEPS=""
+DEPS="settings"
 for dep in ${DEPS}; do
-    cd $dep ; make clean || true; cd ..
+    cd $dep ; make nuke || true; cd ..
 done
-make clean
+make nuke
