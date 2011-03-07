@@ -1,10 +1,12 @@
 Code taken from:
 
-libtelnet - http://github.com/elanthis/libtelnet
+libtelnet - https://github.com/elanthis/libtelnet
 Lua - http://www.lua.org/
-GoLua - http://github.com/afitz/golua
+GoLua - https://github.com/afitz/golua
 MongoDB - http://www.mongodb.org/
-GoMongo - http://github.com/mikejs/gomongo
+GoMongo - https://github.com/mikejs/gomongo
+Go-Mongo - https://github.com/garyburd/go-mongo
+GoZMQ - https://github.com/alecthomas/gozmq
 
 A lot of thanks to the forums at MudLab (http://www.mudlab.org/forum/) and Gammon Software Forums
 (http://www.gammon.com.au/forum/)

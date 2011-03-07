@@ -10,14 +10,16 @@ import (
     "flag"
     "os"
     "syscall"
+    "log"
     "ataxia/settings"
-    //"io"
 )
 
 
 // Flag variables
 var portFlag int
 var configFlag string
+var hotbootFlag bool
+var descriptorFlag int
 
 
 /*
@@ -26,14 +28,18 @@ var configFlag string
 func init() {
     // Setup the command-line flags
     flag.IntVar(&portFlag, "port", 0, "Main port")
-    flag.StringVar(&configFlag, "config file", "data/config.lua", "Config file")
+    flag.StringVar(&configFlag, "config", "data/config.lua", "Config file")
+    flag.BoolVar(&hotbootFlag, "hotboot", false, "Recover from hotboot")
+    flag.IntVar(&descriptorFlag, "descriptor", 0, "Hotboot descriptor")
 
     // Parse the command line
     flag.Parse()
 
-    // If previous shutdown was not clean, clean up state and environment
-        // Are we recovering from a hotboot? Don't clean up network connections
+    if !hotbootFlag {
+        // If previous shutdown was not clean, clean up state and environment
+    }
 
+    // Initialize Lua
     // Read configuration file
 
     // Initializations
@@ -42,8 +48,9 @@ func init() {
         // Logging
         // Queues
         // Database
-        // Lua
         // Network
+    
+    // Set up signal handlers
 }
 
 
@@ -52,7 +59,12 @@ func init() {
 func hotboot() {
     // Save game state
     // Save socket and player list
-    os.Exec(os.Args[0], os.Args, os.Environ())
+    // Disconnect from database
+    arglist := append(os.Args, "-hotboot", "-descriptor=", fmt.Sprint(1234))
+    os.Exec(os.Args[0], arglist, os.Environ())
+    
+    // If we get to this point, something went wrong. Die.
+    log.Fatalln("Failed to exec during hotboot.")
 }
 
 
@@ -74,8 +86,7 @@ under certain conditions; for details, see the file COPYING.
     if settings.Chroot != "" {
         err := syscall.Chroot(settings.Chroot)
         if err != 0 {
-            fmt.Fprintln(os.Stderr, "Failed to chroot:", os.Errno(err))
-            os.Exit(err)
+            log.Fatalln("Failed to chroot:", os.Errno(err))
         }        
     }
     
@@ -83,14 +94,17 @@ under certain conditions; for details, see the file COPYING.
     pid := fmt.Sprint(os.Getpid())
     pidfile, err := os.Open(settings.Pidfile, os.O_RDWR|os.O_CREAT, 0666)
     if pidfile == nil {
-        fmt.Fprintln(os.Stderr, "Error writing pid to file:", err)
-        os.Exit(1)
+        log.Fatalln("Error writing pid to file:", err)
     }
     pidfile.Write([]byte(pid))
     pidfile.Close()
     defer os.Remove(settings.Pidfile)
 
     // Daemonize if configured
+    if settings.Daemonize {
+        log.Println("Daemonizing")
+        // Daemonize here
+    }
 
     // Initialize game state
         // Load database
@@ -102,6 +116,7 @@ under certain conditions; for details, see the file COPYING.
     // Are we recovering from a hotboot?
         // Restore socket connections
 
+    // Run the game loop in its own goroutine
     // Main loop
         // Handle network messages (push user events)
         // Handle game updates
