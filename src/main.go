@@ -11,6 +11,7 @@ import (
     "os"
     "syscall"
     "log"
+    "lua51"
     "ataxia/settings"
 )
 
@@ -22,13 +23,16 @@ var hotbootFlag bool
 var descriptorFlag int
 
 
+// Main Lua State
+var lua_state *lua51.State
+
 /*
     Do some useful initialization here.
 */
 func init() {
     // Setup the command-line flags
     flag.IntVar(&portFlag, "port", 0, "Main port")
-    flag.StringVar(&configFlag, "config", "data/config.lua", "Config file")
+    flag.StringVar(&configFlag, "config", "etc/config.lua", "Config file")
     flag.BoolVar(&hotbootFlag, "hotboot", false, "Recover from hotboot")
     flag.IntVar(&descriptorFlag, "descriptor", 0, "Hotboot descriptor")
 
@@ -36,11 +40,18 @@ func init() {
     flag.Parse()
 
     if !hotbootFlag {
-        // If previous shutdown was not clean, clean up state and environment
+        // If previous shutdown was not clean and we are not recovering from a hotboot, clean up state and environment
     }
 
     // Initialize Lua
+    lua_state = lua51.NewState()
+    lua_state.OpenLibs()
+
     // Read configuration file
+    ok := settings.ParseConfigFile(lua_state, configFlag, portFlag)
+    if !ok {
+        log.Fatal("Error reading config file.")
+    }
 
     // Initializations
         // Environment
@@ -49,8 +60,9 @@ func init() {
         // Queues
         // Database
         // Network
-    
+
     // Set up signal handlers
+    fmt.Println(settings.Port)
 }
 
 
@@ -62,16 +74,16 @@ func hotboot() {
     // Disconnect from database
     arglist := append(os.Args, "-hotboot", "-descriptor=", fmt.Sprint(1234))
     os.Exec(os.Args[0], arglist, os.Environ())
-    
+
     // If we get to this point, something went wrong. Die.
-    log.Fatalln("Failed to exec during hotboot.")
+    log.Fatal("Failed to exec during hotboot.")
 }
 
 
 // Recover from a hotboot
 // Restore game and world state, restore player list, restore player state
-func restore() {
-    
+func recover() {
+    fmt.Print("Recovering from hotboot.")
 }
 
 
@@ -87,9 +99,9 @@ under certain conditions; for details, see the file COPYING.
         err := syscall.Chroot(settings.Chroot)
         if err != 0 {
             log.Fatalln("Failed to chroot:", os.Errno(err))
-        }        
+        }
     }
-    
+
     // Write out pid file
     pid := fmt.Sprint(os.Getpid())
     pidfile, err := os.Open(settings.Pidfile, os.O_RDWR|os.O_CREAT, 0666)

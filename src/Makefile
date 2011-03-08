@@ -1,6 +1,6 @@
 include $(GOROOT)/src/Make.inc
 
-TARG=ataxia
+TARG=../bin/ataxia
 
 GOFILES=\
 	main.go\
