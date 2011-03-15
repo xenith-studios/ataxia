@@ -44,6 +44,7 @@ func init() {
     }
 
     // Initialize Lua
+    log.Println("Initializing Lua")
     lua_state = lua51.NewState()
     lua_state.OpenLibs()
 
@@ -62,7 +63,6 @@ func init() {
         // Network
 
     // Set up signal handlers
-    fmt.Println(settings.Port)
 }
 
 
@@ -109,6 +109,7 @@ under certain conditions; for details, see the file COPYING.
         log.Fatalln("Error writing pid to file:", err)
     }
     pidfile.Write([]byte(pid))
+    log.Println("Wrote PID to", settings.Pidfile)
     pidfile.Close()
     defer os.Remove(settings.Pidfile)
 
