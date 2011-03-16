@@ -8,7 +8,7 @@ bash clean.bash
 
 # Pass 2: make everything
 
-DEPS="settings"
+DEPS="lua settings net"
 for dep in ${DEPS}; do
     cd $dep ; make ; make install ; cd ..
 done

@@ -6,16 +6,30 @@ package net
 import (
     "log"
     "net"
-    "fmt"
+    //"fmt"
     "ataxia/settings"
 )
 
-var Server *net.Listener
+var (
+    Server *net.TCPListener
+    Descriptor int
+)
 
-func Initialize() {
-    server, err := net.Listen("tcp", fmt.Sprintf(":%d", settings.MainPort))
+
+func Initialize() bool {
+    if Server != nil {
+        return true
+    }
+    listener, err := net.ListenTCP("tcp", &net.TCPAddr{net.ParseIP(""), settings.MainPort})
     if err != nil {
         log.Fatalln("Failed to create server:", err)
     }
-    Server = &server
+    Server = listener
+    return true
+}
+
+func Shutdown() {
+    if Server != nil {
+        Server.Close()
+    }
 }

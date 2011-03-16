@@ -1,34 +1,41 @@
+/*
+    Settings
+*/
 package settings
 
 import (
     "log"
-    //"fmt"
     "lua51"
+    "ataxia/lua"
 )
 
-var Chroot string = ""
-var Pidfile string = "data/ataxia.pid"
-var Daemonize bool = false
-var Port int = 9000
+var (
+    Chroot string = ""
+    Pidfile string = "data/ataxia.pid"
+    Daemonize bool = false
+    MainPort int = 9000
+)
 
-func ParseConfigFile(L *lua51.State, configFile string, portFlag int) bool {
+func ParseConfigFile(configFile string, portFlag int) bool {
+    L := lua.MainState
     ok := L.DoFile(configFile)
     if !ok {
         log.Fatal("Failed to read configuration file.")
         return false
     }
 
-    L.GetGlobal("pidfile")
+    lua.MainState.GetGlobal("pid_file")
     Pidfile = lua51.CheckString(L, 1)
     L.Pop(1)
 
-    L.GetGlobal("port")
-    Port = lua51.CheckInteger(L, 1)
-    L.Pop(1)
     if portFlag != 0 {
-        Port = portFlag
+        MainPort = portFlag
+    } else {
+        L.GetGlobal("main_port")
+        MainPort = lua51.CheckInteger(L, 1)
+        L.Pop(1)
     }
-
+    
     L.GetGlobal("chroot")
     Chroot = lua51.CheckString(L, 1)
     L.Pop(1)

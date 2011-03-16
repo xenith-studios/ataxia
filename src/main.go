@@ -11,25 +11,29 @@ import (
     "os"
     "syscall"
     "log"
-    "lua51"
+    "ataxia/lua"
     "ataxia/settings"
+    "ataxia/net"
 )
 
 
-// Flag variables
-var portFlag int
-var configFlag string
-var hotbootFlag bool
-var descriptorFlag int
+// Variables for the command-line flags
+var (
+    portFlag int
+    configFlag string
+    hotbootFlag bool
+    descriptorFlag int
+)
 
 
-// Main Lua State
-var lua_state *lua51.State
-
-/*
-    Do some useful initialization here.
-*/
+// Do all our basic initialization within the main package's init function.
 func init() {
+    fmt.Println(`Ataxia Engine V0.1 © 2009-2011, Xenith Studios (see AUTHORS)
+Ataxia Engine comes with ABSOLUTELY NO WARRANTY; see COPYING for details.
+This is free software, and you are welcome to redistribute it
+under certain conditions; for details, see the file COPYING.
+`);
+
     // Setup the command-line flags
     flag.IntVar(&portFlag, "port", 0, "Main port")
     flag.StringVar(&configFlag, "config", "etc/config.lua", "Config file")
@@ -44,12 +48,10 @@ func init() {
     }
 
     // Initialize Lua
-    log.Println("Initializing Lua")
-    lua_state = lua51.NewState()
-    lua_state.OpenLibs()
-
+    lua.Initialize()
+ 
     // Read configuration file
-    ok := settings.ParseConfigFile(lua_state, configFlag, portFlag)
+    ok := settings.ParseConfigFile(configFlag, portFlag)
     if !ok {
         log.Fatal("Error reading config file.")
     }
@@ -61,13 +63,14 @@ func init() {
         // Queues
         // Database
         // Network
+        net.Initialize()
 
     // Set up signal handlers
 }
 
 
-// Perform a hotboot
-// Save game and world state, save player state, save player list
+// When hotboot is called, this function will save game and world state, save each player state, and save the player list.
+// Then it will do some cleanup (including closing the database) and call Exec to reload the running program.
 func hotboot() {
     // Save game state
     // Save socket and player list
@@ -80,26 +83,28 @@ func hotboot() {
 }
 
 
-// Recover from a hotboot
-// Restore game and world state, restore player list, restore player state
+// When recovering from a hotboot, recover will restore the game and world state, restore the player list, and restore each player state.
+// Once that is done, it will then reconnect each active descriptor to the associated player.
 func recover() {
-    fmt.Print("Recovering from hotboot.")
+    log.Println("Recovering from hotboot.")
 }
 
 
+// 
 func main() {
-    fmt.Println(`Ataxia Engine V0.1 © 2009-2011, Xenith Studios (see AUTHORS)
-Ataxia Engine comes with ABSOLUTELY NO WARRANTY; see COPYING for details.
-This is free software, and you are welcome to redistribute it
-under certain conditions; for details, see the file COPYING.
-`);
+    // At this point, basic initialization has completed
 
-    // chroot into the configured directory
+    // If configured, chroot into the designated directory
     if settings.Chroot != "" {
         err := syscall.Chroot(settings.Chroot)
         if err != 0 {
             log.Fatalln("Failed to chroot:", os.Errno(err))
         }
+        error := os.Chdir("/")
+        if error != nil {
+            log.Fatalln("Failed to chdir:", error)
+        }
+        log.Println("Chrooted to", settings.Chroot)
     }
 
     // Write out pid file
@@ -127,7 +132,9 @@ under certain conditions; for details, see the file COPYING.
         // Load entities
 
     // Are we recovering from a hotboot?
-        // Restore socket connections
+    if hotbootFlag {
+        recover()
+    }
 
     // Run the game loop in its own goroutine
     // Main loop
@@ -140,6 +147,15 @@ under certain conditions; for details, see the file COPYING.
         // Handle pending events
         // Handle pending messages (network and player)
         // Sleep
-
-   // Cleanup
+    for {
+        conn, err := net.Server.Accept()
+        if err != nil {
+            log.Println("Failed to accept a connection")
+        }
+        log.Println("Accepted a connection")
+        conn.Close()
+    }
+    // Cleanup
+    lua.Shutdown()
+    net.Shutdown()
 }
