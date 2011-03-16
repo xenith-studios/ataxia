@@ -11,13 +11,13 @@
 
 
 -- Port to run the main engine on
-port = 9000
+main_port = 9000
 
 -- Set this option to true to run in the background as a server daemon upon
 -- startup. This is useful for certain startup scripts.
 -- This option currently does not work due to Go lacking a proper fork utility.
 -- Defaults to disabled.
---daemonize = false
+-- daemonize = false
 
 -- Location of the PID file
 pid_file = "data/ataxia.pid"
@@ -35,24 +35,24 @@ user = ""
 group = ""
 
 -- Logging facility to use
--- Options are: standard, fancy
+-- Options are: standard, file, syslog
 log_facility = "standard"
 
--- Location of the default log file for the standard logger
-log_file = "log/ataxia.log"
+-- Location of the default log file for the file logger
+-- log_file = "log/ataxia.log"
 
 -- Email facility to use
 -- Options are: none, smtp, sendmail
-email_facility = "sendmail"
+email_facility = "none"
 
 -- Location of the sendmail binary
-sendmail = "/usr/sbin/sendmail"
+-- sendmail = "/usr/sbin/sendmail"
 
 -- Administrator's email address for notifications
-admin_email = ""
+-- admin_email = ""
 
 -- Email address to send abuse notifications
-abuse_email = ""
+-- abuse_email = ""
 
 -- Storage facility to use
 -- Options are: file, database
