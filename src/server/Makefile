@@ -1,8 +1,8 @@
 include $(GOROOT)/src/Make.inc
 
-TARG=ataxia/net
+TARG=ataxia/server
 
 GOFILES=\
-    net.go\
+    server.go\
 
 include $(GOROOT)/src/Make.pkg

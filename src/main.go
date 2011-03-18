@@ -14,7 +14,7 @@ import (
     "log"
     "ataxia/lua"
     "ataxia/settings"
-    "ataxia/net"
+    "ataxia/server"
 )
 
 
@@ -46,10 +46,6 @@ under certain conditions; for details, see the file COPYING.
     // Parse the command line
     flag.Parse()
 
-    if !hotbootFlag {
-        // If previous shutdown was not clean and we are not recovering from a hotboot, clean up state and environment
-    }
-
     // Initialize Lua
     lua.Initialize()
  
@@ -61,15 +57,16 @@ under certain conditions; for details, see the file COPYING.
 
     // Initializations
         // Environment
-        // Settings
         // Logging
         // Queues
         // Database
 
     // Initialize the network
-    net.Initialize()
+    server.Initialize()
 
-    // Set up signal handlers
+    if !hotbootFlag {
+        // If previous shutdown was not clean and we are not recovering from a hotboot, clean up state and environment
+    }
 }
 
 
@@ -105,7 +102,6 @@ func main() {
                 case sig := <- signal.Incoming:
                     switch sig.(signal.UnixSignal) {
                         case syscall.SIGTERM, syscall.SIGINT:
-                            log.Println("***Caught signal %d, shutting down gracefully\n", sig)
                             shutdown <- true
                     }
             }
@@ -155,17 +151,7 @@ func main() {
     }
     
     // Initialization and setup is complete. Spin up a goroutine to handle incoming connections
-    go func() {
-        for {
-            conn, err := net.Server.Accept()
-            if err != nil {
-                log.Println("Failed to accept a connection")
-            } else {
-                log.Println("Accepted a connection")
-            }
-            conn.Close()
-        }
-    }()
+    go server.Listen()
 
     // Run the game loop in its own goroutine
     // Main loop
@@ -179,11 +165,11 @@ func main() {
         // Handle pending messages (network and player)
         // Sleep
     
-    // Listen for the shutdown signal
+    // Wait for the shutdown signal
     <-shutdown
 
     // Cleanup
     log.Println("Cleaning up....")
     lua.Shutdown()
-    net.Shutdown()
+    server.Shutdown()
 }

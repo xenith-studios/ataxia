@@ -8,7 +8,7 @@ bash clean.bash
 
 # Pass 2: make everything
 
-DEPS="lua settings net"
+DEPS="lua settings game server"
 for dep in ${DEPS}; do
     cd $dep ; make ; make install ; cd ..
 done

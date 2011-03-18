@@ -1,12 +1,12 @@
 /*
     Net
 */
-package net
+package server
 
 import (
     "log"
     "net"
-    //"fmt"
+    "ataxia/game"
     "ataxia/settings"
 )
 
@@ -31,5 +31,19 @@ func Initialize() bool {
 func Shutdown() {
     if Server != nil {
         Server.Close()
+    }
+}
+
+func Listen() {
+    for {
+        conn, err := Server.Accept()
+        if err != nil {
+            log.Println("Failed to accept a connection")
+        } else {
+            log.Println("Accepted a connection")
+            player := new(game.Player)
+            player.Socket = conn
+        }
+        conn.Close()
     }
 }
