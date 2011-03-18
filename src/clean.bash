@@ -2,7 +2,7 @@
 #
 set -e
 
-DEPS="lua settings server game"
+DEPS="lua settings"
 for dep in ${DEPS}; do
     cd $dep ; make nuke || true; cd ..
 done

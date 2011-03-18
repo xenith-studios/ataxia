@@ -14,7 +14,6 @@ import (
     "log"
     "ataxia/lua"
     "ataxia/settings"
-    "ataxia/server"
 )
 
 
@@ -62,7 +61,8 @@ under certain conditions; for details, see the file COPYING.
         // Database
 
     // Initialize the network
-    server.Initialize()
+    log.Println("Initializing network")
+    InitializeNetwork()
 
     if !hotbootFlag {
         // If previous shutdown was not clean and we are not recovering from a hotboot, clean up state and environment
@@ -151,7 +151,7 @@ func main() {
     }
     
     // Initialization and setup is complete. Spin up a goroutine to handle incoming connections
-    go server.Listen()
+    go mainServer.Listen()
 
     // Run the game loop in its own goroutine
     // Main loop
@@ -171,5 +171,5 @@ func main() {
     // Cleanup
     log.Println("Cleaning up....")
     lua.Shutdown()
-    server.Shutdown()
+    mainServer.Shutdown()
 }
