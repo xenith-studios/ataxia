@@ -5,10 +5,10 @@ package lua
 
 import (
     "log"
-    "lua51"
+    "golua"
 )
 
-var MainState *lua51.State
+var MainState *golua.State
 
 func Initialize() bool {
     log.Println("Initializing Lua")
@@ -17,7 +17,7 @@ func Initialize() bool {
         return true
     }
 
-    MainState = lua51.NewState()
+    MainState = golua.NewState()
     MainState.OpenLibs()
     return true
 }

@@ -5,7 +5,7 @@ package settings
 
 import (
     "log"
-    "lua51"
+    "golua"
     "ataxia/lua"
 )
 
@@ -16,7 +16,9 @@ var (
     MainPort int = 9000
 )
 
-func ParseConfigFile(configFile string, portFlag int) bool {
+// Pass the config file to Lua for processing, and pull the variables from Lua into package-level variables.
+// Pass in each command-line flag for overriding values in the config file
+func LoadConfigFile(configFile string, mainPort int) bool {
     L := lua.MainState
     ok := L.DoFile(configFile)
     if !ok {
@@ -25,19 +27,19 @@ func ParseConfigFile(configFile string, portFlag int) bool {
     }
 
     lua.MainState.GetGlobal("pid_file")
-    Pidfile = lua51.CheckString(L, 1)
+    Pidfile = golua.CheckString(L, 1)
     L.Pop(1)
 
-    if portFlag != 0 {
-        MainPort = portFlag
+    if mainPort != 0 {
+        MainPort = mainPort
     } else {
         L.GetGlobal("main_port")
-        MainPort = lua51.CheckInteger(L, 1)
+        MainPort = golua.CheckInteger(L, 1)
         L.Pop(1)
     }
     
     L.GetGlobal("chroot")
-    Chroot = lua51.CheckString(L, 1)
+    Chroot = golua.CheckString(L, 1)
     L.Pop(1)
 
     L.GetGlobal("daemonize")

@@ -9,6 +9,7 @@ import (
     "fmt"
     "flag"
     "os"
+    "os/signal"
     "syscall"
     "log"
     "ataxia/lua"
@@ -25,6 +26,7 @@ var (
     descriptorFlag int
 )
 
+var shutdown chan bool
 
 // Do all our basic initialization within the main package's init function.
 func init() {
@@ -34,6 +36,7 @@ This is free software, and you are welcome to redistribute it
 under certain conditions; for details, see the file COPYING.
 `);
 
+    shutdown = make(chan bool)
     // Setup the command-line flags
     flag.IntVar(&portFlag, "port", 0, "Main port")
     flag.StringVar(&configFlag, "config", "etc/config.lua", "Config file")
@@ -51,7 +54,7 @@ under certain conditions; for details, see the file COPYING.
     lua.Initialize()
  
     // Read configuration file
-    ok := settings.ParseConfigFile(configFlag, portFlag)
+    ok := settings.LoadConfigFile(configFlag, portFlag)
     if !ok {
         log.Fatal("Error reading config file.")
     }
@@ -62,8 +65,9 @@ under certain conditions; for details, see the file COPYING.
         // Logging
         // Queues
         // Database
-        // Network
-        net.Initialize()
+
+    // Initialize the network
+    net.Initialize()
 
     // Set up signal handlers
 }
@@ -93,6 +97,20 @@ func recover() {
 // 
 func main() {
     // At this point, basic initialization has completed
+
+    // Spin up a goroutine to handle signals
+    go func() {
+        for {
+            select { 
+                case sig := <- signal.Incoming:
+                    switch sig.(signal.UnixSignal) {
+                        case syscall.SIGTERM, syscall.SIGINT:
+                            log.Println("***Caught signal %d, shutting down gracefully\n", sig)
+                            shutdown <- true
+                    }
+            }
+        }
+    }()
 
     // If configured, chroot into the designated directory
     if settings.Chroot != "" {
@@ -135,6 +153,19 @@ func main() {
     if hotbootFlag {
         recover()
     }
+    
+    // Initialization and setup is complete. Spin up a goroutine to handle incoming connections
+    go func() {
+        for {
+            conn, err := net.Server.Accept()
+            if err != nil {
+                log.Println("Failed to accept a connection")
+            } else {
+                log.Println("Accepted a connection")
+            }
+            conn.Close()
+        }
+    }()
 
     // Run the game loop in its own goroutine
     // Main loop
@@ -147,15 +178,12 @@ func main() {
         // Handle pending events
         // Handle pending messages (network and player)
         // Sleep
-    for {
-        conn, err := net.Server.Accept()
-        if err != nil {
-            log.Println("Failed to accept a connection")
-        }
-        log.Println("Accepted a connection")
-        conn.Close()
-    }
+    
+    // Listen for the shutdown signal
+    <-shutdown
+
     // Cleanup
+    log.Println("Cleaning up....")
     lua.Shutdown()
     net.Shutdown()
 }
