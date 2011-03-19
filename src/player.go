@@ -40,14 +40,6 @@ type Player struct {
 }
 
 
-func (account *Account) Setup() {
-//    account.Write([]byte("Hello, welcome to Ataxia. What is your account name?\n"))
-//    buf, _ := account.Read()
-//    account.Write([]byte(fmt.Sprintf("Hello %s, how are you today?\n", buf)))
-}
-
-
-
 // Player factory
 func NewPlayer(conn net.Conn) (player *Player) {
     player = new(Player)
@@ -94,6 +86,7 @@ func (player *Player) Close() {
         player.connection.socket.Close()
         player.connection.socket = nil
         player.connection.reader = nil
+        log.Println("Player disconnected:", player.account.Name)
     }
 }
 
@@ -113,8 +106,8 @@ func (player *Player) Read() (data string, err os.Error) {
     }
     //buf = buf[0:len(buf)-1]
     buf = bytes.TrimSpace(buf)
-    buf = bytes.TrimRight(buf, "\n\r")
+    buf = bytes.Trim(buf, "\n\r")
     data = string(buf)
-    log.Println(buf)
+    log.Println(player.account.Name, "said:", string(buf))
     return
 }
