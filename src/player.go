@@ -113,6 +113,8 @@ func (player *Player) Read() (data string, err os.Error) {
     }
     //buf = buf[0:len(buf)-1]
     buf = bytes.TrimSpace(buf)
+    buf = bytes.TrimRight(buf, "\n\r")
     data = string(buf)
+    log.Println(buf)
     return
 }
