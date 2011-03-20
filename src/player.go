@@ -4,22 +4,17 @@
 package main
 
 import (
-    "net"
-//    "time"
+    "net/textproto"
     "container/list"
     "os"
     "log"
     "fmt"
-    "bytes"
-    "bufio"
+//    "time"
+//    "syscall"
+//    "bytes"
+//    "bufio"
 )
 
-// The Connection structure wraps all the lower networking details for each connected player
-type Connection struct {
-    socket net.Conn
-    reader *bufio.Reader
-    State string
-}
 
 // Account
 type Account struct {
@@ -32,82 +27,104 @@ type Account struct {
 // Player
 type Player struct {
     account Account
-    connection Connection
+    conn *connection
     In chan string
     Out chan string
-    inBuffer []byte
-    outBuffer []byte
 }
 
 
 // Player factory
-func NewPlayer(conn net.Conn) (player *Player) {
+func NewPlayer(conn *connection) (player *Player) {
     player = new(Player)
-    player.connection.socket = conn
-    player.connection.reader = bufio.NewReader(conn)
+    player.conn = conn
+    player.In = make(chan string, 1024)
+    player.Out = make(chan string, 1024)
     return player
 }
 
-func (player *Player) Run() (err os.Error) {
-    var data string
+func (player *Player) Run() {
+    buf := make([]byte, 1024)
     
     // Setup the player here.
-    player.Write("Hello, welcome to Ataxia. What is your account name?\n")
-    if data, err = player.Read(); err != nil {
-        return err
+    player.Write([]byte("Hello, welcome to Ataxia. What is your account name?\n"))
+    if _, err := player.Read(buf); err != nil {
+        return
     }
-    player.Write(fmt.Sprintf("Hello %s.\n", data))
-    player.account.Name = data
-    player.Write("\n\n> ")
-    //player.connection.socket.SetTimeout(3600)
-    for {
-        if player.connection.socket == nil {
-            break
-        }
+    player.Write([]byte(fmt.Sprintf("Hello %s.\n", string(buf))))
+    player.account.Name = string(buf)
+
+    // Create an anonymous goroutine for reading
+    go func() {
+        for {
+            if player.conn.socket == nil {
+                break
+            }
         
-        if data, err = player.Read(); err != nil {
-            log.Println(err)
-            player.Close()
-            break
-        }
+            data := make([]byte, 1024)
+            var n int
+            var err os.Error
         
-        if len(data) == 0 {
-            continue
+            if n, err = player.Read(data); err != nil {
+                log.Println(n)
+                log.Println(err)
+                player.Close()
+                break
+            }
+
+            if n > 0 {
+                mainServer.SendToAll(fmt.Sprintf("<%s> %s", player.account.Name, string(data)))
+            }
         }
-        
-        mainServer.SendToAll(fmt.Sprintf("<%s> %s", player.account.Name, data))
-    }
-    
-    return
+    }()
+
+    // Create an anonymous goroutine for writing
+    go func() {
+        for {
+            if player.conn.socket == nil {
+                break
+            }
+            buf := <-player.In
+            if _, err := player.Write([]byte(buf)); err != nil {
+                log.Println(err)
+                player.Close()
+                break
+            }
+        }
+    }()
 }
 
 func (player *Player) Close() {
-    if (player.connection.socket != nil) {
-        player.connection.socket.Close()
-        player.connection.socket = nil
-        player.connection.reader = nil
+    if (player.conn.socket != nil) {
+        player.conn.socket.Close()
+        player.conn.socket = nil
+        player.conn.buffer = nil
         log.Println("Player disconnected:", player.account.Name)
     }
 }
 
-func (player *Player) Write(buf string) (n int, err os.Error) {
-    n, err = player.connection.socket.Write([]byte(buf))
-    return n, err
+func (player *Player) Write(buf []byte) (n int, err os.Error) {
+    n, err = player.conn.buffer.Write(buf)
+    player.conn.buffer.Flush()
+    return
 }
 
-func (player *Player) Read() (data string, err os.Error) {
-    buf := make([]byte, 1024)
-    if player.connection.reader == nil {
+func (player *Player) Read(buf []byte) (n int, err os.Error) {
+    if player.conn.buffer == nil {
         return
+    }
+    
+    tp := textproto.NewReader(player.conn.buffer.Reader)
+    
+    var s string
+    if s, err = tp.ReadLine(); err != nil {
+        if err == os.EOF {
+            log.Println("Read EOF, disconnecting player")
+            player.Close()
+            return 0, nil
+        }
+        return 0, err
     }
 
-    if buf, err = player.connection.reader.ReadBytes('\n'); err != nil {
-        return
-    }
-    //buf = buf[0:len(buf)-1]
-    buf = bytes.TrimSpace(buf)
-    buf = bytes.Trim(buf, "\n\r")
-    data = string(buf)
-    log.Println(player.account.Name, "said:", string(buf))
-    return
+    copy(buf, s)
+    return len(s), err
 }

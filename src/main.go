@@ -60,10 +60,6 @@ under certain conditions; for details, see the file COPYING.
         // Queues
         // Database
 
-    // Initialize the network
-    log.Println("Initializing network")
-    InitializeNetwork()
-
     if !hotbootFlag {
         // If previous shutdown was not clean and we are not recovering from a hotboot, clean up state and environment
     }
@@ -137,6 +133,10 @@ func main() {
         log.Println("Daemonizing")
         // Daemonize here
     }
+
+    // Initialize the network
+    log.Println("Initializing network")
+    mainServer = NewServer()
 
     // Initialize game state
         // Load database
