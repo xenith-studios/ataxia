@@ -9,11 +9,24 @@ import (
     "os"
     "log"
     "fmt"
+    "io"
 //    "time"
 //    "syscall"
 //    "bytes"
-//    "bufio"
+    "bufio"
+    "ataxia/handler"
 )
+
+
+// The Connection structure wraps all the lower networking details for each connected player
+type connection struct {
+    socket      io.ReadWriteCloser
+    buffer      *bufio.ReadWriter
+    server      *Server
+    handler     *handler.Handler
+    remoteAddr  string
+    state       string
+}
 
 
 // Account
@@ -23,6 +36,7 @@ type Account struct {
     Name string
     Characters *list.List
 }
+
 
 // Player
 type Player struct {
@@ -42,9 +56,10 @@ func NewPlayer(conn *connection) (player *Player) {
     return player
 }
 
+
 func (player *Player) Run() {
     buf := make([]byte, 1024)
-    
+
     // Setup the player here.
     player.Write([]byte("Hello, welcome to Ataxia. What is your account name?\n"))
     if _, err := player.Read(buf); err != nil {
@@ -72,7 +87,7 @@ func (player *Player) Run() {
             }
 
             if n > 0 {
-                mainServer.SendToAll(fmt.Sprintf("<%s> %s", player.account.Name, string(data)))
+                player.conn.server.SendToAll(fmt.Sprintf("<%s> %s", player.account.Name, string(data)))
             }
         }
     }()
@@ -93,20 +108,24 @@ func (player *Player) Run() {
     }()
 }
 
+
 func (player *Player) Close() {
     if (player.conn.socket != nil) {
         player.conn.socket.Close()
         player.conn.socket = nil
         player.conn.buffer = nil
+        player.conn.server.RemovePlayer(player)
         log.Println("Player disconnected:", player.account.Name)
     }
 }
+
 
 func (player *Player) Write(buf []byte) (n int, err os.Error) {
     n, err = player.conn.buffer.Write(buf)
     player.conn.buffer.Flush()
     return
 }
+
 
 func (player *Player) Read(buf []byte) (n int, err os.Error) {
     if player.conn.buffer == nil {

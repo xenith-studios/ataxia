@@ -93,13 +93,16 @@ func main() {
 
     // Spin up a goroutine to handle signals
     go func() {
-        for {
-            select { 
-                case sig := <- signal.Incoming:
-                    switch sig.(signal.UnixSignal) {
-                        case syscall.SIGTERM, syscall.SIGINT:
-                            shutdown <- true
-                    }
+        for sig := range signal.Incoming {
+            if usig,ok := sig.(signal.UnixSignal); ok {
+                switch usig {
+                    case syscall.SIGQUIT: fallthrough
+                    case syscall.SIGTERM: fallthrough
+                    case syscall.SIGINT:
+                        shutdown <- true
+                    case syscall.SIGTSTP:
+                        syscall.Kill(syscall.Getpid(), syscall.SIGSTOP)
+                }
             }
         }
     }()
@@ -136,7 +139,7 @@ func main() {
 
     // Initialize the network
     log.Println("Initializing network")
-    mainServer = NewServer()
+    server := NewServer(settings.MainPort, shutdown)
 
     // Initialize game state
         // Load database
@@ -151,7 +154,7 @@ func main() {
     }
     
     // Initialization and setup is complete. Spin up a goroutine to handle incoming connections
-    go mainServer.Listen()
+    go server.Listen()
 
     // Run the game loop in its own goroutine
     // Main loop
@@ -171,5 +174,5 @@ func main() {
     // Cleanup
     log.Println("Cleaning up....")
     lua.Shutdown()
-    mainServer.Shutdown()
+    server.Shutdown()
 }
