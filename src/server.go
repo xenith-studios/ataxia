@@ -10,6 +10,7 @@ import (
     "fmt"
     "bufio"
     "container/list"
+    "ataxia/handler"
 )
 
 type Server struct {
@@ -44,7 +45,6 @@ func (server *Server) Shutdown() {
         }
         server.socket.Close()
     }
-    server.shutdown <- true
 }
 
 
@@ -58,6 +58,7 @@ func (server *Server) Listen() {
             c.remoteAddr = conn.RemoteAddr().String()
             c.socket = conn
             c.server = server
+            c.handler = handler.NewTelnetHandler()
             br := bufio.NewReader(conn)
             bw := bufio.NewWriter(conn)
             c.buffer = bufio.NewReadWriter(br, bw)

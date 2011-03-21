@@ -23,7 +23,7 @@ type connection struct {
     socket      io.ReadWriteCloser
     buffer      *bufio.ReadWriter
     server      *Server
-    handler     *handler.Handler
+    handler     handler.Handler
     remoteAddr  string
     state       string
 }
@@ -132,10 +132,14 @@ func (player *Player) Read(buf []byte) (n int, err os.Error) {
         return
     }
     
+    if player.conn.socket == nil {
+        return
+    }
+
     tp := textproto.NewReader(player.conn.buffer.Reader)
     
-    var s string
-    if s, err = tp.ReadLine(); err != nil {
+    var data []byte
+    if data, err = tp.ReadLineBytes(); err != nil {
         if err == os.EOF {
             log.Println("Read EOF, disconnecting player")
             player.Close()
@@ -144,6 +148,6 @@ func (player *Player) Read(buf []byte) (n int, err os.Error) {
         return 0, err
     }
 
-    copy(buf, s)
-    return len(s), err
+    copy(buf, data)
+    return len(buf), err
 }
