@@ -53,6 +53,7 @@ func NewPlayer(conn *connection) (player *Player) {
     player.conn = conn
     player.In = make(chan string, 1024)
     player.Out = make(chan string, 1024)
+    player.account.Name = "Unknown"
     return player
 }
 
@@ -121,18 +122,25 @@ func (player *Player) Close() {
 
 
 func (player *Player) Write(buf []byte) (n int, err os.Error) {
-    n, err = player.conn.buffer.Write(buf)
+    if player.conn.socket == nil || player.conn.buffer == nil {
+        return
+    }
+
+    if n, err = player.conn.buffer.Write(buf); err != nil {
+        if err == os.EOF {
+            log.Println("EOF on write, disconnecting player")
+            player.Close()
+            return 0, nil
+        }
+        return 0, err
+    }
     player.conn.buffer.Flush()
     return
 }
 
 
 func (player *Player) Read(buf []byte) (n int, err os.Error) {
-    if player.conn.buffer == nil {
-        return
-    }
-    
-    if player.conn.socket == nil {
+    if player.conn.socket == nil || player.conn.buffer == nil {
         return
     }
 
