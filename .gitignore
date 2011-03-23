@@ -1,4 +1,6 @@
 *.6
 *.swp
-ataxia
+bin/ataxia
 *.pid
+src/cmd/ataxia/ataxia
+src/cmd/ataxia/package.go
