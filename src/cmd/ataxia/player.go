@@ -5,7 +5,7 @@ package main
 
 import (
     "net/textproto"
-    "container/list"
+//    "container/list"
     "os"
     "log"
     "fmt"
@@ -14,12 +14,13 @@ import (
 //    "syscall"
 //    "bytes"
     "bufio"
+	"strings"
     "ataxia/handler"
 )
 
 
 // The Connection structure wraps all the lower networking details for each connected player
-type connection struct {
+type Connection struct {
     socket      io.ReadWriteCloser
     buffer      *bufio.ReadWriter
     server      *Server
@@ -34,25 +35,26 @@ type Account struct {
     Email string
     Password string
     Name string
-    Characters *list.List
+    Characters []string
 }
 
 
 // Player
 type Player struct {
-    account Account
-    conn *connection
+    account *Account
+    conn *Connection
     In chan string
     Out chan string
 }
 
 
 // Player factory
-func NewPlayer(conn *connection) (player *Player) {
+func NewPlayer(server *Server, conn *Connection) (player *Player) {
     player = new(Player)
     player.conn = conn
     player.In = make(chan string, 1024)
     player.Out = make(chan string, 1024)
+	player.account = new(Account)
     player.account.Name = "Unknown"
     return player
 }
@@ -69,42 +71,43 @@ func (player *Player) Run() {
     player.Write([]byte(fmt.Sprintf("Hello %s.\n", string(buf))))
     player.account.Name = string(buf)
 
+	player.conn.server.AddPlayer(player)
     // Create an anonymous goroutine for reading
     go func() {
         for {
             if player.conn.socket == nil {
-                break
-            }
-        
-            data := make([]byte, 1024)
-            var n int
-            var err os.Error
-        
-            if n, err = player.Read(data); err != nil {
-                log.Println(n)
-                log.Println(err)
-                player.Close()
-                break
+                return
             }
 
-            if n > 0 {
-                player.conn.server.SendToAll(fmt.Sprintf("<%s> %s", player.account.Name, string(data)))
-            }
+			data := make([]byte, 1024)
+			_, err := player.Read(data)
+
+            if err != nil {
+                return
+			}
+
+			line := strings.TrimRight(string(data), "\r\n")
+
+			// TODO: Parse the command here
+			player.conn.server.SendToAll(fmt.Sprintf("<%s> %s", player.account.Name, line))
         }
     }()
 
     // Create an anonymous goroutine for writing
     go func() {
-        for {
+        for line := range player.In {
             if player.conn.socket == nil {
                 break
             }
-            buf := <-player.In
-            if _, err := player.Write([]byte(buf)); err != nil {
-                log.Println(err)
-                player.Close()
-                break
-            }
+			written := 0
+			bytes := []byte(line)
+			for written < len(line) {
+				n, err := player.Write(bytes[written:])
+				if err != nil {
+	                return
+	            }
+	            written += n
+			}
         }
     }()
 }
@@ -129,9 +132,10 @@ func (player *Player) Write(buf []byte) (n int, err os.Error) {
     if n, err = player.conn.buffer.Write(buf); err != nil {
         if err == os.EOF {
             log.Println("EOF on write, disconnecting player")
-            player.Close()
-            return 0, nil
-        }
+        } else {
+			log.Println(err)
+		}
+		player.Close()
         return 0, err
     }
     player.conn.buffer.Flush()
@@ -150,9 +154,10 @@ func (player *Player) Read(buf []byte) (n int, err os.Error) {
     if data, err = tp.ReadLineBytes(); err != nil {
         if err == os.EOF {
             log.Println("Read EOF, disconnecting player")
-            player.Close()
-            return 0, nil
-        }
+        } else {
+			log.Println(err)
+		}
+		player.Close()
         return 0, err
     }
 

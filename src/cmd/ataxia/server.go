@@ -4,98 +4,136 @@
 package main
 
 import (
-    "log"
-    "net"
-    "os"
-    "fmt"
-    "bufio"
-    "container/list"
-    "ataxia/handler"
+		"log"
+	"net"
+	"os"
+	"fmt"
+	"bufio"
+	"sync"
+//	"container/list"
+	"ataxia/handler"
 )
 
-type Server struct {
-    socket *net.TCPListener
-    PlayerList *list.List
-    In chan string
-    shutdown chan bool
+type PlayerList struct {
+	players map[string]*Player
+	mu		sync.RWMutex
 }
 
 
-func NewServer(port int, shutdown chan bool) (server *Server) {
-    listener, err := net.ListenTCP("tcp", &net.TCPAddr{net.ParseIP(""), port})
-    if err != nil {
-        log.Fatalln("Failed to create server:", err)
-        return nil
-    }
+type Server struct {
+	socket *net.TCPListener
+	PlayerList *PlayerList
+	In chan string
+	shutdown chan bool
+}
 
-    server = new(Server)
-    server.PlayerList = new(list.List)
-    server.In = make(chan string, 1024)
-    server.socket = listener
-    server.shutdown = shutdown
-    return
+
+func NewPlayerList() (list *PlayerList) {
+	return &PlayerList{players: make(map[string]*Player)}
+}
+
+
+func (list *PlayerList) Add(name string, player *Player) {
+	list.mu.Lock()
+	defer list.mu.Unlock()
+	list.players[name] = player
+}
+
+func (list *PlayerList) Delete(name string) {
+	list.mu.Lock()
+	defer list.mu.Unlock()
+	list.players[name] = nil
+}
+
+
+func (list *PlayerList) Get(name string) (player *Player) {
+	list.mu.RLock()
+	defer list.mu.RUnlock()
+	player = list.players[name]
+	return
+}
+
+func NewServer(port int, shutdown chan bool) (server *Server) {
+	listener, err := net.ListenTCP("tcp", &net.TCPAddr{net.ParseIP(""), port})
+	if err != nil {
+		log.Fatalln("Failed to create server:", err)
+		return nil
+	}
+
+	server = new(Server)
+	server.PlayerList = NewPlayerList()
+	server.In = make(chan string, 1024)
+	server.socket = listener
+	server.shutdown = shutdown
+	return
 }
 
 
 func (server *Server) Shutdown() {
-    if server.socket != nil {
-        for e := server.PlayerList.Front(); e != nil; e = e.Next() {
-            player := e.Value.(*Player)
-            player.Close()
-        }
-        server.socket.Close()
-    }
+	if server.socket != nil {
+		for _, player := range server.PlayerList.players {
+			if player != nil {
+				player.Close()
+			}
+		}
+		server.socket.Close()
+	}
 }
 
 
 func (server *Server) Listen() {
-    for {
-        conn, err := server.socket.Accept()
-        if err != nil {
-            log.Println("Failed to accept new connection")
-        } else {
-            c := new(connection)
-            c.remoteAddr = conn.RemoteAddr().String()
-            c.socket = conn
-            c.server = server
-            c.handler = handler.NewTelnetHandler()
-            br := bufio.NewReader(conn)
-            bw := bufio.NewWriter(conn)
-            c.buffer = bufio.NewReadWriter(br, bw)
-            log.Println("Accepted a new connection:", c.remoteAddr)
-            player := NewPlayer(c)
-            server.PlayerList.PushBack(player)
-            go player.Run()
-        }
-    }
+	for {
+		if server.socket == nil {
+			log.Println("Server socket closed")
+			shutdown <- true
+			return
+		}
+		conn, err := server.socket.Accept()
+		if err != nil {
+			log.Println("Failed to accept new connection")
+		} else {
+			c := new(Connection)
+			c.remoteAddr = conn.RemoteAddr().String()
+			c.socket = conn
+			c.server = server
+			br := bufio.NewReader(conn)
+			bw := bufio.NewWriter(conn)
+			c.buffer = bufio.NewReadWriter(br, bw)
+			c.handler = handler.NewTelnetHandler(conn)
+			log.Println("Accepted a new connection:", c.remoteAddr)
+			player := NewPlayer(server, c)
+			go player.Run()
+		}
+	}
 }
 
 
 func (server *Server) Run() {
-    for {
-    }
+	for {
+	}
 }
 
 
 func (server *Server) SendToAll(buf string) {
-    for e := server.PlayerList.Front(); e != nil; e = e.Next() {
-        player := e.Value.(*Player)
-        log.Println(buf)
-        player.In <- fmt.Sprintf("\n\r%s\n\r", buf)
+	for _, player := range server.PlayerList.players {
+		if player != nil {
+			log.Println(buf)
+	        player.In <- fmt.Sprintf("%s\r\n", buf)
+		}
     }
+}
+
+
+func (server *Server) AddPlayer(player *Player) {
+	server.PlayerList.Add(player.account.Name, player)
 }
 
 
 func (server *Server) RemovePlayer(player *Player) {
-    for e := server.PlayerList.Front(); e != nil; e = e.Next() {
-        if player == e.Value.(*Player) {
-            server.PlayerList.Remove(e)
-            break
-        }
-    }
+    server.PlayerList.Delete(player.account.Name)
 }
 
 
 func (server *Server) Write(buf []byte) (n int, err os.Error) {
-    return 0, os.EOF
+	return 0, os.EOF
 }
