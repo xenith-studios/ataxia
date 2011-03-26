@@ -1,0 +1,3 @@
+[submodule "lib/libtelnet"]
+	path = lib/libtelnet
+	url = git://github.com/elanthis/libtelnet.git
