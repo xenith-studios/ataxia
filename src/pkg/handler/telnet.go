@@ -5,7 +5,8 @@ import (
 	"bufio"
 	"net"
 //	"log"
-	"net/textproto"
+	"bytes"
+//	"net/textproto"
 )
 
 
@@ -25,21 +26,24 @@ func NewTelnetHandler(conn net.Conn) (handler *TelnetHandler) {
 
 
 func (handler *TelnetHandler) Read(buf []byte) (n int, err os.Error) {
-	tp := textproto.NewReader(handler.buffer.Reader)
-
 	var data []byte
-	if data, err = tp.ReadLineBytes(); err != nil {
-		return len(data), err
+	data = make([]byte, 1024)
+	if n, err = handler.buffer.Read(data); err != nil {
+		return n, err
 	}
 
 	// Pass data into telnet.Recv()
 	//telnet.Recv()
-	copy(buf, data)
-	return len(data), err
+
+	copy(buf, bytes.Replace(bytes.Replace(data, []byte("\n"), []byte(""), -1), []byte("\r"), []byte(""), -1))
+	return n, err
 }
 
 
 func (handler *TelnetHandler) Write(buf []byte) (n int, err os.Error) {
+	// Pass the data into telnet.Send()
+	//telet.Send()
+
 	if n, err = handler.buffer.Write(buf); err != nil {
 		return n, err
 	}

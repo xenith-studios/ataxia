@@ -14,7 +14,7 @@ import (
 //	"syscall"
 //	"bytes"
 //	"bufio"
-	"strings"
+//	"strings"
 	"ataxia/handler"
 )
 
@@ -65,6 +65,12 @@ func (player *Player) Run() {
 	// Setup the player here.
 	player.Write([]byte("Hello, welcome to Ataxia. What is your account name?\n"))
 	if _, err := player.Read(buf); err != nil {
+		if err == os.EOF {
+			log.Println("Read EOF, disconnecting player")
+		} else {
+			log.Println(err)
+		}
+		player.Close()
 		return
 	}
 	player.Write([]byte(fmt.Sprintf("Hello %s.\n", string(buf))))
@@ -79,7 +85,7 @@ func (player *Player) Run() {
 			}
 
 			data := make([]byte, 1024)
-			_, err := player.Read(data)
+			n, err := player.Read(data)
 
 			if err != nil {
 				if err == os.EOF {
@@ -91,10 +97,10 @@ func (player *Player) Run() {
 				return
 			}
 
-			line := strings.TrimRight(string(data), "\r\n")
-
 			// TODO: Parse the command here
-			player.conn.server.SendToAll(fmt.Sprintf("<%s> %s", player.account.Name, line))
+			if n > 0 {
+				player.conn.server.SendToAll(fmt.Sprintf("<%s> %s", player.account.Name, string(data)))
+			}
 		}
 	}()
 
