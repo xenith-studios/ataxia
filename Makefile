@@ -14,6 +14,7 @@ deppkg :
 
 pkgs :
 	@echo "Building packages..."
+#	$(MAKE) -C lib/telnet install
 	$(MAKE) -C src/pkg/lua install
 	$(MAKE) -C src/pkg/settings install
 	$(MAKE) -C src/pkg/handler install
@@ -32,12 +33,14 @@ install : all
 	$(MAKE) -C src/cmd/ataxia install
 
 clean :
+	$(MAKE) -C lib/telnet clean
 	$(MAKE) -C src/pkg/lua clean
 	$(MAKE) -C src/pkg/settings clean
 	$(MAKE) -C src/pkg/handler clean
 	$(MAKE) -C src/cmd/ataxia clean
 
 nuke :
+	$(MAKE) -C lib/telnet nuke
 	$(MAKE) -C src/pkg/lua nuke
 	$(MAKE) -C src/pkg/settings nuke
 	$(MAKE) -C src/pkg/handler nuke
