@@ -4,7 +4,7 @@ import (
 	"os"
 	"bufio"
 	"net"
-	"log"
+//	"log"
 	"net/textproto"
 )
 
@@ -29,18 +29,25 @@ func (handler *TelnetHandler) Read(buf []byte) (n int, err os.Error) {
 
 	var data []byte
 	if data, err = tp.ReadLineBytes(); err != nil {
-		if err == os.EOF {
-			log.Println("Read EOF, disconnecting player")
-		} else {
-			log.Println(err)
-		}
-		return 0, err
+		return len(data), err
 	}
 
+	// Pass data into telnet.Recv()
+	//telnet.Recv()
 	copy(buf, data)
 	return len(data), err
 }
 
+
 func (handler *TelnetHandler) Write(buf []byte) (n int, err os.Error) {
-	return 0, nil
+	if n, err = handler.buffer.Write(buf); err != nil {
+		return n, err
+	}
+	handler.buffer.Flush()
+	return n, err
+}
+
+
+func (handler *TelnetHandler) Close() {
+	handler.buffer = nil
 }

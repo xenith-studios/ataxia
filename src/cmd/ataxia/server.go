@@ -8,7 +8,7 @@ import (
 	"net"
 	"os"
 	"fmt"
-	"bufio"
+//	"bufio"
 	"sync"
 //	"container/list"
 	"ataxia/handler"
@@ -96,9 +96,6 @@ func (server *Server) Listen() {
 			c.remoteAddr = conn.RemoteAddr().String()
 			c.socket = conn
 			c.server = server
-			br := bufio.NewReader(conn)
-			bw := bufio.NewWriter(conn)
-			c.buffer = bufio.NewReadWriter(br, bw)
 			c.handler = handler.NewTelnetHandler(conn)
 			log.Println("Accepted a new connection:", c.remoteAddr)
 			player := NewPlayer(server, c)
