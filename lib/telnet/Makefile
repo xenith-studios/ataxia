@@ -21,20 +21,14 @@ CLEANFILES+=\
 
 include $(GOROOT)/src/Make.pkg
 
-all: install examples
+all: install
 
 %: install %.go
 	$(QUOTED_GOBIN)/$(GC) $*.go
 	$(QUOTED_GOBIN)/$(LD) -o $@ $*.$O
 
-golua.o: golua.c
-	gcc $(CGO_CFLAGS) $(_CGO_CFLAGS_$(GOARCH)) -fPIC $(CFLAGS) -c golua.c -o golua.o
-
-lua_defs.go:
-	echo "package golua;" > lua_defs.go
-	echo "$(LUA_INCLUDE_DIRECTIVES)" "import \"C\"" >> lua_defs.go
-#	echo "import \"C\"" >> lua_defs.go
-	cat $(LUA_HEADER_FILES) | grep '#define LUA' | sed 's/#define/const/' | sed 's/\([A-Z_][A-Z_]*\)[[:space:]]*.*/\1 = C.\1/'  >> lua_defs.go
+telnet.o: telnet.c
+	gcc $(CGO_CFLAGS) $(_CGO_CFLAGS_$(GOARCH)) -fPIC $(CFLAGS) -c telnet.c -o telnet.o
 
 examples: install
 	cd example && make
