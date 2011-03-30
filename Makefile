@@ -14,7 +14,7 @@ deppkg :
 
 pkgs :
 	@echo "Building packages..."
-#	$(MAKE) -C lib/telnet install
+	$(MAKE) -C lib/telnet install
 	$(MAKE) -C src/pkg/lua install
 	$(MAKE) -C src/pkg/settings install
 	$(MAKE) -C src/pkg/handler install

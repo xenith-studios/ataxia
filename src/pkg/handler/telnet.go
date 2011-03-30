@@ -7,12 +7,14 @@ import (
 //	"log"
 	"bytes"
 //	"net/textproto"
+	"telnet"
 )
 
 
 type TelnetHandler struct {
 	buffer *bufio.ReadWriter
 	flags int8
+	telnet_t telnet.Telnet_T
 }
 
 
