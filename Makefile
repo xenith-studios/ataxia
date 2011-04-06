@@ -2,7 +2,7 @@
 .PHONY : all relconst deppkg pkgs cmd install clean nuke
 
 # By default, build everything
-all : deppkg pkgs cmd
+all : pkgs cmd
 
 relconst :
 	@echo "Updating release constants..."
