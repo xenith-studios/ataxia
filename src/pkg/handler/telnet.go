@@ -14,7 +14,7 @@ import (
 type TelnetHandler struct {
 	buffer *bufio.ReadWriter
 	flags int8
-	telnet_t telnet.Telnet_T
+	telnet_t *telnet.Telnet_T
 }
 
 
@@ -23,6 +23,7 @@ func NewTelnetHandler(conn net.Conn) (handler *TelnetHandler) {
 	br := bufio.NewReader(conn)
 	bw := bufio.NewWriter(conn)
 	handler.buffer = bufio.NewReadWriter(br, bw)
+	handler.telnet_t = telnet.NewTelnet()
 	return
 }
 

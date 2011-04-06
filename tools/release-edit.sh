@@ -4,6 +4,7 @@ RELFILE="src/cmd/ataxia/package.go"
 
 if [[ ! -d ".git" ]]; then
   echo "Must be run at the root of the git repository (.git directory not found)"
+  exit 1
 fi
 
 DATE=`date`

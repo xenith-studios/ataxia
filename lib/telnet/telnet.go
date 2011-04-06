@@ -4,7 +4,7 @@ package telnet
 import "C"
 
 type Telnet_T struct{
-	
+	telnet_t *C.telnet_t
 }
 
 func NewTelnet() *Telnet_T {

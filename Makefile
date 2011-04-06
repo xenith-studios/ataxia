@@ -2,7 +2,7 @@
 .PHONY : all relconst deppkg pkgs cmd install clean nuke
 
 # By default, build everything
-all : pkgs cmd
+all : deppkg pkgs cmd
 
 relconst :
 	@echo "Updating release constants..."
@@ -10,7 +10,7 @@ relconst :
 
 deppkg :
 	@echo "Installing dependencies..."
-	#goinstall -u log4go.googlecode.com/hg
+	goinstall -u log4go.googlecode.com/hg
 
 pkgs :
 	@echo "Building packages..."
