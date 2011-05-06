@@ -63,8 +63,8 @@ func (player *Player) Run() {
 	buf := make([]byte, 1024)
 
 	// Setup the player here.
-	player.Write([]byte("Hello, welcome to Ataxia. What is your account name?\n"))
-	if _, err := player.Read(buf); err != nil {
+	player.conn.handler.Write([]byte("Hello, welcome to Ataxia. What is your account name?\n"))
+	if _, err := player.conn.handler.Read(buf); err != nil {
 		if err == os.EOF {
 			log.Println("Read EOF, disconnecting player")
 		} else {
@@ -73,7 +73,7 @@ func (player *Player) Run() {
 		player.Close()
 		return
 	}
-	player.Write([]byte(fmt.Sprintf("Hello %s.\n", string(buf))))
+	player.conn.handler.Write([]byte(fmt.Sprintf("Hello %s.\n", string(buf))))
 	player.account.Name = string(buf)
 
 	player.conn.server.AddPlayer(player)

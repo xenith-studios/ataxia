@@ -4,12 +4,13 @@
 package main
 
 import (
-		"log"
+	"log"
 	"net"
 	"os"
 	"fmt"
 //	"bufio"
 	"sync"
+	"time"
 //	"container/list"
 	"ataxia/handler"
 )
@@ -106,16 +107,28 @@ func (server *Server) Listen() {
 
 
 func (server *Server) Run() {
+	// Main loop
+		// Handle network messages (push user events)
+		// Handle game updates
+			// Game tick
+			// Time update
+			// Weather update
+			// Entity updates (push events)
+		// Handle pending events
+		// Handle pending messages (network and player)
+		// Sleep
 	for {
+		// Sleep for 1 ms
+		time.Sleep(1000000)
 	}
 }
 
 
-func (server *Server) SendToAll(buf string) {
+func (server *Server) SendToAll(msg string) {
 	for _, player := range server.PlayerList.players {
 		if player != nil {
-			log.Println(buf)
-	        player.In <- fmt.Sprintf("%s\r\n", buf)
+			log.Println(msg)
+	        player.In <- fmt.Sprintf("%s\r\n", msg)
 		}
     }
 }

@@ -101,8 +101,12 @@ func main() {
 					case syscall.SIGQUIT: fallthrough
 					case syscall.SIGTERM: fallthrough
 					case syscall.SIGINT:
+						// Catch the three interrupt signals and signal the game to shutdown.
 						shutdown <- true
+					case syscall.SIGHUP:
+						// TODO: Reload settings and game state
 					case syscall.SIGTSTP:
+						// Pass on the SIGSTP signal through the syscall mechanism. This actually works.
 						syscall.Kill(syscall.Getpid(), syscall.SIGSTOP)
 				}
 			}
@@ -122,6 +126,15 @@ func main() {
 		log.Println("Chrooted to", settings.Chroot)
 	}
 
+	// Drop priviledges if configured
+
+	// Daemonize if configured
+	if settings.Daemonize {
+		log.Println("Daemonizing")
+		// Daemonize here
+		// TODO: This probably won't be doable until Go supports forking into the background.
+	}
+
 	// Write out pid file
 	pid := fmt.Sprint(os.Getpid())
 	pidfile, err := os.Open(settings.Pidfile, os.O_RDWR|os.O_CREAT, 0666)
@@ -132,12 +145,6 @@ func main() {
 	log.Println("Wrote PID to", settings.Pidfile)
 	pidfile.Close()
 	defer os.Remove(settings.Pidfile)
-
-	// Daemonize if configured
-	if settings.Daemonize {
-		log.Println("Daemonizing")
-		// Daemonize here
-	}
 
 	// Initialize the network
 	log.Println("Initializing network")
@@ -159,16 +166,7 @@ func main() {
 	go server.Listen()
 
 	// Run the game loop in its own goroutine
-	// Main loop
-		// Handle network messages (push user events)
-		// Handle game updates
-			// Game tick
-			// Time update
-			// Weather update
-			// Entity updates (push events)
-		// Handle pending events
-		// Handle pending messages (network and player)
-		// Sleep
+	go server.Run()
 
 	// Wait for the shutdown signal
 	<-shutdown

@@ -14,7 +14,7 @@ import (
 type TelnetHandler struct {
 	buffer *bufio.ReadWriter
 	flags int8
-	telnet_t *telnet.Telnet_T
+	telnet *telnet.Telnet
 }
 
 
@@ -23,7 +23,7 @@ func NewTelnetHandler(conn net.Conn) (handler *TelnetHandler) {
 	br := bufio.NewReader(conn)
 	bw := bufio.NewWriter(conn)
 	handler.buffer = bufio.NewReadWriter(br, bw)
-	handler.telnet_t = telnet.NewTelnet()
+	handler.telnet = telnet.NewTelnet()
 	return
 }
 
@@ -36,7 +36,7 @@ func (handler *TelnetHandler) Read(buf []byte) (n int, err os.Error) {
 	}
 
 	// Pass data into telnet.Recv()
-	//telnet.Recv()
+	handler.telnet.Recv(data)
 
 	copy(buf, bytes.Replace(bytes.Replace(data, []byte("\n"), []byte(""), -1), []byte("\r"), []byte(""), -1))
 	return n, err
@@ -45,9 +45,9 @@ func (handler *TelnetHandler) Read(buf []byte) (n int, err os.Error) {
 
 func (handler *TelnetHandler) Write(buf []byte) (n int, err os.Error) {
 	// Pass the data into telnet.Send()
-	//telet.Send()
+	data := handler.telnet.Send(buf)
 
-	if n, err = handler.buffer.Write(buf); err != nil {
+	if n, err = handler.buffer.Write(data); err != nil {
 		return n, err
 	}
 	handler.buffer.Flush()
@@ -57,4 +57,5 @@ func (handler *TelnetHandler) Write(buf []byte) (n int, err os.Error) {
 
 func (handler *TelnetHandler) Close() {
 	handler.buffer = nil
+	handler.telnet.Close()
 }
