@@ -1,7 +1,7 @@
 /*
     Ataxia Mud Engine
 
-    Copyright © 2009-2010 Xenith Studios
+    Copyright © 2009-2011 Xenith Studios
 */
 package main
 
@@ -35,7 +35,7 @@ Ataxia Engine comes with ABSOLUTELY NO WARRANTY; see COPYING for details.
 This is free software, and you are welcome to redistribute it
 under certain conditions; for details, see the file COPYING.
 
-`, ATAXIA_VERSION, ATAXIA_COMPILED);
+`, ATAXIA_VERSION, ATAXIA_COMPILED)
 
 	shutdown = make(chan bool)
 	// Setup the command-line flags
@@ -137,7 +137,7 @@ func main() {
 
 	// Write out pid file
 	pid := fmt.Sprint(os.Getpid())
-	pidfile, err := os.Open(settings.Pidfile, os.O_RDWR|os.O_CREAT, 0666)
+	pidfile, err := os.Create(settings.Pidfile)
 	if pidfile == nil {
 		log.Fatalln("Error writing pid to file:", err)
 	}
