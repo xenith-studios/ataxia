@@ -11,9 +11,10 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"log"
 	"ataxia/lua"
 	"ataxia/settings"
+	"log"
+//	log "log4go.googlecode.com/hg"
 )
 
 
