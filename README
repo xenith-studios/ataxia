@@ -6,7 +6,9 @@ $ hg clone -r weekly https://go.googlecode.com/hg/ go
 $ cd go/src
 $ ./all.bash
 
-Once Go is installed:
+You will need to install GoLUA from https://github.com/xenith-studios/golua
+
+Once Go and GoLUA are installed:
 
 $ make deppkg
 $ make

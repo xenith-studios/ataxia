@@ -97,7 +97,7 @@ func main() {
 	// Spin up a goroutine to handle signals
 	go func() {
 		for sig := range signal.Incoming {
-			if usig,ok := sig.(signal.UnixSignal); ok {
+			if usig,ok := sig.(os.UnixSignal); ok {
 				switch usig {
 					case syscall.SIGQUIT: fallthrough
 					case syscall.SIGTERM: fallthrough
