@@ -1,22 +1,19 @@
 package handler
 
 import (
-	"os"
 	"bufio"
 	"net"
-//	"log"
+	//	"log"
 	"bytes"
-//	"net/textproto"
+	//	"net/textproto"
 	"ataxia/telnet"
 )
 
-
 type TelnetHandler struct {
 	buffer *bufio.ReadWriter
-	flags int8
+	flags  int8
 	telnet *telnet.Telnet
 }
-
 
 func NewTelnetHandler(conn net.Conn) (handler *TelnetHandler) {
 	handler = new(TelnetHandler)
@@ -27,8 +24,7 @@ func NewTelnetHandler(conn net.Conn) (handler *TelnetHandler) {
 	return
 }
 
-
-func (handler *TelnetHandler) Read(buf []byte) (n int, err os.Error) {
+func (handler *TelnetHandler) Read(buf []byte) (n int, err error) {
 	var data []byte
 	data = make([]byte, 1024)
 	if n, err = handler.buffer.Read(data); err != nil {
@@ -42,8 +38,7 @@ func (handler *TelnetHandler) Read(buf []byte) (n int, err os.Error) {
 	return n, err
 }
 
-
-func (handler *TelnetHandler) Write(buf []byte) (n int, err os.Error) {
+func (handler *TelnetHandler) Write(buf []byte) (n int, err error) {
 	// Pass the data into telnet.Send()
 	data := handler.telnet.Send(buf)
 
@@ -53,7 +48,6 @@ func (handler *TelnetHandler) Write(buf []byte) (n int, err os.Error) {
 	handler.buffer.Flush()
 	return n, err
 }
-
 
 func (handler *TelnetHandler) Close() {
 	handler.buffer = nil

@@ -2,7 +2,7 @@
 *.o
 *.swp
 bin/ataxia
+ataxia
 *.pid
 _obj
-src/cmd/ataxia/ataxia
-src/cmd/ataxia/package.go
+package.go

@@ -1,6 +1,9 @@
 package telnet
 
-// #include "telnet.h"
+/*
+#include <stdlib.h>
+#include "telnet.h"
+*/
 import "C"
 
 type Telnet struct{

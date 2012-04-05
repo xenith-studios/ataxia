@@ -1,38 +1,35 @@
 /*
-    Server structures and functions
+   Server structures and functions
 */
 package main
 
 import (
+	"fmt"
+	"io"
 	"log"
 	"net"
-	"os"
-	"fmt"
-//	"bufio"
+	//	"bufio"
 	"sync"
 	"time"
-//	"container/list"
+	//	"container/list"
 	"ataxia/handler"
 )
 
 type PlayerList struct {
 	players map[string]*Player
-	mu		sync.RWMutex
+	mu      sync.RWMutex
 }
-
 
 type Server struct {
-	socket *net.TCPListener
+	socket     *net.TCPListener
 	PlayerList *PlayerList
-	In chan string
-	shutdown chan bool
+	In         chan string
+	shutdown   chan bool
 }
-
 
 func NewPlayerList() (list *PlayerList) {
 	return &PlayerList{players: make(map[string]*Player)}
 }
-
 
 func (list *PlayerList) Add(name string, player *Player) {
 	list.mu.Lock()
@@ -45,7 +42,6 @@ func (list *PlayerList) Delete(name string) {
 	defer list.mu.Unlock()
 	list.players[name] = nil
 }
-
 
 func (list *PlayerList) Get(name string) (player *Player) {
 	list.mu.RLock()
@@ -69,7 +65,6 @@ func NewServer(port int, shutdown chan bool) (server *Server) {
 	return
 }
 
-
 func (server *Server) Shutdown() {
 	if server.socket != nil {
 		for _, player := range server.PlayerList.players {
@@ -80,7 +75,6 @@ func (server *Server) Shutdown() {
 		server.socket.Close()
 	}
 }
-
 
 func (server *Server) Listen() {
 	for {
@@ -105,45 +99,40 @@ func (server *Server) Listen() {
 	}
 }
 
-
 func (server *Server) Run() {
 	// Main loop
-		// Handle network messages (push user events)
-		// Handle game updates
-			// Game tick
-			// Time update
-			// Weather update
-			// Entity updates (push events)
-		// Handle pending events
-		// Handle pending messages (network and player)
-		// Sleep
+	// Handle network messages (push user events)
+	// Handle game updates
+	// Game tick
+	// Time update
+	// Weather update
+	// Entity updates (push events)
+	// Handle pending events
+	// Handle pending messages (network and player)
+	// Sleep
 	for {
 		// Sleep for 1 ms
 		time.Sleep(1000000)
 	}
 }
 
-
 func (server *Server) SendToAll(msg string) {
 	for _, player := range server.PlayerList.players {
 		if player != nil {
 			log.Println(msg)
-	        player.In <- fmt.Sprintf("%s\r\n", msg)
+			player.In <- fmt.Sprintf("%s\r\n", msg)
 		}
-    }
+	}
 }
-
 
 func (server *Server) AddPlayer(player *Player) {
 	server.PlayerList.Add(player.account.Name, player)
 }
 
-
 func (server *Server) RemovePlayer(player *Player) {
-    server.PlayerList.Delete(player.account.Name)
+	server.PlayerList.Delete(player.account.Name)
 }
 
-
-func (server *Server) Write(buf []byte) (n int, err os.Error) {
-	return 0, os.EOF
+func (server *Server) Write(buf []byte) (n int, err error) {
+	return 0, io.EOF
 }

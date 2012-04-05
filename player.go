@@ -1,51 +1,47 @@
 /*
-    Player structures and functions
+   Player structures and functions
 */
 package main
 
 import (
-//	"net/textproto"
-//	"container/list"
-	"os"
-	"log"
+	//	"net/textproto"
+	//	"container/list"
+
 	"fmt"
 	"io"
-//	"time"
-//	"syscall"
-//	"bytes"
-//	"bufio"
-//	"strings"
+	"log"
+	//	"time"
+	//	"syscall"
+	//	"bytes"
+	//	"bufio"
+	//	"strings"
 	"ataxia/handler"
 )
 
-
 // The Connection structure wraps all the lower networking details for each connected player
 type Connection struct {
-	socket		io.ReadWriteCloser
-	server		*Server
-	handler		handler.Handler
-	remoteAddr	string
-	state		string
+	socket     io.ReadWriteCloser
+	server     *Server
+	handler    handler.Handler
+	remoteAddr string
+	state      string
 }
-
 
 // Account
 type Account struct {
-	Email		string
-	Password	string
-	Name		string
-	Characters	[]string
+	Email      string
+	Password   string
+	Name       string
+	Characters []string
 }
-
 
 // Player
 type Player struct {
-	account		*Account
-	conn		*Connection
-	In			chan string
-	Out			chan string
+	account *Account
+	conn    *Connection
+	In      chan string
+	Out     chan string
 }
-
 
 // Player factory
 func NewPlayer(server *Server, conn *Connection) (player *Player) {
@@ -58,14 +54,13 @@ func NewPlayer(server *Server, conn *Connection) (player *Player) {
 	return player
 }
 
-
 func (player *Player) Run() {
 	buf := make([]byte, 1024)
 
 	// Setup the player here.
 	player.conn.handler.Write([]byte("Hello, welcome to Ataxia. What is your account name?\n"))
 	if _, err := player.conn.handler.Read(buf); err != nil {
-		if err == os.EOF {
+		if err == io.EOF {
 			log.Println("Read EOF, disconnecting player")
 		} else {
 			log.Println(err)
@@ -88,7 +83,7 @@ func (player *Player) Run() {
 			n, err := player.Read(data)
 
 			if err != nil {
-				if err == os.EOF {
+				if err == io.EOF {
 					log.Println("Read EOF, disconnecting player")
 				} else {
 					log.Println(err)
@@ -115,7 +110,7 @@ func (player *Player) Run() {
 			for written < len(line) {
 				n, err := player.Write(bytes[written:])
 				if err != nil {
-					if err == os.EOF {
+					if err == io.EOF {
 						log.Println("EOF on write, disconnecting player")
 					} else {
 						log.Println(err)
@@ -129,9 +124,8 @@ func (player *Player) Run() {
 	}()
 }
 
-
 func (player *Player) Close() {
-	if (player.conn.socket != nil) {
+	if player.conn.socket != nil {
 		player.conn.socket.Close()
 		player.conn.socket = nil
 		player.conn.handler.Close()
@@ -140,8 +134,7 @@ func (player *Player) Close() {
 	}
 }
 
-
-func (player *Player) Write(buf []byte) (n int, err os.Error) {
+func (player *Player) Write(buf []byte) (n int, err error) {
 	if player.conn.socket == nil {
 		return
 	}
@@ -149,8 +142,7 @@ func (player *Player) Write(buf []byte) (n int, err os.Error) {
 	return player.conn.handler.Write(buf)
 }
 
-
-func (player *Player) Read(buf []byte) (n int, err os.Error) {
+func (player *Player) Read(buf []byte) (n int, err error) {
 	if player.conn.socket == nil {
 		return
 	}

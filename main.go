@@ -1,28 +1,28 @@
 /*
-    Ataxia Mud Engine
+   Ataxia Mud Engine
 
-    Copyright © 2009-2011 Xenith Studios
+   Copyright © 2009-2011 Xenith Studios
 */
 package main
 
 import (
-	"fmt"
+	"ataxia/lua"
+	"ataxia/settings"
 	"flag"
+	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
-	"ataxia/lua"
-	"ataxia/settings"
-	"log"
+
 //	log "log4go.googlecode.com/hg"
 )
 
-
 // Variables for the command-line flags
 var (
-	portFlag int
-	configFlag string
-	hotbootFlag bool
+	portFlag       int
+	configFlag     string
+	hotbootFlag    bool
 	descriptorFlag int
 )
 
@@ -50,7 +50,7 @@ under certain conditions; for details, see the file COPYING.
 
 	// Initialize Lua
 	lua.Initialize()
- 
+
 	// Read configuration file
 	ok := settings.LoadConfigFile(configFlag, portFlag)
 	if !ok {
@@ -58,16 +58,15 @@ under certain conditions; for details, see the file COPYING.
 	}
 
 	// Initializations
-		// Environment
-		// Logging
-		// Queues
-		// Database
+	// Environment
+	// Logging
+	// Queues
+	// Database
 
 	if !hotbootFlag {
 		// If previous shutdown was not clean and we are not recovering from a hotboot, clean up state and environment
 	}
 }
-
 
 // When hotboot is called, this function will save game and world state, save each player state, and save the player list.
 // Then it will do some cleanup (including closing the database) and call Exec to reload the running program.
@@ -76,12 +75,11 @@ func hotboot() {
 	// Save socket and player list
 	// Disconnect from database
 	arglist := append(os.Args, "-hotboot", "-descriptor=", fmt.Sprint(1234))
-	os.Exec(os.Args[0], arglist, os.Environ())
+	syscall.Exec(os.Args[0], arglist, os.Environ())
 
 	// If we get to this point, something went wrong. Die.
 	log.Fatal("Failed to exec during hotboot.")
 }
-
 
 // When recovering from a hotboot, recover will restore the game and world state, restore the player list, and restore each player state.
 // Once that is done, it will then reconnect each active descriptor to the associated player.
@@ -89,26 +87,29 @@ func recover() {
 	log.Println("Recovering from hotboot.")
 }
 
-
 // 
 func main() {
 	// At this point, basic initialization has completed
 
 	// Spin up a goroutine to handle signals
 	go func() {
-		for sig := range signal.Incoming {
-			if usig,ok := sig.(os.UnixSignal); ok {
+		c := make(chan os.Signal)
+		signal.Notify(c)
+		for sig := range c {
+			if usig, ok := sig.(os.Signal); ok {
 				switch usig {
-					case syscall.SIGQUIT: fallthrough
-					case syscall.SIGTERM: fallthrough
-					case syscall.SIGINT:
-						// Catch the three interrupt signals and signal the game to shutdown.
-						shutdown <- true
-					case syscall.SIGHUP:
-						// TODO: Reload settings and game state
-					case syscall.SIGTSTP:
-						// Pass on the SIGSTP signal through the syscall mechanism. This actually works.
-						syscall.Kill(syscall.Getpid(), syscall.SIGSTOP)
+				case syscall.SIGQUIT:
+					fallthrough
+				case syscall.SIGTERM:
+					fallthrough
+				case syscall.SIGINT:
+					// Catch the three interrupt signals and signal the game to shutdown.
+					shutdown <- true
+				case syscall.SIGHUP:
+					// TODO: Reload settings and game state
+				case syscall.SIGTSTP:
+					// Pass on the SIGSTP signal through the syscall mechanism. This actually works.
+					syscall.Kill(syscall.Getpid(), syscall.SIGSTOP)
 				}
 			}
 		}
@@ -117,8 +118,8 @@ func main() {
 	// If configured, chroot into the designated directory
 	if settings.Chroot != "" {
 		err := syscall.Chroot(settings.Chroot)
-		if err != 0 {
-			log.Fatalln("Failed to chroot:", os.Errno(err))
+		if err != nil {
+			log.Fatalln("Failed to chroot:", err)
 		}
 		error := os.Chdir("/")
 		if error != nil {
@@ -152,17 +153,17 @@ func main() {
 	server := NewServer(settings.MainPort, shutdown)
 
 	// Initialize game state
-		// Load database
-		// Load commands
-		// Load scripts
-		// Load world
-		// Load entities
+	// Load database
+	// Load commands
+	// Load scripts
+	// Load world
+	// Load entities
 
 	// Are we recovering from a hotboot?
 	if hotbootFlag {
 		recover()
 	}
-    
+
 	// Initialization and setup is complete. Spin up a goroutine to handle incoming connections
 	go server.Listen()
 
