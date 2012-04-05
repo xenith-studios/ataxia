@@ -1,10 +1,10 @@
-= Ataxia Game Engine =
+# Ataxia Game Engine #
 
-== About ==
+## About ##
 
 Ataxia is a modern MUD engine written Go. It heavily utilizes concurrency and uses Lua for configuration and game logic.
 
-== Install ==
+## Install ##
 
 First, install Go. Ataxia is written to work with the current Go1 release. See: http://golang.org/doc/install
 
