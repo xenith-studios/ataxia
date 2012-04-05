@@ -7,7 +7,7 @@ import (
 //	"log"
 	"bytes"
 //	"net/textproto"
-	"telnet"
+	"ataxia/telnet"
 )
 
 
