@@ -5,7 +5,7 @@ package lua
 
 import (
     "log"
-    "golua"
+    "github.com/xenith-studios/golua"
 )
 
 var MainState *golua.State

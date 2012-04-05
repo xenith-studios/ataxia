@@ -1,5 +1,5 @@
 # Explicitly make targets phony, just in case
-.PHONY : all relconst deppkg pkgs cmd install clean nuke
+.PHONY : all relconst deppkg pkgs cmd install clean
 
 # By default, build everything
 all : deppkg cmd
@@ -29,7 +29,7 @@ helpers :
 	$(MAKE) -C src/cmd/gencert
 	$(MAKE) -C src/cmd/stresstest
 
-install : all
+install : relconst
 	go install
 
 clean :
