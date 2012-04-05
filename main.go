@@ -1,7 +1,7 @@
 /*
    Ataxia Mud Engine
 
-   Copyright © 2009-2011 Xenith Studios
+   Copyright © 2009-2012 Xenith Studios
 */
 package main
 
@@ -30,7 +30,7 @@ var shutdown chan bool
 
 // Do all our basic initialization within the main package's init function.
 func init() {
-	fmt.Printf(`Ataxia Engine %s © 2009-2011, Xenith Studios (see AUTHORS)
+	fmt.Printf(`Ataxia Engine %s © 2009-2012, Xenith Studios (see AUTHORS)
 Compiled on %s
 Ataxia Engine comes with ABSOLUTELY NO WARRANTY; see COPYING for details.
 This is free software, and you are welcome to redistribute it

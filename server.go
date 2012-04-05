@@ -85,7 +85,7 @@ func (server *Server) Listen() {
 		}
 		conn, err := server.socket.Accept()
 		if err != nil {
-			log.Println("Failed to accept new connection")
+			log.Println("Failed to accept new connection:", err)
 		} else {
 			c := new(Connection)
 			c.remoteAddr = conn.RemoteAddr().String()
