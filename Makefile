@@ -1,5 +1,5 @@
 # Explicitly make targets phony, just in case
-.PHONY : all relconst deppkg pkgs cmd install clean
+.PHONY : all relconst deppkg cmd install clean
 
 # By default, build everything
 all : deppkg cmd
@@ -10,14 +10,8 @@ relconst :
 
 deppkg :
 	@echo "Installing dependencies..."
-#	goinstall -u log4go.googlecode.com/hg
-
-pkgs :
-	@echo "Building packages..."
-	$(MAKE) -C lib/telnet install
-	$(MAKE) -C src/pkg/lua install
-	$(MAKE) -C src/pkg/settings install
-	$(MAKE) -C src/pkg/handler install
+	go get -u github.com/xenith-studios/golua
+#	go get -u code.google.com/p/log4go
 
 cmd : relconst
 	@echo "Building ataxia..."
@@ -26,8 +20,8 @@ cmd : relconst
 
 helpers :
 	@echo "Building helpers..."
-	$(MAKE) -C src/cmd/gencert
-	$(MAKE) -C src/cmd/stresstest
+	go build gencert
+	go build stresstest
 
 install : relconst
 	go install
