@@ -15,7 +15,7 @@ import (
 	//	"bytes"
 	//	"bufio"
 	//	"strings"
-	"ataxia/handler"
+	"./handler"
 )
 
 // The Connection structure wraps all the lower networking details for each connected player

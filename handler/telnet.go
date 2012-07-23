@@ -6,7 +6,7 @@ import (
 	//	"log"
 	"bytes"
 	//	"net/textproto"
-	"ataxia/telnet"
+	"../telnet"
 )
 
 type TelnetHandler struct {

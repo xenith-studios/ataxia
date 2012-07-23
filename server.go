@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 	//	"container/list"
-	"ataxia/handler"
+	"./handler"
 )
 
 type PlayerList struct {

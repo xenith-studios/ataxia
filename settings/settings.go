@@ -6,7 +6,7 @@ package settings
 import (
     "log"
     "github.com/xenith-studios/golua"
-    "ataxia/lua"
+    "../lua"
 )
 
 var (
