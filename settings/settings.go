@@ -4,7 +4,7 @@
 package settings
 
 import (
-	"../lua"
+	"ataxia/lua"
 	"github.com/xenith-studios/golua"
 	"log"
 )

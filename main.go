@@ -6,8 +6,8 @@
 package main
 
 import (
-	"./lua"
-	"./settings"
+	"ataxia/lua"
+	"ataxia/settings"
 	"flag"
 	"fmt"
 	"log"
