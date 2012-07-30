@@ -67,6 +67,7 @@ func NewServer(port int, shutdown chan bool) (server *Server) {
 
 func (server *Server) Shutdown() {
 	if server.socket != nil {
+		server.SendToAll("Server is shutting down!")
 		for _, player := range server.PlayerList.players {
 			if player != nil {
 				player.Close()

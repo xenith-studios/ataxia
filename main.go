@@ -94,7 +94,7 @@ func main() {
 	// Spin up a goroutine to handle signals
 	go func() {
 		c := make(chan os.Signal)
-		signal.Notify(c)
+		signal.Notify(c, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
 		for sig := range c {
 			if usig, ok := sig.(os.Signal); ok {
 				switch usig {
@@ -121,7 +121,7 @@ func main() {
 		if err != nil {
 			log.Fatalln("Failed to chroot:", err)
 		}
-		error := os.Chdir("/")
+		error := os.Chdir(settings.Chroot)
 		if error != nil {
 			log.Fatalln("Failed to chdir:", error)
 		}
