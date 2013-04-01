@@ -6,7 +6,6 @@ package main
 import (
 	//	"net/textproto"
 	//	"container/list"
-
 	"fmt"
 	"io"
 	"log"
@@ -15,7 +14,7 @@ import (
 	//	"bytes"
 	//	"bufio"
 	//	"strings"
-	"./handler"
+	"ataxia/handler"
 )
 
 // The Connection structure wraps all the lower networking details for each connected player

@@ -4,9 +4,9 @@
 package settings
 
 import (
-	"../lua"
 	"github.com/xenith-studios/golua"
 	"log"
+	"ataxia/lua"
 )
 
 var (
