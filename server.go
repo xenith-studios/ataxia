@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 	//	"container/list"
-	"ataxia/handler"
+	"github.com/xenith-studios/ataxia/handler"
 )
 
 type PlayerList struct {
@@ -51,7 +51,7 @@ func (list *PlayerList) Get(name string) (player *Player) {
 }
 
 func NewServer(port int, shutdown chan bool) (server *Server) {
-	listener, err := net.ListenTCP("tcp", &net.TCPAddr{net.ParseIP(""), port})
+	listener, err := net.ListenTCP("tcp", &net.TCPAddr{net.ParseIP(""), port, ""})
 	if err != nil {
 		log.Fatalln("Failed to create server:", err)
 		return nil

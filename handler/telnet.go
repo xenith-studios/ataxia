@@ -6,7 +6,7 @@ import (
 	//	"log"
 	"bytes"
 	//	"net/textproto"
-	"ataxia/telnet"
+	"github.com/xenith-studios/ataxia/telnet"
 )
 
 type TelnetHandler struct {
@@ -20,7 +20,7 @@ func NewTelnetHandler(conn net.Conn) (handler *TelnetHandler) {
 	br := bufio.NewReader(conn)
 	bw := bufio.NewWriter(conn)
 	handler.buffer = bufio.NewReadWriter(br, bw)
-	handler.telnet = telnet.NewTelnet()
+	handler.telnet = telnet.New()
 	return
 }
 

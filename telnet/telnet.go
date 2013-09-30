@@ -10,7 +10,7 @@ type Telnet struct{
 	telnet_t *C.telnet_t
 }
 
-func NewTelnet() *Telnet {
+func New() *Telnet {
 	telnet := new(Telnet)
 	telnet.telnet_t = C.initialize()
 	return telnet

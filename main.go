@@ -12,8 +12,8 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"ataxia/lua"
-	"ataxia/settings"
+	"github.com/xenith-studios/ataxia/lua"
+	"github.com/xenith-studios/ataxia/settings"
 //	log "log4go.googlecode.com/hg"
 )
 
