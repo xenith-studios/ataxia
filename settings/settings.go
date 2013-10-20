@@ -4,7 +4,6 @@
 package settings
 
 import (
-	"github.com/xenith-studios/golua"
 	"log"
 	"github.com/xenith-studios/ataxia/lua"
 )
@@ -20,26 +19,26 @@ var (
 // Pass in each command-line flag for overriding values in the config file
 func LoadConfigFile(configFile string, mainPort int) bool {
 	L := lua.MainState
-	ok := L.DoFile(configFile)
-	if !ok {
+	err := L.DoFile(configFile)
+	if err != nil {
 		log.Fatal("Failed to read configuration file.")
 		return false
 	}
 
-	lua.MainState.GetGlobal("pid_file")
-	Pidfile = golua.CheckString(L, 1)
+	L.GetGlobal("pid_file")
+	Pidfile = L.CheckString(1)
 	L.Pop(1)
 
 	if mainPort != 0 {
 		MainPort = mainPort
 	} else {
 		L.GetGlobal("main_port")
-		MainPort = golua.CheckInteger(L, 1)
+		MainPort = L.CheckInteger(1)
 		L.Pop(1)
 	}
 
 	L.GetGlobal("chroot")
-	Chroot = golua.CheckString(L, 1)
+	Chroot = L.CheckString(1)
 	L.Pop(1)
 
 	L.GetGlobal("daemonize")

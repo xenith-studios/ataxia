@@ -86,14 +86,14 @@ func recover() {
 	log.Println("Recovering from hotboot.")
 }
 
-// 
+//
 func main() {
 	// At this point, basic initialization has completed
 
 	// Spin up a goroutine to handle signals
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
 	go func() {
-		c := make(chan os.Signal)
-		signal.Notify(c, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
 		for sig := range c {
 			if usig, ok := sig.(os.Signal); ok {
 				switch usig {
@@ -106,9 +106,7 @@ func main() {
 					shutdown <- true
 				case syscall.SIGHUP:
 					// TODO: Reload settings and game state
-				case syscall.SIGTSTP:
-					// Pass on the SIGSTP signal through the syscall mechanism. This actually works.
-					syscall.Kill(syscall.Getpid(), syscall.SIGSTOP)
+					log.Println("Received SIGHUP, reloading configuration and game state.")
 				}
 			}
 		}
@@ -120,9 +118,9 @@ func main() {
 		if err != nil {
 			log.Fatalln("Failed to chroot:", err)
 		}
-		error := os.Chdir(settings.Chroot)
-		if error != nil {
-			log.Fatalln("Failed to chdir:", error)
+		err = os.Chdir(settings.Chroot)
+		if err != nil {
+			log.Fatalln("Failed to chdir:", err)
 		}
 		log.Println("Chrooted to", settings.Chroot)
 	}
@@ -139,7 +137,7 @@ func main() {
 	// Write out pid file
 	pid := fmt.Sprint(os.Getpid())
 	pidfile, err := os.Create(settings.Pidfile)
-	if pidfile == nil {
+	if err != nil {
 		log.Fatalln("Error writing pid to file:", err)
 	}
 	pidfile.Write([]byte(pid))
