@@ -1,0 +1,8 @@
+{
+	"say":
+	{
+		"script":	"scripts/commands/say.lua",
+		"func_name":	"do_say",
+		"group":	"none"
+	}
+}

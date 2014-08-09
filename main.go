@@ -148,10 +148,13 @@ func main() {
 	// Initialize the network
 	log.Println("Initializing network")
 	server := NewServer(settings.MainPort, shutdown)
-
+	log.Println("Server running on port", settings.MainPort)
 	// Initialize game state
 	// Load database
+
 	// Load commands
+	LoadCommandList()
+
 	// Load scripts
 	// Load world
 	// Load entities

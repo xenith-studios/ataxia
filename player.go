@@ -93,6 +93,7 @@ func (player *Player) Run() {
 
 			// TODO: Parse the command here
 			if n > 0 {
+				Interpret(string(data), player)
 				player.conn.server.SendToAll(fmt.Sprintf("<%s> %s", player.account.Name, string(data)))
 			}
 		}

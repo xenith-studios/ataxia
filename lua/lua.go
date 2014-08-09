@@ -27,3 +27,11 @@ func Shutdown() {
 		MainState.Close()
 	}
 }
+
+// simple command, one arg, no results
+func Execute(func_name string, args string) {
+	// need to lock the vm here
+	MainState.GetField(golua.LUA_GLOBALSINDEX, func_name)
+	MainState.PushString(args)
+	MainState.Call(1, 0)
+} 
