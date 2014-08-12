@@ -51,7 +51,7 @@ func (list *PlayerList) Get(name string) (player *Player) {
 }
 
 func NewServer(port int, shutdown chan bool) (server *Server) {
-	listener, err := net.ListenTCP("tcp", &net.TCPAddr{IP: net.ParseIP(""), Port: port, ""})
+	listener, err := net.ListenTCP("tcp", &net.TCPAddr{IP: net.ParseIP(""), Port: port, Zone: ""})
 	if err != nil {
 		log.Fatalln("Failed to create server:", err)
 		return nil

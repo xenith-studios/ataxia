@@ -1,7 +1,7 @@
 /*
    Ataxia Mud Engine
 
-   Copyright © 2009-2013 Xenith Studios
+   Copyright © 2009-2014 Xenith Studios
 */
 package main
 
@@ -30,7 +30,7 @@ var shutdown chan bool
 
 // Do all our basic initialization within the main package's init function.
 func init() {
-	fmt.Printf(`Ataxia Engine %s © 2009-2013, Xenith Studios (see AUTHORS)
+	fmt.Printf(`Ataxia Engine %s © 2009-2014, Xenith Studios (see AUTHORS)
 Compiled on %s
 Ataxia Engine comes with ABSOLUTELY NO WARRANTY; see COPYING for details.
 This is free software, and you are welcome to redistribute it
@@ -64,7 +64,7 @@ under certain conditions; for details, see the file COPYING.
 	// Database
 
 	if !hotbootFlag {
-		// If previous shutdown was not clean and we are not recovering from a hotboot, clean up state and environment
+		// If previous shutdown was not clean and we are not recovering from a hotboot, clean up state and environment if needed
 	}
 }
 
@@ -104,6 +104,7 @@ func main() {
 					fallthrough
 				case syscall.SIGINT:
 					// Catch the three interrupt signals and signal the game to shutdown.
+					log.Println("Received SIGINT, shutting down.")
 					shutdown <- true
 				case syscall.SIGHUP:
 					// TODO: Reload settings and game state
@@ -130,7 +131,8 @@ func main() {
 
 	// Daemonize if configured
 	if settings.Daemonize {
-		log.Println("Daemonizing")
+		log.Println("Daemonize functionality is currently disabled. Continuing as normal...")
+		// log.Println("Daemonizing...")
 		// Daemonize here
 		// TODO: This probably won't be doable until Go supports forking into the background.
 	}
@@ -181,7 +183,7 @@ func main() {
 	<-shutdown
 
 	// Cleanup
-	log.Println("Cleaning up....")
+	log.Println("Shutdown detected. Cleaning up....")
 	lua.Shutdown()
 	server.Shutdown()
 }
