@@ -8,14 +8,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	luar "github.com/stevedonovan/luar"
+	"github.com/xenith-studios/ataxia/lua"
+	"github.com/xenith-studios/ataxia/settings"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
-	"github.com/xenith-studios/ataxia/lua"
-	"github.com/xenith-studios/ataxia/settings"
-	luar "github.com/stevedonovan/luar"
-//	log "log4go.googlecode.com/hg"
+	//	log "log4go.googlecode.com/hg"
 )
 
 // Variables for the command-line flags
@@ -158,8 +158,8 @@ func main() {
 
 	// register exported functions (this is a weird place, should be in main?  or called from there?)
 	luar.Register(lua.MainState, "", luar.Map{
-		"SendToAll":		server.SendToAll,
-		"GetPlayerData":	server.GetPlayerData,
+		"SendToAll":     server.SendToAll,
+		"GetPlayerData": server.GetPlayerData,
 	})
 
 	// Load scripts
