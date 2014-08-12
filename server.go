@@ -126,6 +126,15 @@ func (server *Server) SendToAll(msg string) {
 	}
 }
 
+// for exporting to lua
+func (server *Server) GetPlayerData(id string, field string) (ret string) {
+	player := server.PlayerList.Get(id)
+	if field == "name" {
+		ret = player.account.Name
+	}
+	return
+}
+
 func (server *Server) AddPlayer(player *Player) {
 	server.PlayerList.Add(player.account.Name, player)
 }

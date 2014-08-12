@@ -14,6 +14,7 @@ import (
 	"syscall"
 	"github.com/xenith-studios/ataxia/lua"
 	"github.com/xenith-studios/ataxia/settings"
+	luar "github.com/stevedonovan/luar"
 //	log "log4go.googlecode.com/hg"
 )
 
@@ -154,6 +155,12 @@ func main() {
 
 	// Load commands
 	LoadCommandList()
+
+	// register exported functions (this is a weird place, should be in main?  or called from there?)
+	luar.Register(lua.MainState, "", luar.Map{
+		"SendToAll":		server.SendToAll,
+		"GetPlayerData":	server.GetPlayerData,
+	})
 
 	// Load scripts
 	// Load world

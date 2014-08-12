@@ -62,5 +62,7 @@ func Interpret(str string, player *Player) {
 		args = parts[1]
 	}
 
-	lua.Execute(command.Func_name, args)
+	// acquire lock on player here, to pass UID into lua script.
+	player_uid := player.account.Name // temporary
+	lua.ExecuteInterpret(command.Func_name, player_uid, args)
 }
