@@ -71,14 +71,11 @@ func (player *Player) Run() {
 	player.conn.handler.Write([]byte(fmt.Sprintf("Hello %s.\n", string(buf))))
 	player.account.Name = string(buf)
 
-	player.character = NewCharacter() // load from file later
+	player.character = player.conn.server.World.LoadCharacter(player.account.Name) // let them choose later
+
 	player.character.Player = player
-	player.character.Name = player.account.Name
-	log.Println(player.conn.server.AreaList[0].rooms["3001"])
-	player.character.Room = player.conn.server.AreaList[0].rooms["3001"]
 
 	player.conn.server.AddPlayer(player)
-	player.conn.server.AddCharacter(player.character)
 
 	// Create an anonymous goroutine for reading
 	go func() {
@@ -102,7 +99,7 @@ func (player *Player) Run() {
 
 			// TODO: Parse the command here
 			if n > 0 {
-				Interpret(string(data), player)
+				player.Interpret(string(data))
 				//				player.conn.server.SendToAll(fmt.Sprintf("<%s> %s", player.account.Name, string(data)))
 			}
 		}
@@ -141,6 +138,16 @@ func (player *Player) Close() {
 		player.conn.server.RemovePlayer(player)
 		log.Println("Player disconnected:", player.account.Name)
 	}
+}
+
+func (player *Player) Interpret(input string) {
+	// two level interpeting, do it here (catch player commands), if not found, do it in character
+
+	// interpret goes here
+
+	// else
+	player.character.Interpret(input)
+	player.character.Write("> ")
 }
 
 func (player *Player) Write(buf []byte) (n int, err error) {

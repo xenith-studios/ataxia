@@ -4,7 +4,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"net"
@@ -12,7 +11,9 @@ import (
 	"sync"
 	"time"
 	//	"container/list"
+	golua "github.com/aarzilli/golua/lua"
 	"github.com/xenith-studios/ataxia/handler"
+	"github.com/xenith-studios/ataxia/lua"
 )
 
 type PlayerList struct {
@@ -21,13 +22,12 @@ type PlayerList struct {
 }
 
 type Server struct {
-	socket        *net.TCPListener
-	PlayerList    *PlayerList
-	AreaList      []*Area
-	CharacterList map[string]*Character
-	RoomList      map[string]*Room
-	In            chan string
-	shutdown      chan bool
+	socket     *net.TCPListener
+	luaState   *golua.State
+	World      *World
+	PlayerList *PlayerList
+	In         chan string
+	shutdown   chan bool
 }
 
 func NewPlayerList() (list *PlayerList) {
@@ -53,19 +53,6 @@ func (list *PlayerList) Get(name string) (player *Player) {
 	return
 }
 
-func (server *Server) LoadAreas() {
-	area := NewArea()
-	area.Server = server
-	area.Load("data/world/midgaard.json")
-	server.AreaList = []*Area{area}
-}
-
-func (server *Server) InitializeWorld() {
-	for area := range server.AreaList {
-		server.AreaList[area].Initialize()
-	}
-}
-
 func NewServer(port int, shutdown chan bool) (server *Server) {
 	listener, err := net.ListenTCP("tcp", &net.TCPAddr{IP: net.ParseIP(""), Port: port, Zone: ""})
 	if err != nil {
@@ -74,18 +61,30 @@ func NewServer(port int, shutdown chan bool) (server *Server) {
 	}
 
 	server = new(Server)
+
+	server.luaState = lua.MainState
+	server.PublishAccessors(server.luaState)
+
+	server.World = NewWorld(server.luaState)
+	server.World.PublishAccessors(server.luaState)
+
 	server.PlayerList = NewPlayerList()
-	server.CharacterList = make(map[string]*Character)
-	server.RoomList = make(map[string]*Room)
+
 	server.In = make(chan string, 1024)
 	server.socket = listener
 	server.shutdown = shutdown
 	return
 }
 
+func (server *Server) InitializeWorld() {
+	server.World.LoadAreas()
+	server.World.Initialize()
+
+}
+
 func (server *Server) Shutdown() {
 	if server.socket != nil {
-		server.SendToAll("Server is shutting down!")
+		server.SendToPlayers("Server is shutting down!")
 		for _, player := range server.PlayerList.players {
 			if player != nil {
 				player.Close()
@@ -135,86 +134,8 @@ func (server *Server) Run() {
 	}
 }
 
-func (server *Server) SendToAll(msg string) {
-	for _, ch := range server.CharacterList {
-		if ch.Player != nil {
-			log.Println(msg)
-			ch.Player.In <- fmt.Sprintf("%s\r\n", msg)
-		}
-	}
-}
-
-func (server *Server) SendToOthers(char_id string, msg string) {
-	for id, ch := range server.CharacterList {
-		if id == char_id {
-			continue
-		}
-
-		if ch.Player != nil {
-			log.Println(msg)
-			ch.Player.In <- fmt.Sprintf("%s\r\n", msg)
-		}
-	}
-}
-
-func (server *Server) SendToChar(id string, msg string) {
-	ch := server.CharacterList[id]
-	if ch != nil {
-		if ch.Player != nil {
-			ch.Player.In <- msg
-		}
-	}
-}
-
-// for exporting to lua
-func (server *Server) GetPlayerData(id string, field string) (ret string) {
-	player := server.PlayerList.Get(id)
-	if field == "name" { // replace this with reflection on struct tags?
-		ret = player.account.Name
-	}
-	return
-}
-
-func (server *Server) GetCharacterData(id string, field string) (ret string) {
-	ch := server.CharacterList[id]
-	if ch == nil {
-		return ""
-	}
-
-	if field == "name" {
-		return ch.Name
-	}
-	if field == "room" {
-		return ch.Room.Id
-	}
-	return
-}
-
-func (server *Server) GetRoomData(id string, field string) (ret string) {
-	ch := server.RoomList[id]
-	if ch == nil {
-		return ""
-	}
-
-	if field == "name" {
-		return ch.Name
-	}
-	if field == "description" {
-		return ch.Description
-	}
-	return
-}
-
 func (server *Server) AddPlayer(player *Player) {
 	server.PlayerList.Add(player.account.Name, player)
-}
-
-func (server *Server) AddCharacter(ch *Character) {
-	server.CharacterList[ch.Id] = ch
-}
-
-func (server *Server) AddRoom(room *Room) {
-	server.RoomList[room.Id] = room
 }
 
 func (server *Server) RemovePlayer(player *Player) {

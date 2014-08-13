@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	//	"fmt"
 	"io/ioutil"
 	"log"
 	"strconv"
@@ -91,6 +91,7 @@ type RoomExitTemplate struct {
 
 type Room struct {
 	Id          string
+	Vnum        string
 	Name        string
 	Description string
 	exits       map[int]RoomExit
@@ -127,13 +128,16 @@ type AreaPrototype struct {
 }
 
 type Area struct {
-	Server    *Server
+	ID        string
+	World     *World
 	Prototype AreaPrototype
 	rooms     map[string]*Room
 }
 
-func NewArea() *Area {
+func NewArea(world *World) *Area {
 	o := Area{
+		ID:    uuid(),
+		World: world,
 		rooms: make(map[string]*Room),
 	}
 	return &o
@@ -148,7 +152,7 @@ func (area *Area) Load(filename string) {
 
 	log.Println("Loaded file", filename)
 	err = json.Unmarshal(bytes, &area.Prototype)
-	fmt.Printf("%+v\n", area.Prototype)
+	//	fmt.Printf("%+v\n", area.Prototype)
 
 	if err != nil {
 		log.Fatal("Unable to parse area file", filename)
@@ -162,6 +166,7 @@ func (area *Area) Initialize() {
 	// make instance of each room, add the exits
 	for vnum, roomTemplate := range area.Prototype.RoomTemplates {
 		room := NewRoom()
+		room.Vnum = vnum
 		room.Name = roomTemplate.Name
 		room.Description = roomTemplate.Description
 		for dir_str, exitTemplate := range roomTemplate.Exits {
@@ -172,7 +177,7 @@ func (area *Area) Initialize() {
 		}
 
 		area.rooms[vnum] = room
-		area.Server.AddRoom(room)
+		area.World.AddRoom(room)
 	}
 
 	// resolve exits to room pointers (for now, this is only intra-area)

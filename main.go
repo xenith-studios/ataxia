@@ -8,7 +8,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	luar "github.com/stevedonovan/luar"
 	"github.com/xenith-studios/ataxia/lua"
 	"github.com/xenith-studios/ataxia/settings"
 	"log"
@@ -49,7 +48,8 @@ under certain conditions; for details, see the file COPYING.
 	flag.Parse()
 
 	// Initialize Lua
-	lua.Initialize()
+	//	lua.Initialize()
+	lua.MainState = lua.NewState()
 
 	// Read configuration file
 	ok := settings.LoadConfigFile(configFlag, portFlag)
@@ -156,21 +156,9 @@ func main() {
 	// Load database
 
 	// Load commands
-	LoadCommandList()
-
-	// register exported functions (this is a weird place, should be in main?  or called from there?)
-	luar.Register(lua.MainState, "", luar.Map{
-		"SendToAll":        server.SendToAll,
-		"SendToOthers":     server.SendToOthers,
-		"SendToChar":       server.SendToChar,
-		"GetPlayerData":    server.GetPlayerData,
-		"GetCharacterData": server.GetCharacterData,
-		"GetRoomData":      server.GetRoomData,
-	})
 
 	// Load scripts
 	// Load world
-	server.LoadAreas()
 
 	// Load entities
 
@@ -192,6 +180,6 @@ func main() {
 
 	// Cleanup
 	log.Println("Shutdown detected. Cleaning up....")
-	lua.Shutdown()
+	lua.Shutdown(lua.MainState)
 	server.Shutdown()
 }
