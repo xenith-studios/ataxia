@@ -21,13 +21,13 @@ type PlayerList struct {
 }
 
 type Server struct {
-	socket     *net.TCPListener
-	PlayerList *PlayerList
-	AreaList	[]*Area
-	CharacterList	map[string]*Character
-	RoomList		map[string]*Room
-	In         chan string
-	shutdown   chan bool
+	socket        *net.TCPListener
+	PlayerList    *PlayerList
+	AreaList      []*Area
+	CharacterList map[string]*Character
+	RoomList      map[string]*Room
+	In            chan string
+	shutdown      chan bool
 }
 
 func NewPlayerList() (list *PlayerList) {
@@ -52,7 +52,6 @@ func (list *PlayerList) Get(name string) (player *Player) {
 	player = list.players[name]
 	return
 }
-
 
 func (server *Server) LoadAreas() {
 	area := NewArea()
@@ -170,7 +169,7 @@ func (server *Server) SendToChar(id string, msg string) {
 // for exporting to lua
 func (server *Server) GetPlayerData(id string, field string) (ret string) {
 	player := server.PlayerList.Get(id)
-	if field == "name" {  // replace this with reflection on struct tags?
+	if field == "name" { // replace this with reflection on struct tags?
 		ret = player.account.Name
 	}
 	return
@@ -205,7 +204,6 @@ func (server *Server) GetRoomData(id string, field string) (ret string) {
 	}
 	return
 }
-
 
 func (server *Server) AddPlayer(player *Player) {
 	server.PlayerList.Add(player.account.Name, player)

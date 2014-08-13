@@ -2,137 +2,138 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"strconv"
-	"fmt"
 )
+
 type MobileTemplate struct {
-	keywords	string
-	short_descr	string
-	long_descr	string
-	description	string
-	race		string
-	act_flags	string
-	aff_flags	string
-	alignment	int
-	group		string
-	level		int
-	hitroll		int
-	hp_dice		string
-	mana_dice	string
-	damage_dice	string
-	damage_type	string
-	ac_pierce	int
-	ac_bash		int
-	ac_slash	int
-	ac_exotic	int
-	off_flags	string
-	imm_flags	string
-	res_flags	string
-	vuln_flags	string
-	start_pos	string
-	default_pos	string
-	sex			string
-	wealth		int
-	form_flags	string
-	part_flags	string
-	size		string
-	material	string
+	keywords    string
+	short_descr string
+	long_descr  string
+	description string
+	race        string
+	act_flags   string
+	aff_flags   string
+	alignment   int
+	group       string
+	level       int
+	hitroll     int
+	hp_dice     string
+	mana_dice   string
+	damage_dice string
+	damage_type string
+	ac_pierce   int
+	ac_bash     int
+	ac_slash    int
+	ac_exotic   int
+	off_flags   string
+	imm_flags   string
+	res_flags   string
+	vuln_flags  string
+	start_pos   string
+	default_pos string
+	sex         string
+	wealth      int
+	form_flags  string
+	part_flags  string
+	size        string
+	material    string
 	// remove_flags (hack)
 	// mobprogs
 }
 
 type ObjectTemplate struct {
-	keywords	string
-	short_descr	string
-	description	string
-	material	string
-	item_type	string
-	extra_flags	string
-	wear_flags	string
-	value0		string
-	value1		string
-	value2		string
-	value3		string
-	value4		string
-	level		int
-	weight		int
-	cost 		int
-	condition	string
-//	added_affects	[]map[string]int
-//	added_flags		[]map[string]int (more complex, needs struct)
-	extra_descr	map[string]string
+	keywords    string
+	short_descr string
+	description string
+	material    string
+	item_type   string
+	extra_flags string
+	wear_flags  string
+	value0      string
+	value1      string
+	value2      string
+	value3      string
+	value4      string
+	level       int
+	weight      int
+	cost        int
+	condition   string
+	//	added_affects	[]map[string]int
+	//	added_flags		[]map[string]int (more complex, needs struct)
+	extra_descr map[string]string
 }
 
 type RoomTemplate struct {
-	Name		string
-	Description	string
-	Tele_dest	int
-	Room_flags	string
-	Sector_type	int
-	Heal_rate	int
-	Mana_rate	int
-	Clan		string
-	Guild		string
-	Owner		string
-	Exits		map[string]RoomExitTemplate
-	Extra_descr	map[string]string
+	Name        string
+	Description string
+	Tele_dest   int
+	Room_flags  string
+	Sector_type int
+	Heal_rate   int
+	Mana_rate   int
+	Clan        string
+	Guild       string
+	Owner       string
+	Exits       map[string]RoomExitTemplate
+	Extra_descr map[string]string
 }
 
 type RoomExitTemplate struct {
-	Description	string
-	Keywords	string
-	Locks		int
-	Key 		int
-	Vnum		int
+	Description string
+	Keywords    string
+	Locks       int
+	Key         int
+	Vnum        int
 }
 
 type Room struct {
-	Id			string
-	Name		string
-	Description	string
-	exits		map[int]RoomExit
+	Id          string
+	Name        string
+	Description string
+	exits       map[int]RoomExit
 }
 
 func NewRoom() *Room {
-	o := Room {
-		Id:		uuid(),
-		exits:	make(map[int]RoomExit),
+	o := Room{
+		Id:    uuid(),
+		exits: make(map[int]RoomExit),
 	}
 	return &o
 }
 
 type RoomExit struct {
-	dest_vnum	string
-	destination	*Room
+	dest_vnum   string
+	destination *Room
 }
 
 type AreaHeader struct {
-	Credits		string
-	Name		string
-	Filename	string
+	Credits  string
+	Name     string
+	Filename string
 }
 
 type AreaPrototype struct {
-	Area			AreaHeader			`json:"AREA"`
-	RoomTemplates	map[string]RoomTemplate 	`json:"ROOMS"`
-//	mobileTemplates	map[string]MobileTemplate 	`json:"MOBILES"`
-//	objectTemplates	map[string]ObjectTemplate 	`json:"OBJECTS"`
+	Area          AreaHeader              `json:"AREA"`
+	RoomTemplates map[string]RoomTemplate `json:"ROOMS"`
+	//	mobileTemplates	map[string]MobileTemplate 	`json:"MOBILES"`
+	//	objectTemplates	map[string]ObjectTemplate 	`json:"OBJECTS"`
 	// Resets	[]ResetTemplate
-//	roomTemplates	map[string]RoomTemplate 	`json:"ROOMS"`
+	//	roomTemplates	map[string]RoomTemplate 	`json:"ROOMS"`
 	// shops
 	// specials
 }
 
 type Area struct {
-	Server			*Server
-	Prototype		AreaPrototype
-	rooms			map[string]*Room
+	Server    *Server
+	Prototype AreaPrototype
+	rooms     map[string]*Room
 }
 
 func NewArea() *Area {
-	o := Area {
+	o := Area{
 		rooms: make(map[string]*Room),
 	}
 	return &o

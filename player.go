@@ -36,11 +36,11 @@ type Account struct {
 
 // Player
 type Player struct {
-	account *Account
-	conn    *Connection
-	character	*Character
-	In      chan string
-	Out     chan string
+	account   *Account
+	conn      *Connection
+	character *Character
+	In        chan string
+	Out       chan string
 }
 
 // Player factory
