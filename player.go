@@ -38,6 +38,7 @@ type Account struct {
 type Player struct {
 	account *Account
 	conn    *Connection
+	character	*Character
 	In      chan string
 	Out     chan string
 }
@@ -70,7 +71,15 @@ func (player *Player) Run() {
 	player.conn.handler.Write([]byte(fmt.Sprintf("Hello %s.\n", string(buf))))
 	player.account.Name = string(buf)
 
+	player.character = NewCharacter() // load from file later
+	player.character.Player = player
+	player.character.Name = player.account.Name
+	log.Println(player.conn.server.AreaList[0].rooms["3001"])
+	player.character.Room = player.conn.server.AreaList[0].rooms["3001"]
+
 	player.conn.server.AddPlayer(player)
+	player.conn.server.AddCharacter(player.character)
+
 	// Create an anonymous goroutine for reading
 	go func() {
 		for {

@@ -1,4 +1,5 @@
-function do_say (player_id, args)
-	name = GetPlayerData(player_id, "name")
-	SendToAll(string.format("%s says '%s'", name, args))
+function do_say (char_id, args)
+	name = GetCharacterData(char_id, "name")
+	SendToOthers(char_id, string.format("%s says '%s'\n", name, args))
+	SendToChar(char_id, string.format("You say '%s'\n", args))
 end

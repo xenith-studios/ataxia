@@ -159,12 +159,20 @@ func main() {
 	// register exported functions (this is a weird place, should be in main?  or called from there?)
 	luar.Register(lua.MainState, "", luar.Map{
 		"SendToAll":		server.SendToAll,
+		"SendToOthers":		server.SendToOthers,
+		"SendToChar":		server.SendToChar,
 		"GetPlayerData":	server.GetPlayerData,
+		"GetCharacterData":	server.GetCharacterData,
+		"GetRoomData":		server.GetRoomData,
 	})
 
 	// Load scripts
 	// Load world
+	server.LoadAreas()
+
 	// Load entities
+
+	server.InitializeWorld()
 
 	// Are we recovering from a hotboot?
 	if hotbootFlag {

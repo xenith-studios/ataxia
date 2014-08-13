@@ -4,5 +4,11 @@
 		"script":	"scripts/commands/say.lua",
 		"func_name":	"do_say",
 		"group":	"none"
+	},
+	"look":
+	{
+		"script":	"scripts/commands/look.lua",
+		"func_name":	"do_look",
+		"group":	"none"
 	}
 }

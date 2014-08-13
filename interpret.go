@@ -63,6 +63,6 @@ func Interpret(str string, player *Player) {
 	}
 
 	// acquire lock on player here, to pass UID into lua script.
-	player_uid := player.account.Name // temporary
+	player_uid := player.character.Id // temporary
 	lua.ExecuteInterpret(command.Func_name, player_uid, args)
 }

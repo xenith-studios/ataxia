@@ -12,6 +12,7 @@ deppkg :
 	@echo "Installing dependencies..."
 	go get -u github.com/aarzilli/golua/lua
 	go get -u github.com/stevedonovan/luar
+	go get -u github.com/nu7hatch/gouuid
 #	go get -u code.google.com/p/log4go
 
 cmd : relconst
