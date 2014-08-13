@@ -7,18 +7,18 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
-//	"fmt"
-	"strings"
+	//	"fmt"
 	"github.com/xenith-studios/ataxia/lua"
+	"strings"
 )
 
 type Command struct {
-	Script		string
-	Func_name	string
-	Group		string
+	Script    string
+	Func_name string
+	Group     string
 }
 
-var  commandList map[string]Command // pointers so they can be easily modified below
+var commandList map[string]Command // pointers so they can be easily modified below
 
 func LoadCommandList() {
 	bytes, err := ioutil.ReadFile("scripts/commands/commands.json")

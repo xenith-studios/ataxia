@@ -32,7 +32,7 @@ func (handler *TelnetHandler) Read(buf []byte) (n int, err error) {
 	}
 
 	// Pass data into telnet.Recv()
-	handler.telnet.Recv(data)
+	//handler.telnet.Recv(data)
 
 	copy(buf, bytes.Replace(bytes.Replace(data, []byte("\n"), []byte(""), -1), []byte("\r"), []byte(""), -1))
 	return n, err
@@ -40,7 +40,9 @@ func (handler *TelnetHandler) Read(buf []byte) (n int, err error) {
 
 func (handler *TelnetHandler) Write(buf []byte) (n int, err error) {
 	// Pass the data into telnet.Send()
-	data := handler.telnet.Send(buf)
+	//data := handler.telnet.Send(buf)
+	data := make([]byte, 4096)
+	copy(data, buf)
 
 	if n, err = handler.buffer.Write(data); err != nil {
 		return n, err

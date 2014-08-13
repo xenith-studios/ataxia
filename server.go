@@ -68,7 +68,7 @@ func (server *Server) InitializeWorld() {
 }
 
 func NewServer(port int, shutdown chan bool) (server *Server) {
-	listener, err := net.ListenTCP("tcp", &net.TCPAddr{net.ParseIP(""), port, ""})
+	listener, err := net.ListenTCP("tcp", &net.TCPAddr{IP: net.ParseIP(""), Port: port, Zone: ""})
 	if err != nil {
 		log.Fatalln("Failed to create server:", err)
 		return nil
