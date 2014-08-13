@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/xenith-studios/ataxia/utils"
 	"io/ioutil"
 	"log"
 	"strconv"
@@ -98,7 +99,7 @@ type Room struct {
 
 func NewRoom() *Room {
 	o := Room{
-		Id:    uuid(),
+		Id:    utils.UUID(),
 		exits: make(map[int]RoomExit),
 	}
 	return &o

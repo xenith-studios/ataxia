@@ -1,5 +1,7 @@
 package main
 
+import "github.com/xenith-studios/ataxia/utils"
+
 type Character struct {
 	Id     string
 	Player *Player
@@ -9,7 +11,7 @@ type Character struct {
 
 func NewCharacter() *Character {
 	ch := Character{
-		Id: uuid(),
+		Id: utils.UUID(),
 	}
 
 	return &ch
