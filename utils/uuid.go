@@ -1,10 +1,10 @@
-package main
+package utils
 
 import (
 	gouuid "github.com/nu7hatch/gouuid"
 )
 
-func uuid() string {
+func UUID() string {
 	id, _ := gouuid.NewV4()
 	return id.String()
 }
