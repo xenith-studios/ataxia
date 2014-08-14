@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"bytes"
 	//	"time"
 	//	"syscall"
 	//	"bytes"
@@ -99,6 +100,7 @@ func (player *Player) Run() {
 
 			// TODO: Parse the command here
 			if n > 0 {
+				data = bytes.Trim(data, " \x00") // trim trailing space and nuls
 				player.Interpret(string(data))
 				//				player.conn.server.SendToAll(fmt.Sprintf("<%s> %s", player.account.Name, string(data)))
 			}
