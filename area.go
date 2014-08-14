@@ -95,20 +95,28 @@ type Room struct {
 	Vnum        string
 	Name        string
 	Description string
-	exits       map[int]RoomExit
+	exits       map[int]*RoomExit
 }
 
 func NewRoom() *Room {
 	o := Room{
 		Id:    utils.UUID(),
-		exits: make(map[int]RoomExit),
+		exits: make(map[int]*RoomExit),
 	}
 	return &o
 }
 
 type RoomExit struct {
+	ID          string
 	dest_vnum   string
 	destination *Room
+}
+
+func NewRoomExit() *RoomExit {
+	o := RoomExit{
+		ID: utils.UUID(),
+	}
+	return &o
 }
 
 type AreaHeader struct {
@@ -172,7 +180,7 @@ func (area *Area) Initialize() {
 		room.Description = roomTemplate.Description
 		for dir_str, exitTemplate := range roomTemplate.Exits {
 			dir, _ := strconv.Atoi(dir_str)
-			exit := room.exits[dir]
+			exit := NewRoomExit()
 			exit.dest_vnum = strconv.Itoa(exitTemplate.Vnum)
 			room.exits[dir] = exit
 		}
@@ -183,8 +191,15 @@ func (area *Area) Initialize() {
 
 	// resolve exits to room pointers (for now, this is only intra-area)
 	for _, room := range area.rooms {
-		for _, exit := range room.exits {
-			exit.destination = area.rooms[exit.dest_vnum]
+		for dir, exit := range room.exits {
+			dest := area.World.LookupRoom(exit.dest_vnum)
+			if dest == nil {
+				log.Println("Couldn't find room destination for vnum", exit.dest_vnum)
+				delete(room.exits, dir)
+			} else {
+				exit.destination = dest
+				area.World.AddRoomExit(exit)
+			}
 		}
 	}
 }

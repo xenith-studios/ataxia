@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
-	//	"fmt"
+	//		"fmt"
 	golua "github.com/aarzilli/golua/lua"
 	"github.com/xenith-studios/ataxia/lua"
 	"strings"
@@ -65,12 +65,13 @@ func (interp *Interpreter) Interpret(str string, ch *Character) {
 	command, found := interp.commandList[parts[0]]
 
 	if !found {
-		ch.Write(str)
+		ch.Write("Huh?\n")
+		return
 	}
 
 	args := ""
 	if len(parts) > 1 {
-		args = parts[1]
+		args = strings.TrimSpace(parts[1])
 	}
 
 	// acquire lock on player here, to pass UID into lua script.

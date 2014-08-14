@@ -11,6 +11,7 @@ type World struct {
 	Areas      map[string]*Area
 	Characters map[string]*Character
 	Rooms      map[string]*Room
+	RoomExits  map[string]*RoomExit
 }
 
 func NewWorld(state *golua.State) *World {
@@ -19,6 +20,7 @@ func NewWorld(state *golua.State) *World {
 		Areas:       make(map[string]*Area),
 		Characters:  make(map[string]*Character),
 		Rooms:       make(map[string]*Room),
+		RoomExits:   make(map[string]*RoomExit),
 	}
 	return &world
 }
@@ -44,6 +46,10 @@ func (world *World) AddCharacter(ch *Character) {
 
 func (world *World) AddRoom(room *Room) {
 	world.Rooms[room.Id] = room
+}
+
+func (world *World) AddRoomExit(exit *RoomExit) {
+	world.RoomExits[exit.ID] = exit
 }
 
 func (world *World) LookupRoom(vnum string) *Room {

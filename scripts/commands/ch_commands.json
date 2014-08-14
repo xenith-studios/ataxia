@@ -1,14 +1,62 @@
 {
 	"say":
 	{
-		"script":	"scripts/commands/say.lua",
+		"script":	"scripts/commands/character/say.lua",
 		"func_name":	"do_say",
 		"group":	"none"
 	},
 	"look":
 	{
-		"script":	"scripts/commands/look.lua",
+		"script":	"scripts/commands/character/look.lua",
 		"func_name":	"do_look",
+		"group":	"none"
+	},
+	"walk":
+	{
+		"script":	"scripts/commands/character/walk.lua",
+		"func_name":	"do_walk",
+		"group":	"none"
+	},
+	"exits":
+	{
+		"script":	"scripts/commands/character/exits.lua",
+		"func_name":	"do_exits",
+		"group":	"none"
+	},
+	"north":
+	{
+		"script":	"scripts/commands/character/exits.lua",
+		"func_name":	"do_north",
+		"group":	"none"
+	},
+	"south":
+	{
+		"script":	"scripts/commands/character/exits.lua",
+		"func_name":	"do_south",
+		"group":	"none"
+	},
+	"east":
+	{
+		"script":	"scripts/commands/character/exits.lua",
+		"func_name":	"do_east",
+		"group":	"none"
+	},
+	"west":
+	{
+		"script":	"scripts/commands/character/exits.lua",
+		"func_name":	"do_west",
+		"group":	"none"
+	},
+	"up":
+	{
+		"script":	"scripts/commands/character/exits.lua",
+		"func_name":	"do_up",
+		"group":	"none"
+	},
+	"down":
+	{
+		"script":	"scripts/commands/character/exits.lua",
+		"func_name":	"do_down",
 		"group":	"none"
 	}
 }

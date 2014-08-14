@@ -28,7 +28,10 @@ func Shutdown(st *golua.State) {
 func Execute(st *golua.State, func_name string, args string) {
 	st.GetField(golua.LUA_GLOBALSINDEX, func_name)
 	st.PushString(args)
-	st.Call(1, 0)
+	err := st.Call(1, 0)
+	if err != nil {
+		log.Println("Lua script error in '", func_name, "' with args '", args, "':", err)
+	}
 }
 
 // two argument execute, passes executing player id
@@ -36,6 +39,9 @@ func ExecuteInterpret(st *golua.State, func_name string, player_uid string, args
 	st.GetField(golua.LUA_GLOBALSINDEX, func_name)
 	st.PushString(player_uid)
 	st.PushString(args)
-	st.Call(2, 0)
+	err := st.Call(2, 0)
+	if err != nil {
+		log.Println("Lua script error in '", func_name, "' with args '", args, "':", err)
+	}
 }
 

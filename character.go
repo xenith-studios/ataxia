@@ -13,7 +13,7 @@ type Character struct {
 func NewCharacter(world *World) *Character {
 	ch := Character{
 		World: world,
-		Id: utils.UUID(),
+		Id:    utils.UUID(),
 	}
 
 	return &ch

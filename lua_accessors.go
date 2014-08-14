@@ -39,7 +39,10 @@ func (world *World) PublishAccessors(state *golua.State) {
 		"SendToOthers":     world.SendToOthers,
 		"SendToChar":       world.SendToChar,
 		"GetCharacterData": world.GetCharacterData,
+		"SetCharacterData": world.SetCharacterData,
 		"GetRoomData":      world.GetRoomData,
+		"GetRoomExit":      world.GetRoomExit,
+		"GetRoomExitData":  world.GetRoomExitData,
 	})
 }
 
@@ -89,6 +92,18 @@ func (world *World) GetCharacterData(id string, field string) (ret string) {
 	return
 }
 
+func (world *World) SetCharacterData(id string, field string, value string) {
+	ch := world.Characters[id]
+	if ch == nil {
+		return
+	}
+
+	if field == "room" {
+		ch.Room = world.Rooms[value]
+		return
+	}
+}
+
 func (world *World) GetRoomData(id string, field string) (ret string) {
 	ch := world.Rooms[id]
 	if ch == nil {
@@ -101,5 +116,34 @@ func (world *World) GetRoomData(id string, field string) (ret string) {
 	if field == "description" {
 		return ch.Description
 	}
-	return
+	return ""
+}
+
+func (world *World) GetRoomExit(room_id string, dir int) (ret string) {
+	room := world.Rooms[room_id]
+	if room == nil {
+		return ""
+	}
+
+	if room.exits[dir] != nil {
+		return room.exits[dir].ID
+	}
+
+	return ""
+}
+
+func (world *World) GetRoomExitData(exit_id string, field string) (ret string) {
+	exit := world.RoomExits[exit_id]
+	if exit == nil {
+		return ""
+	}
+
+	if field == "destination" {
+		if exit.destination == nil {
+			return ""
+		}
+
+		return exit.destination.Id
+	}
+	return ""
 }
