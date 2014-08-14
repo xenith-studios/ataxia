@@ -6,7 +6,7 @@ import (
 	//	"log"
 	"bytes"
 	//	"net/textproto"
-	"github.com/xenith-studios/ataxia/telnet"
+	telnet "github.com/xenith-studios/go-telnet"
 )
 
 type TelnetHandler struct {
