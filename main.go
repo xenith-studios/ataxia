@@ -48,7 +48,6 @@ under certain conditions; for details, see the file COPYING.
 	flag.Parse()
 
 	// Initialize Lua
-	//	lua.Initialize()
 	lua.MainState = lua.NewState()
 
 	// Read configuration file
@@ -56,6 +55,7 @@ under certain conditions; for details, see the file COPYING.
 	if !ok {
 		log.Fatal("Error reading config file.")
 	}
+	log.Println("Loaded config file.")
 
 	// Initializations
 	// Environment
@@ -152,6 +152,30 @@ func main() {
 	log.Println("Initializing network")
 	server := NewServer(settings.MainPort, shutdown)
 	log.Println("Server running on port", settings.MainPort)
+
+	// at this point, server and world go functions have been published
+	// to Lua, we can load up some libraries for scripting action
+	err = lua.MainState.DoFile("scripts/interface/context.lua")
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = lua.MainState.DoFile("scripts/interface/accessors.lua")
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = lua.MainState.DoFile("scripts/interface/character.lua")
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = lua.MainState.DoFile("scripts/interface/room.lua")
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = lua.MainState.DoFile("scripts/commands/character_action.lua")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// Initialize game state
 	// Load database
 

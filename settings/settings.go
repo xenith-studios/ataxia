@@ -34,6 +34,7 @@ func LoadConfigFile(configFile string, mainPort int) bool {
 	} else {
 		L.GetGlobal("main_port")
 		MainPort = L.CheckInteger(1)
+log.Println("here")
 		L.Pop(1)
 	}
 

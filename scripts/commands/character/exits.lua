@@ -1,12 +1,11 @@
-function do_exits (char_id, args)
-	room_id = GetCharacterData(char_id, "room")
+function do_exits (ch, args)
 	dirs = {"north", "east", "south", "west", "up", "down"}
 	exit_list = "[ "
 	found = false
 
 	for dir = 0, 5 do
-		exit_id = GetRoomExit(room_id, dir)
-		if exit_id ~= "" then
+		exit = ch:room():exits(tostring(dir))
+		if exit ~= nil then
 			exit_list = exit_list .. dirs[dir+1] .. " "
 			found = true
 		end
@@ -17,5 +16,5 @@ function do_exits (char_id, args)
 	end
 
 	exit_list = exit_list .. "]"
-	SendToChar(char_id, exit_list .. "\n")
+	ch:Send(exit_list .. "\n")
 end

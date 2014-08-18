@@ -35,11 +35,12 @@ func Execute(st *golua.State, func_name string, args string) {
 }
 
 // two argument execute, passes executing player id
-func ExecuteInterpret(st *golua.State, func_name string, player_uid string, args string) {
-	st.GetField(golua.LUA_GLOBALSINDEX, func_name)
-	st.PushString(player_uid)
+func ExecuteInterpret(st *golua.State, func_name string, actor_id string, args string) {
+	st.GetField(golua.LUA_GLOBALSINDEX, "execute_character_action")
+	st.PushString(actor_id)
+	st.PushString(func_name)
 	st.PushString(args)
-	err := st.Call(2, 0)
+	err := st.Call(3, 0)
 	if err != nil {
 		log.Println("Lua script error in '", func_name, "' with args '", args, "':", err)
 	}

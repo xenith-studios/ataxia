@@ -4,6 +4,7 @@ import (
 	"fmt"
 	golua "github.com/aarzilli/golua/lua"
 	"log"
+	"strconv"
 	//	"github.com/xenith-studios/ataxia/lua"
 	luar "github.com/stevedonovan/luar"
 )
@@ -43,6 +44,9 @@ func (world *World) PublishAccessors(state *golua.State) {
 		"GetRoomData":      world.GetRoomData,
 		"GetRoomExit":      world.GetRoomExit,
 		"GetRoomExitData":  world.GetRoomExitData,
+		"GetObjectData":	world.GetObjectData,
+		"SetObjectData":	world.SetObjectData,
+		"GetDictData":		world.GetDictData,
 	})
 }
 
@@ -75,6 +79,36 @@ func (world *World) SendToChar(id string, msg string) {
 			ch.Player.In <- msg
 		}
 	}
+}
+
+func (world *World) GetObjectData(id string, field string) (ret string) {
+	if world.Characters[id] != nil { return world.GetCharacterData(id, field) }
+	if world.Rooms[id] != nil { return world.GetRoomData(id, field) }
+	if world.RoomExits[id] != nil { return world.GetRoomExitData(id, field) }
+	return ""
+}
+
+func (world *World) SetObjectData(id string, field string, value string) {
+	if world.Characters[id] != nil { world.SetCharacterData(id, field, value) }
+//	if world.Rooms[id] != nil { world.SetRoomData(id, field, value) }
+//	if world.RoomExits[id] != nil { world.SetRoomExitData(id, field, value) }
+}
+
+func (world *World) GetDictData(id string, field string, key string) (ret string) {
+	if world.Rooms[id] == nil {
+		return ""
+	}
+
+	room := world.Rooms[id]
+	if field == "exits" {
+		keyv, _ := strconv.Atoi(key)
+		exit := room.exits[keyv]
+		if exit != nil {
+			return exit.ID
+		}
+	}
+
+	return ""
 }
 
 func (world *World) GetCharacterData(id string, field string) (ret string) {

@@ -1,4 +1,10 @@
 {
+	"test":
+	{
+		"script":	"scripts/commands/character/test.lua",
+		"func_name":	"do_test",
+		"group":	"none"
+	},
 	"say":
 	{
 		"script":	"scripts/commands/character/say.lua",
