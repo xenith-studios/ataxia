@@ -10,6 +10,7 @@ relconst :
 
 deppkg :
 	@echo "Installing dependencies..."
+	go get -u github.com/xenith-studios/go-telnet
 	go get -u github.com/aarzilli/golua/lua
 	go get -u github.com/stevedonovan/luar
 	go get -u github.com/nu7hatch/gouuid
