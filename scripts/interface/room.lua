@@ -1,7 +1,9 @@
 Room = DataAccessor:new({
+	_typestr = "Room",
+
 	-- strings
-	name = function(self, value) return self:accessString("name", value) end,
-	description = function(self, value) return self:accessString("description", value) end,
+	name = function(self, value) return self:access("string", "name", value) end,
+	description = function(self, value) return self:access("string", "description", value) end,
 
 	-- objects
 	exits = function(self, key, value) return self:accessDict(RoomExit, "exits", key, value) end,
@@ -16,7 +18,9 @@ end
 
 
 RoomExit = DataAccessor:new({
-	destination = function(self, value) return self:accessObject(Room, "destination", value) end
+	_typestr = "RoomExit",
+
+	destination = function(self, value) return self:access(Room, "destination", value) end
 })
 
 function RoomExit:create(id, context)
