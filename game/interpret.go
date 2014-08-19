@@ -1,7 +1,7 @@
 /*
    Command interpreter
 */
-package interpret
+package game
 
 import (
 	"encoding/json"

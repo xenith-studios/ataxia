@@ -1,7 +1,6 @@
-package main
+package game
 
 import (
-	"github.com/xenith-studios/ataxia/engine"
 	"github.com/xenith-studios/ataxia/utils"
 )
 
@@ -9,11 +8,11 @@ type Character struct {
 	Id     string
 	Player *Player
 	Name   string
-	World  *engine.World
+	World  *World
 	Room   *Room
 }
 
-func NewCharacter(world *engine.World) *Character {
+func NewCharacter(world *World) *Character {
 	ch := Character{
 		World: world,
 		Id:    utils.UUID(),

@@ -25,7 +25,7 @@ type PlayerList struct {
 type Server struct {
 	socket     *net.TCPListener
 	luaState   *golua.State
-	World      *World
+	World      *game.World
 	PlayerList *PlayerList
 	In         chan string
 	shutdown   chan bool
@@ -66,7 +66,7 @@ func NewServer(port int, shutdown chan bool) (server *Server) {
 	server.luaState = lua.MainState
 	server.PublishAccessors(server.luaState)
 
-	server.World = NewWorld(server.luaState)
+	server.World = game.NewWorld(server.luaState)
 	server.World.PublishAccessors(server.luaState)
 
 	server.PlayerList = NewPlayerList()

@@ -1,28 +1,26 @@
-package engine
+package game
 
 import (
 	golua "github.com/aarzilli/golua/lua"
-	"github.com/xenith-studios/ataxia/game"
-	"github.com/xenith-studios/ataxia/interpret"
 )
 
 type World struct {
-	Interpreter *interpet.Interpreter
+	Interpreter *Interpreter
 
 	// shortcut pointers
-	Areas      map[string]*game.Area
-	Characters map[string]*game.Character
-	Rooms      map[string]*game.Room
-	RoomExits  map[string]*game.RoomExit
+	Areas      map[string]*Area
+	Characters map[string]*Character
+	Rooms      map[string]*Room
+	RoomExits  map[string]*RoomExit
 }
 
 func NewWorld(state *golua.State) *World {
 	world := World{
 		Interpreter: NewInterpreter(state),
-		Areas:       make(map[string]*game.Area),
-		Characters:  make(map[string]*game.Character),
-		Rooms:       make(map[string]*game.Room),
-		RoomExits:   make(map[string]*game.RoomExit),
+		Areas:       make(map[string]*Area),
+		Characters:  make(map[string]*Character),
+		Rooms:       make(map[string]*Room),
+		RoomExits:   make(map[string]*RoomExit),
 	}
 	return &world
 }
@@ -41,7 +39,7 @@ func (world *World) LoadAreas() {
 	world.Areas[area.ID] = area
 }
 
-func (world *World) AddCharacter(ch *game.Character) {
+func (world *World) AddCharacter(ch *Character) {
 	ch.World = world
 	world.Characters[ch.Id] = ch
 }
