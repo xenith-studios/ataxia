@@ -6,10 +6,10 @@ import (
 
 type Character struct {
 	Id     string
-	Player *Player
 	Name   string
 	World  *World
 	Room   *Room
+	output chan string
 }
 
 func NewCharacter(world *World) *Character {
@@ -22,11 +22,22 @@ func NewCharacter(world *World) *Character {
 }
 
 func (ch *Character) Interpret(str string) {
-	ch.World.Interpreter.Interpret(str, ch)
+	err := ch.World.Interpreter.Interpret(str, ch.Id)
+	if err != nil {
+		ch.Write("Huh?\n")
+	}
 }
 
 func (ch *Character) Write(str string) {
-	if ch.Player != nil {
-		ch.Player.Write([]byte(str))
+	if ch.output != nil {
+		ch.output <- str
 	}
+}
+
+func (ch *Character) Attach(c chan string) {
+	ch.output = c
+}
+
+func (ch *Character) Detach() {
+	ch.output = nil
 }

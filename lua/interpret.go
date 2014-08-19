@@ -1,7 +1,7 @@
 /*
    Command interpreter
 */
-package game
+package lua
 
 import (
 	"encoding/json"
@@ -9,8 +9,9 @@ import (
 	"log"
 	//		"fmt"
 	golua "github.com/aarzilli/golua/lua"
-	"github.com/xenith-studios/ataxia/lua"
+//	"github.com/xenith-studios/ataxia/lua"
 	"strings"
+	"errors"
 )
 
 type Command struct {
@@ -60,13 +61,12 @@ func (interp *Interpreter) LoadCommands(commandFile string) {
 	log.Printf("Loaded %d commands.", len(interp.commandList))
 }
 
-func (interp *Interpreter) Interpret(str string, ch *Character) {
+func (interp *Interpreter) Interpret(str string, actor_id string) (err error) {
 	parts := strings.SplitN(str, " ", 2) // need better split (other or multiple whitespace)
 	command, found := interp.commandList[parts[0]]
 
 	if !found {
-		ch.Write("Huh?\n")
-		return
+		return errors.New("Command not found")
 	}
 
 	args := ""
@@ -75,5 +75,6 @@ func (interp *Interpreter) Interpret(str string, ch *Character) {
 	}
 
 	// acquire lock on player here, to pass UID into lua script.
-	lua.ExecuteInterpret(interp.luaState, command.Func_name, ch.Id, args)
+	ExecuteInterpret(interp.luaState, command.Func_name, actor_id, args)
+	return nil
 }

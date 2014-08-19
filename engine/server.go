@@ -18,7 +18,7 @@ import (
 )
 
 type PlayerList struct {
-	players map[string]*game.Player
+	players map[string]*Player
 	mu      sync.RWMutex
 }
 
@@ -32,10 +32,10 @@ type Server struct {
 }
 
 func NewPlayerList() (list *PlayerList) {
-	return &PlayerList{players: make(map[string]*game.Player)}
+	return &PlayerList{players: make(map[string]*Player)}
 }
 
-func (list *PlayerList) Add(name string, player *game.Player) {
+func (list *PlayerList) Add(name string, player *Player) {
 	list.mu.Lock()
 	defer list.mu.Unlock()
 	list.players[name] = player
@@ -47,7 +47,7 @@ func (list *PlayerList) Delete(name string) {
 	list.players[name] = nil
 }
 
-func (list *PlayerList) Get(name string) (player *game.Player) {
+func (list *PlayerList) Get(name string) (player *Player) {
 	list.mu.RLock()
 	defer list.mu.RUnlock()
 	player = list.players[name]
@@ -99,7 +99,7 @@ func (server *Server) Listen() {
 	for {
 		if server.socket == nil {
 			log.Println("Server socket closed")
-			shutdown <- true
+			server.shutdown <- true
 			return
 		}
 		conn, err := server.socket.Accept()
@@ -113,7 +113,7 @@ func (server *Server) Listen() {
 			c.server = server
 			c.handler = handler.NewTelnetHandler(conn)
 			log.Println("Accepted a new connection:", c.remoteAddr)
-			player := game.NewPlayer(server, c)
+			player := NewPlayer(server, c)
 			go player.Run()
 		}
 	}
@@ -136,11 +136,11 @@ func (server *Server) Run() {
 	}
 }
 
-func (server *Server) AddPlayer(player *game.Player) {
+func (server *Server) AddPlayer(player *Player) {
 	server.PlayerList.Add(player.account.Name, player)
 }
 
-func (server *Server) RemovePlayer(player *game.Player) {
+func (server *Server) RemovePlayer(player *Player) {
 	server.PlayerList.Delete(player.account.Name)
 }
 

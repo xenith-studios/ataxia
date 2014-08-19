@@ -16,6 +16,7 @@ import (
 	//	"bufio"
 	//	"strings"
 	"github.com/xenith-studios/ataxia/handler"
+	"github.com/xenith-studios/ataxia/game"
 )
 
 // The Connection structure wraps all the lower networking details for each connected player
@@ -39,7 +40,7 @@ type Account struct {
 type Player struct {
 	account   *Account
 	conn      *Connection
-	character *Character
+	character *game.Character
 	In        chan string
 	Out       chan string
 }
@@ -73,9 +74,7 @@ func (player *Player) Run() {
 	player.account.Name = string(buf)
 
 	player.character = player.conn.server.World.LoadCharacter(player.account.Name) // let them choose later
-
-	player.character.Player = player
-
+	player.character.Attach(player.In)
 	player.conn.server.AddPlayer(player)
 
 	// Create an anonymous goroutine for reading
@@ -137,6 +136,7 @@ func (player *Player) Close() {
 		player.conn.socket.Close()
 		player.conn.socket = nil
 		player.conn.handler.Close()
+		player.character.Detach()
 		player.conn.server.RemovePlayer(player)
 		log.Println("Player disconnected:", player.account.Name)
 	}

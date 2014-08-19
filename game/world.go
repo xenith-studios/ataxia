@@ -2,10 +2,12 @@ package game
 
 import (
 	golua "github.com/aarzilli/golua/lua"
+	"github.com/xenith-studios/ataxia/lua"
+
 )
 
 type World struct {
-	Interpreter *Interpreter
+	Interpreter *lua.Interpreter
 
 	// shortcut pointers
 	Areas      map[string]*Area
@@ -16,7 +18,7 @@ type World struct {
 
 func NewWorld(state *golua.State) *World {
 	world := World{
-		Interpreter: NewInterpreter(state),
+		Interpreter: lua.NewInterpreter(state),
 		Areas:       make(map[string]*Area),
 		Characters:  make(map[string]*Character),
 		Rooms:       make(map[string]*Room),
@@ -34,7 +36,7 @@ func (world *World) Initialize() {
 }
 
 func (world *World) LoadAreas() {
-	area := game.NewArea(world)
+	area := NewArea(world)
 	area.Load("data/world/midgaard.json")
 	world.Areas[area.ID] = area
 }
@@ -44,15 +46,15 @@ func (world *World) AddCharacter(ch *Character) {
 	world.Characters[ch.Id] = ch
 }
 
-func (world *World) AddRoom(room *game.Room) {
+func (world *World) AddRoom(room *Room) {
 	world.Rooms[room.Id] = room
 }
 
-func (world *World) AddRoomExit(exit *game.RoomExit) {
+func (world *World) AddRoomExit(exit *RoomExit) {
 	world.RoomExits[exit.ID] = exit
 }
 
-func (world *World) LookupRoom(vnum string) *game.Room {
+func (world *World) LookupRoom(vnum string) *Room {
 	for _, room := range world.Rooms {
 		if room.Vnum == vnum {
 			return room
@@ -62,9 +64,9 @@ func (world *World) LookupRoom(vnum string) *game.Room {
 	return nil
 }
 
-func (world *World) LoadCharacter(name string) (ch *game.Character) {
+func (world *World) LoadCharacter(name string) (ch *Character) {
 	// for now, just make a new one, give it a name
-	ch = game.NewCharacter(world)
+	ch = NewCharacter(world)
 	ch.Name = name
 	ch.Room = world.LookupRoom("3001")
 	world.AddCharacter(ch)
