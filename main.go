@@ -8,6 +8,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/xenith-studios/ataxia/engine"
 	"github.com/xenith-studios/ataxia/lua"
 	"github.com/xenith-studios/ataxia/settings"
 	"log"
@@ -150,7 +151,7 @@ func main() {
 
 	// Initialize the network
 	log.Println("Initializing network")
-	server := NewServer(settings.MainPort, shutdown)
+	server := engine.NewServer(settings.MainPort, shutdown)
 	log.Println("Server running on port", settings.MainPort)
 
 	// at this point, server and world go functions have been published

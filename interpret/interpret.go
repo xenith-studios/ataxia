@@ -1,7 +1,7 @@
 /*
    Command interpreter
 */
-package main
+package interpret
 
 import (
 	"encoding/json"

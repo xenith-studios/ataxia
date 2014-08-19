@@ -15,13 +15,14 @@ import (
 	//	"bytes"
 	//	"bufio"
 	//	"strings"
+	"github.com/xenith-studios/ataxia/engine"
 	"github.com/xenith-studios/ataxia/handler"
 )
 
 // The Connection structure wraps all the lower networking details for each connected player
 type Connection struct {
 	socket     io.ReadWriteCloser
-	server     *Server
+	server     *engine.Server
 	handler    handler.Handler
 	remoteAddr string
 	state      string

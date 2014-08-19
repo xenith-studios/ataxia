@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	//	"fmt"
+	"github.com/xenith-studios/ataxia/engine"
 	"github.com/xenith-studios/ataxia/utils"
 	"io/ioutil"
 	"log"
@@ -138,12 +139,12 @@ type AreaPrototype struct {
 
 type Area struct {
 	ID        string
-	World     *World
+	World     *engine.World
 	Prototype AreaPrototype
 	rooms     map[string]*Room
 }
 
-func NewArea(world *World) *Area {
+func NewArea(world *engine.World) *Area {
 	o := Area{
 		ID:    utils.UUID(),
 		World: world,

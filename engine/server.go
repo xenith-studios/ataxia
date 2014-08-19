@@ -1,7 +1,7 @@
 /*
    Server structures and functions
 */
-package main
+package engine
 
 import (
 	"io"
@@ -12,12 +12,13 @@ import (
 	"time"
 	//	"container/list"
 	golua "github.com/aarzilli/golua/lua"
+	"github.com/xenith-studios/ataxia/game"
 	"github.com/xenith-studios/ataxia/handler"
 	"github.com/xenith-studios/ataxia/lua"
 )
 
 type PlayerList struct {
-	players map[string]*Player
+	players map[string]*game.Player
 	mu      sync.RWMutex
 }
 
@@ -31,10 +32,10 @@ type Server struct {
 }
 
 func NewPlayerList() (list *PlayerList) {
-	return &PlayerList{players: make(map[string]*Player)}
+	return &PlayerList{players: make(map[string]*game.Player)}
 }
 
-func (list *PlayerList) Add(name string, player *Player) {
+func (list *PlayerList) Add(name string, player *game.Player) {
 	list.mu.Lock()
 	defer list.mu.Unlock()
 	list.players[name] = player
@@ -46,7 +47,7 @@ func (list *PlayerList) Delete(name string) {
 	list.players[name] = nil
 }
 
-func (list *PlayerList) Get(name string) (player *Player) {
+func (list *PlayerList) Get(name string) (player *game.Player) {
 	list.mu.RLock()
 	defer list.mu.RUnlock()
 	player = list.players[name]
@@ -104,6 +105,7 @@ func (server *Server) Listen() {
 		conn, err := server.socket.Accept()
 		if err != nil {
 			log.Println("Failed to accept new connection:", err)
+			continue
 		} else {
 			c := new(Connection)
 			c.remoteAddr = conn.RemoteAddr().String()
@@ -111,7 +113,7 @@ func (server *Server) Listen() {
 			c.server = server
 			c.handler = handler.NewTelnetHandler(conn)
 			log.Println("Accepted a new connection:", c.remoteAddr)
-			player := NewPlayer(server, c)
+			player := game.NewPlayer(server, c)
 			go player.Run()
 		}
 	}
@@ -134,11 +136,11 @@ func (server *Server) Run() {
 	}
 }
 
-func (server *Server) AddPlayer(player *Player) {
+func (server *Server) AddPlayer(player *game.Player) {
 	server.PlayerList.Add(player.account.Name, player)
 }
 
-func (server *Server) RemovePlayer(player *Player) {
+func (server *Server) RemovePlayer(player *game.Player) {
 	server.PlayerList.Delete(player.account.Name)
 }
 
