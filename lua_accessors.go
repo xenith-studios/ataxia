@@ -29,7 +29,7 @@ func (server *Server) SendToPlayers(msg string) {
 func (server *Server) GetPlayerData(id string, field string) (ret string) {
 	player := server.PlayerList.Get(id)
 	if field == "name" { // replace this with reflection on struct tags?
-		ret = player.account.Name
+		ret = player.Name
 	}
 	return
 }
