@@ -28,21 +28,16 @@ type Connection struct {
 	state      string
 }
 
-// Account
-type Account struct {
+// Player
+type Player struct {
 	Email      string
 	Password   string
 	Name       string
 	Characters []string
-}
-
-// Player
-type Player struct {
-	account   *Account
-	conn      *Connection
-	character *game.Character
-	In        chan string
-	Out       chan string
+	conn       *Connection
+	character  *game.Character
+	In         chan string
+	Out        chan string
 }
 
 // Player factory
@@ -51,8 +46,7 @@ func NewPlayer(server *Server, conn *Connection) (player *Player) {
 	player.conn = conn
 	player.In = make(chan string, 1024)
 	player.Out = make(chan string, 1024)
-	player.account = new(Account)
-	player.account.Name = "Unknown"
+	player.Name = "Unknown"
 	return player
 }
 
@@ -71,9 +65,9 @@ func (player *Player) Run() {
 		return
 	}
 	player.conn.handler.Write([]byte(fmt.Sprintf("Hello %s.\n", string(buf))))
-	player.account.Name = string(buf)
+	player.Name = string(buf)
 
-	player.character = player.conn.server.World.LoadCharacter(player.account.Name) // let them choose later
+	player.character = player.conn.server.World.LoadCharacter(player.Name) // let them choose later
 	player.character.Attach(player.In)
 	player.conn.server.AddPlayer(player)
 
@@ -101,7 +95,7 @@ func (player *Player) Run() {
 			if n > 0 {
 				data = bytes.Trim(data, " \x00") // trim trailing space and nuls
 				player.Interpret(string(data))
-				//				player.conn.server.SendToAll(fmt.Sprintf("<%s> %s", player.account.Name, string(data)))
+				//				player.conn.server.SendToAll(fmt.Sprintf("<%s> %s", player.Name, string(data)))
 			}
 		}
 	}()
@@ -138,7 +132,7 @@ func (player *Player) Close() {
 		player.conn.handler.Close()
 		player.character.Detach()
 		player.conn.server.RemovePlayer(player)
-		log.Println("Player disconnected:", player.account.Name)
+		log.Println("Player disconnected:", player.Name)
 	}
 }
 

@@ -137,11 +137,11 @@ func (server *Server) Run() {
 }
 
 func (server *Server) AddPlayer(player *Player) {
-	server.PlayerList.Add(player.account.Name, player)
+	server.PlayerList.Add(player.Name, player)
 }
 
 func (server *Server) RemovePlayer(player *Player) {
-	server.PlayerList.Delete(player.account.Name)
+	server.PlayerList.Delete(player.Name)
 }
 
 func (server *Server) Write(buf []byte) (n int, err error) {
