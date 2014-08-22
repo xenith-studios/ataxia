@@ -1,6 +1,3 @@
-/*
-   Command interpreter
-*/
 package lua
 
 import (
@@ -8,9 +5,8 @@ import (
 	"io/ioutil"
 	"log"
 	//		"fmt"
-	golua "github.com/aarzilli/golua/lua"
-	//	"github.com/xenith-studios/ataxia/lua"
 	"errors"
+	golua "github.com/aarzilli/golua/lua"
 	"strings"
 )
 

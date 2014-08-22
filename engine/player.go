@@ -1,7 +1,8 @@
+package engine
+
 /*
    Player structures and functions
 */
-package engine
 
 import (
 	//	"net/textproto"

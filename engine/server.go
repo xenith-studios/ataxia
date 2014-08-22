@@ -1,7 +1,8 @@
+package engine
+
 /*
    Server structures and functions
 */
-package engine
 
 import (
 	"io"

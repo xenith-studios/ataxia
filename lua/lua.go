@@ -1,6 +1,3 @@
-/*
-   Lua
-*/
 package lua
 
 import (
