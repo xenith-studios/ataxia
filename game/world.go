@@ -3,7 +3,6 @@ package game
 import (
 	golua "github.com/aarzilli/golua/lua"
 	"github.com/xenith-studios/ataxia/lua"
-
 )
 
 type World struct {

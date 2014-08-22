@@ -4,9 +4,9 @@
 package lua
 
 import (
-	"log"
 	golua "github.com/aarzilli/golua/lua"
-//	luar "github.com/stevedonovan/luar"
+	"log"
+	//	luar "github.com/stevedonovan/luar"
 )
 
 var MainState *golua.State
@@ -45,4 +45,3 @@ func ExecuteInterpret(st *golua.State, func_name string, actor_id string, args s
 		log.Println("Lua script error in '", func_name, "' with args '", args, "':", err)
 	}
 }
-

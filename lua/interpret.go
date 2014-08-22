@@ -9,9 +9,9 @@ import (
 	"log"
 	//		"fmt"
 	golua "github.com/aarzilli/golua/lua"
-//	"github.com/xenith-studios/ataxia/lua"
-	"strings"
+	//	"github.com/xenith-studios/ataxia/lua"
 	"errors"
+	"strings"
 )
 
 type Command struct {

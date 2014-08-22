@@ -32,4 +32,3 @@ func (server *Server) GetPlayerData(id string, field string) (ret string) {
 	}
 	return
 }
-

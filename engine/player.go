@@ -15,8 +15,8 @@ import (
 	//	"bytes"
 	//	"bufio"
 	//	"strings"
-	"github.com/xenith-studios/ataxia/handler"
 	"github.com/xenith-studios/ataxia/game"
+	"github.com/xenith-studios/ataxia/handler"
 )
 
 // The Connection structure wraps all the lower networking details for each connected player

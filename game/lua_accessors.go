@@ -3,7 +3,7 @@ package game
 import (
 	"fmt"
 	golua "github.com/aarzilli/golua/lua"
-//	"log"
+	//	"log"
 	"strconv"
 	//	"github.com/xenith-studios/ataxia/lua"
 	luar "github.com/stevedonovan/luar"
@@ -22,7 +22,7 @@ func (world *World) PublishAccessors(state *golua.State) {
 		"GetObjectData":    world.GetObjectData,
 		"SetObjectData":    world.SetObjectData,
 		"GetDictData":      world.GetDictData,
-		"TestList":			TestList,
+		"TestList":         TestList,
 	})
 }
 

@@ -41,7 +41,7 @@ under certain conditions; for details, see the file COPYING.
 	shutdown = make(chan bool)
 	// Setup the command-line flags
 	flag.IntVar(&portFlag, "port", 0, "Main port")
-	flag.StringVar(&configFlag, "config", "etc/config.lua", "Config file")
+	flag.StringVar(&configFlag, "config", "data/config.lua", "Config file")
 	flag.BoolVar(&hotbootFlag, "hotboot", false, "Recover from hotboot")
 	flag.IntVar(&descriptorFlag, "descriptor", 0, "Hotboot descriptor")
 
