@@ -26,17 +26,17 @@ pid_file = "data/ataxia.pid"
 -- This option requires starting Ataxia with root priviledges.
 chroot = ""
 
--- User to run ataxia as.
+-- Set this option to have ataxia drop priviledges to the specified user on startup.
 -- This option requires starting Ataxia with root priviledges.
 user = ""
 
--- Group to run ataxia as.
+-- Set this option to have ataxia drop priviledges to the specified group on startup.
 -- This option requires starting Ataxia with root priviledges.
 group = ""
 
 -- Logging facility to use
--- Options are: standard, file, syslog
-log_facility = "standard"
+-- Options are: stdout, file, syslog
+log_facility = "stdout"
 
 -- Location of the default log file for the file logger
 -- log_file = "log/ataxia.log"
@@ -64,8 +64,8 @@ world_data = "data/world/"
 -- Location of account data
 account_data = "data/accounts/"
 
--- Location of player data
-player_data = "data/players/"
+-- Location of character data
+character_data = "data/characters/"
 
 -- Max simultaenous connections total
 max_clients = 1000
@@ -79,11 +79,11 @@ account_creation = true
 -- Maximum number of characters per account
 chars_per_account = 3
 
--- Maximum number of simultaneous characters online per account
+-- Maximum number of simultaneous characters online per account (multiplaying support)
 active_per_account = 1
 
 -- Autosave interval in minutes
 autosave = 15
 
--- Backup players
-backup_players = true
+-- Allow character backups
+backup_characters = true

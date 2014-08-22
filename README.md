@@ -14,8 +14,29 @@ Once Go is installed:
 
 This will install all dependencies and build ataxia, putting the binary in bin/
 
-Modify etc/config.lua
+Modify data/config.lua
 
 Run Ataxia:
 
     $ ./bin/ataxia
+
+## Directory Layout ##
+
+    bin/
+        The location of compiled binary files and helper scripts
+    doc/
+        User and developer documentation (not godoc documentation)
+    log/
+        Location of stored log files
+    tools/
+        Helper scripts and tools for developers
+    data/
+        On-disk data files, such as config files
+    data/world
+        World data files
+    scripts/
+        On-disk storage location for all Lua scripts
+    scripts/interface
+        Helper scripts that set up the data interface between Go and Lua
+    scripts/command
+        All in-game commands
