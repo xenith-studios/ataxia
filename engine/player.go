@@ -1,7 +1,7 @@
 package engine
 
 /*
-   Player structures and functions
+   Account structures and functions
 */
 
 import (
@@ -20,104 +20,105 @@ import (
 	"github.com/xenith-studios/ataxia/handler"
 )
 
-// The Connection structure wraps all the lower networking details for each connected player
-type Connection struct {
-	socket     io.ReadWriteCloser
-	server     *Server
-	handler    handler.Handler
-	remoteAddr string
-	state      string
-}
-
-// Player
-type Player struct {
+// The Account struct defines each connected player at the engine level
+type Account struct {
 	Email      string
 	Password   string
 	Name       string
 	Characters []string
-	conn       *Connection
+	conn       *connection
+	server     *Server
 	character  *game.Character
 	In         chan string
 	Out        chan string
 }
 
-// Player factory
-func NewPlayer(server *Server, conn *Connection) (player *Player) {
-	player = new(Player)
-	player.conn = conn
-	player.In = make(chan string, 1024)
-	player.Out = make(chan string, 1024)
-	player.Name = "Unknown"
-	return player
+// The connection struct wraps all the lower-level networking details for each connected player
+type connection struct {
+	socket     io.ReadWriteCloser
+	handler    handler.Handler
+	remoteAddr string
+	state      string
 }
 
-func (player *Player) Run() {
+// Account factory
+func NewAccount(server *Server, conn *connection) (account *Account) {
+	account = new(Account)
+	account.conn = conn
+	account.server = server
+	account.In = make(chan string, 1024)
+	account.Out = make(chan string, 1024)
+	account.Name = "Unknown"
+	return account
+}
+
+func (account *Account) Run() {
 	buf := make([]byte, 1024)
 
-	// Setup the player here.
-	player.conn.handler.Write([]byte("Hello, welcome to Ataxia. What is your account name?\n"))
-	if _, err := player.conn.handler.Read(buf); err != nil {
+	// Setup the account here.
+	account.conn.handler.Write([]byte("Hello, welcome to Ataxia. What is your account name?\n"))
+	if _, err := account.conn.handler.Read(buf); err != nil {
 		if err == io.EOF {
-			log.Println("Read EOF, disconnecting player")
+			log.Println("Read EOF, disconnecting player...")
 		} else {
 			log.Println(err)
 		}
-		player.Close()
+		account.Close()
 		return
 	}
-	player.conn.handler.Write([]byte(fmt.Sprintf("Hello %s.\n", string(buf))))
-	player.Name = string(buf)
+	account.conn.handler.Write([]byte(fmt.Sprintf("Hello %s.\n", string(buf))))
+	account.Name = string(buf)
 
-	player.character = player.conn.server.World.LoadCharacter(player.Name) // let them choose later
-	player.character.Attach(player.In)
-	player.conn.server.AddPlayer(player)
+	account.character = account.server.World.LoadCharacter(account.Name) // let them choose later
+	account.character.Attach(account.In)
+	account.server.AddPlayer(account)
 
 	// Create an anonymous goroutine for reading
 	go func() {
 		for {
-			if player.conn.socket == nil {
+			if account.conn.socket == nil {
 				return
 			}
 
 			data := make([]byte, 1024)
-			n, err := player.Read(data)
+			n, err := account.Read(data)
 
 			if err != nil {
 				if err == io.EOF {
-					log.Println("Read EOF, disconnecting player")
+					log.Println("Read EOF, disconnecting account")
 				} else {
 					log.Println(err)
 				}
-				player.Close()
+				account.Close()
 				return
 			}
 
 			// TODO: Parse the command here
 			if n > 0 {
 				data = bytes.Trim(data, " \x00") // trim trailing space and nuls
-				player.Interpret(string(data))
-				//				player.conn.server.SendToAll(fmt.Sprintf("<%s> %s", player.Name, string(data)))
+				account.Interpret(string(data))
+				//				account.server.SendToAll(fmt.Sprintf("<%s> %s", account.Name, string(data)))
 			}
 		}
 	}()
 
 	// Create an anonymous goroutine for writing
 	go func() {
-		for line := range player.In {
-			if player.conn.socket == nil {
+		for line := range account.In {
+			if account.conn.socket == nil {
 				break
 			}
 			written := 0
 			bytes := []byte(line)
 			for written < len(line) {
-				n, err := player.Write(bytes[written:])
+				n, err := account.Write(bytes[written:])
 				if err != nil {
 					if err == io.EOF {
-						log.Println("EOF on write, disconnecting player")
+						log.Println("EOF on write, disconnecting account")
 					} else {
 						log.Println(err)
 					}
-					player.Close()
+					account.Close()
 					return
 				}
 				written += n
@@ -126,39 +127,39 @@ func (player *Player) Run() {
 	}()
 }
 
-func (player *Player) Close() {
-	if player.conn.socket != nil {
-		player.conn.socket.Close()
-		player.conn.socket = nil
-		player.conn.handler.Close()
-		player.character.Detach()
-		player.conn.server.RemovePlayer(player)
-		log.Println("Player disconnected:", player.Name)
+func (account *Account) Close() {
+	if account.conn.socket != nil {
+		account.conn.handler.Close()
+		account.character.Detach()
+		account.server.RemovePlayer(account)
+		account.conn.socket.Close()
+		account.conn.socket = nil
+		log.Println("Account disconnected:", account.Name)
 	}
 }
 
-func (player *Player) Interpret(input string) {
-	// two level interpeting, do it here (catch player commands), if not found, do it in character
+func (account *Account) Interpret(input string) {
+	// two level interpeting, do it here (catch account commands), if not found, do it in character
 
 	// interpret goes here
 
 	// else
-	player.character.Interpret(input)
-	player.character.Write("> ")
+	account.character.Interpret(input)
+	account.character.Write("> ")
 }
 
-func (player *Player) Write(buf []byte) (n int, err error) {
-	if player.conn.socket == nil {
+func (account *Account) Write(buf []byte) (n int, err error) {
+	if account.conn.socket == nil {
 		return
 	}
 
-	return player.conn.handler.Write(buf)
+	return account.conn.handler.Write(buf)
 }
 
-func (player *Player) Read(buf []byte) (n int, err error) {
-	if player.conn.socket == nil {
+func (account *Account) Read(buf []byte) (n int, err error) {
+	if account.conn.socket == nil {
 		return
 	}
 
-	return player.conn.handler.Read(buf)
+	return account.conn.handler.Read(buf)
 }

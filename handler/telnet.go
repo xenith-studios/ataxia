@@ -52,6 +52,7 @@ func (handler *TelnetHandler) Write(buf []byte) (n int, err error) {
 }
 
 func (handler *TelnetHandler) Close() {
+	handler.buffer.Flush()
 	handler.buffer = nil
 	handler.telnet.Close()
 }
