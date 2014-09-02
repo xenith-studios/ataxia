@@ -18,10 +18,12 @@ import (
 	//	"strings"
 	"github.com/xenith-studios/ataxia/game"
 	"github.com/xenith-studios/ataxia/handler"
+	"github.com/xenith-studios/ataxia/utils"
 )
 
 // The Account struct defines each connected player at the engine level
 type Account struct {
+	Id         string
 	Email      string
 	Password   string
 	Name       string
@@ -44,6 +46,7 @@ type connection struct {
 // Account factory
 func NewAccount(server *Server, conn *connection) (account *Account) {
 	account = new(Account)
+	account.Id = utils.UUID()
 	account.conn = conn
 	account.server = server
 	account.In = make(chan string, 1024)
@@ -106,7 +109,7 @@ func (account *Account) Run() {
 	go func() {
 		for line := range account.In {
 			if account.conn.socket == nil {
-				break
+				return
 			}
 			written := 0
 			bytes := []byte(line)
