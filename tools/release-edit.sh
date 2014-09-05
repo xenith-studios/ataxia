@@ -14,7 +14,7 @@ if [[ -z "$RELEASE" ]]; then
   RELEASE="development release"
 fi
 
-echo "Updating constants:"
+echo "Updating release constants:"
 echo "  ATAXIA_VERSION  = '$RELEASE'"
 echo "  ATAXIA_COMPILED = '$DATE'"
 

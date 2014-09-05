@@ -8,9 +8,15 @@ Ataxia is a modern MUD engine written Go. It heavily utilizes concurrency and us
 
 First, install Go. Ataxia is written to work with the current Go1 release. See: http://golang.org/doc/install
 
-Once Go is installed:
+Second, you should install gpm and gvp:
 
-    $ make
+    https://github.com/pote/gpm
+    https://github.com/pote/gvp
+
+Once everything is installed:
+
+    $ gpm install
+    $ ./build.sh
 
 This will install all dependencies and build ataxia, putting the binary in bin/
 
