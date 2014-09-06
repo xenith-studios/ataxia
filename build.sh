@@ -3,7 +3,7 @@
 sh tools/release-edit.sh
 
 echo "Running go fmt, go vet, and golint..."
-for dir in {engine,lua,game,handler,settings,utils}; do
+for dir in {engine,lua,game,handler,utils}; do
     cd $dir;
     go fmt;
     goimports -w .;

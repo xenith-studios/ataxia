@@ -13,21 +13,21 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/rakyll/globalconf"
 	"github.com/xenith-studios/ataxia/engine"
 	"github.com/xenith-studios/ataxia/lua"
-	"github.com/xenith-studios/ataxia/settings"
-	//	log "log4go.googlecode.com/hg"
 )
 
-// Variables for the command-line flags
+// Variables for the command-line flags and config file values
 var (
-	portFlag       int
-	configFlag     string
-	hotbootFlag    bool
-	descriptorFlag int
+	portFlag       *int
+	configFlag     *string
+	hotbootFlag    *bool
+	descriptorFlag *int
+	pidFlag        *string
+	chrootFlag     *string
+	daemonizeFlag  *bool
 )
-
-var shutdown chan bool
 
 // Do all our basic initialization within the main package's init function.
 func init() {
@@ -39,12 +39,14 @@ under certain conditions; for details, see the file COPYING.
 
 `, ataxiaVersion, ataxiaCompiled)
 
-	shutdown = make(chan bool)
 	// Setup the command-line flags
-	flag.IntVar(&portFlag, "port", 0, "Main port")
-	flag.StringVar(&configFlag, "config", "data/config.lua", "Config file")
-	flag.BoolVar(&hotbootFlag, "hotboot", false, "Recover from hotboot")
-	flag.IntVar(&descriptorFlag, "descriptor", 0, "Hotboot descriptor")
+	portFlag = flag.Int("main_port", 9000, "Main port")
+	configFlag = flag.String("config", "data/config.ini", "Config file")
+	hotbootFlag = flag.Bool("hotboot", false, "Recover from hotboot")
+	descriptorFlag = flag.Int("descriptor", 0, "Hotboot descriptor")
+	pidFlag = flag.String("pid_file", "data/ataxia.pid", "PID file")
+	chrootFlag = flag.String("chroot", "", "Chroot directory")
+	daemonizeFlag = flag.Bool("daemonize", false, "Daemonize")
 
 	// Parse the command line
 	flag.Parse()
@@ -53,10 +55,13 @@ under certain conditions; for details, see the file COPYING.
 	lua.MainState = lua.NewState()
 
 	// Read configuration file
-	ok := settings.LoadConfigFile(configFlag, portFlag)
-	if !ok {
+	conf, err := globalconf.NewWithOptions(&globalconf.Options{
+		Filename: *configFlag,
+	})
+	if err != nil {
 		log.Fatal("Error reading config file.")
 	}
+	conf.ParseAll()
 	log.Println("Loaded config file.")
 
 	// Initializations
@@ -65,7 +70,7 @@ under certain conditions; for details, see the file COPYING.
 	// Queues
 	// Database
 
-	if !hotbootFlag {
+	if !*hotbootFlag {
 		// If previous shutdown was not clean and we are not recovering from a hotboot, clean up state and environment if needed
 	}
 }
@@ -92,6 +97,7 @@ func recover() {
 //
 func main() {
 	// At this point, basic initialization has completed
+	shutdown := make(chan bool)
 
 	// Spin up a goroutine to handle signals
 	c := make(chan os.Signal, 1)
@@ -117,22 +123,22 @@ func main() {
 	}()
 
 	// If configured, chroot into the designated directory
-	if settings.Chroot != "" {
-		err := syscall.Chroot(settings.Chroot)
+	if *chrootFlag != "" {
+		err := syscall.Chroot(*chrootFlag)
 		if err != nil {
 			log.Fatalln("Failed to chroot:", err)
 		}
-		err = os.Chdir(settings.Chroot)
+		err = os.Chdir(*chrootFlag)
 		if err != nil {
 			log.Fatalln("Failed to chdir:", err)
 		}
-		log.Println("Chrooted to", settings.Chroot)
+		log.Println("Chrooted to", *chrootFlag)
 	}
 
 	// Drop priviledges if configured
 
 	// Daemonize if configured
-	if settings.Daemonize {
+	if *daemonizeFlag {
 		log.Println("Daemonize functionality is currently disabled. Continuing as normal...")
 		// log.Println("Daemonizing...")
 		// Daemonize here
@@ -141,19 +147,19 @@ func main() {
 
 	// Write out pid file
 	pid := fmt.Sprint(os.Getpid())
-	pidfile, err := os.Create(settings.Pidfile)
+	pidfile, err := os.Create(*pidFlag)
 	if err != nil {
 		log.Fatalln("Error writing pid to file:", err)
 	}
 	pidfile.Write([]byte(pid))
-	log.Println("Wrote PID to", settings.Pidfile)
+	log.Println("Wrote PID to", *pidFlag)
 	pidfile.Close()
-	defer os.Remove(settings.Pidfile)
+	defer os.Remove(*pidFlag)
 
 	// Initialize the network
 	log.Println("Initializing network")
-	server := engine.NewServer(settings.MainPort, shutdown)
-	log.Println("Server running on port", settings.MainPort)
+	server := engine.NewServer(*portFlag, shutdown)
+	log.Println("Server running on port", *portFlag)
 
 	// at this point, server and world go functions have been published
 	// to Lua, we can load up some libraries for scripting action
@@ -191,7 +197,7 @@ func main() {
 	server.InitializeWorld()
 
 	// Are we recovering from a hotboot?
-	if hotbootFlag {
+	if *hotbootFlag {
 		recover()
 	}
 
