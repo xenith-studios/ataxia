@@ -9,19 +9,21 @@ import (
 	telnet "github.com/xenith-studios/go-telnet"
 )
 
+// TelnetHandler type for telnet connections
 type TelnetHandler struct {
 	buffer *bufio.ReadWriter
 	flags  int8
 	telnet *telnet.Telnet
 }
 
-func NewTelnetHandler(conn net.Conn) (handler *TelnetHandler) {
-	handler = new(TelnetHandler)
+// NewTelnetHandler returns a new handler
+func NewTelnetHandler(conn net.Conn) Handler {
 	br := bufio.NewReader(conn)
 	bw := bufio.NewWriter(conn)
-	handler.buffer = bufio.NewReadWriter(br, bw)
-	handler.telnet = telnet.New()
-	return
+	return &TelnetHandler{
+		buffer: bufio.NewReadWriter(br, bw),
+		telnet: telnet.New(),
+	}
 }
 
 func (handler *TelnetHandler) Read(buf []byte) (n int, err error) {
@@ -51,6 +53,7 @@ func (handler *TelnetHandler) Write(buf []byte) (n int, err error) {
 	return n, err
 }
 
+// Close flushes all remaining data in the buffer and closes everything down
 func (handler *TelnetHandler) Close() {
 	handler.buffer.Flush()
 	handler.buffer = nil

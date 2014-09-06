@@ -16,14 +16,13 @@ type World struct {
 }
 
 func NewWorld(state *golua.State) *World {
-	world := World{
+	return &World{
 		Interpreter: lua.NewInterpreter(state),
 		Areas:       make(map[string]*Area),
 		Characters:  make(map[string]*Character),
 		Rooms:       make(map[string]*Room),
 		RoomExits:   make(map[string]*RoomExit),
 	}
-	return &world
 }
 
 func (world *World) Initialize() {
@@ -42,11 +41,11 @@ func (world *World) LoadAreas() {
 
 func (world *World) AddCharacter(ch *Character) {
 	ch.World = world
-	world.Characters[ch.Id] = ch
+	world.Characters[ch.ID] = ch
 }
 
 func (world *World) AddRoom(room *Room) {
-	world.Rooms[room.Id] = room
+	world.Rooms[room.ID] = room
 }
 
 func (world *World) AddRoomExit(exit *RoomExit) {

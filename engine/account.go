@@ -23,7 +23,7 @@ import (
 
 // The Account struct defines each connected player at the engine level
 type Account struct {
-	Id         string
+	ID         string
 	Email      string
 	Password   string
 	Name       string
@@ -43,16 +43,16 @@ type connection struct {
 	state      string
 }
 
-// Account factory
+// NewAccount returns a pointer to a newly connected player
 func NewAccount(server *Server, conn *connection) (account *Account) {
-	account = new(Account)
-	account.Id = utils.UUID()
-	account.conn = conn
-	account.server = server
-	account.In = make(chan string, 1024)
-	account.Out = make(chan string, 1024)
-	account.Name = "Unknown"
-	return account
+	return &Account{
+		ID:     utils.UUID(),
+		conn:   conn,
+		server: server,
+		In:     make(chan string, 1024),
+		Out:    make(chan string, 1024),
+		Name:   "Unknown",
+	}
 }
 
 func (account *Account) Run() {

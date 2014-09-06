@@ -92,7 +92,7 @@ type RoomExitTemplate struct {
 }
 
 type Room struct {
-	Id          string
+	ID          string
 	Vnum        string
 	Name        string
 	Description string
@@ -101,7 +101,7 @@ type Room struct {
 
 func NewRoom() *Room {
 	o := Room{
-		Id:    utils.UUID(),
+		ID:    utils.UUID(),
 		exits: make(map[int]*RoomExit),
 	}
 	return &o

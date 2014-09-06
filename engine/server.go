@@ -55,27 +55,27 @@ func (list *PlayerList) Get(name string) (player *Account) {
 	return
 }
 
-func NewServer(port int, shutdown chan bool) (server *Server) {
+// NewServer creates a new server and returns a pointer to it
+func NewServer(port int, shutdown chan bool) *Server {
 	listener, err := net.ListenTCP("tcp", &net.TCPAddr{IP: net.ParseIP(""), Port: port, Zone: ""})
 	if err != nil {
 		log.Fatalln("Failed to create server:", err)
 		return nil
 	}
 
-	server = new(Server)
+	server := &Server{
+		luaState:   lua.MainState,
+		World:      game.NewWorld(lua.MainState),
+		PlayerList: NewPlayerList(),
+		socket:     listener,
+		shutdown:   shutdown,
+		In:         make(chan string, 1024),
+	}
 
-	server.luaState = lua.MainState
 	server.PublishAccessors(server.luaState)
-
-	server.World = game.NewWorld(server.luaState)
 	server.World.PublishAccessors(server.luaState)
 
-	server.PlayerList = NewPlayerList()
-
-	server.In = make(chan string, 1024)
-	server.socket = listener
-	server.shutdown = shutdown
-	return
+	return server
 }
 
 func (server *Server) InitializeWorld() {

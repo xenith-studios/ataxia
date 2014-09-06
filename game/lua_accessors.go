@@ -118,7 +118,7 @@ func (world *World) GetCharacterData(id string, field string) (ret string) {
 		return ch.Name
 	}
 	if field == "room" {
-		return ch.Room.Id
+		return ch.Room.ID
 	}
 	return
 }
@@ -174,7 +174,7 @@ func (world *World) GetRoomExitData(exit_id string, field string) (ret string) {
 			return ""
 		}
 
-		return exit.destination.Id
+		return exit.destination.ID
 	}
 	return ""
 }

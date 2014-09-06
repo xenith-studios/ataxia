@@ -5,7 +5,7 @@ import (
 )
 
 type Character struct {
-	Id     string
+	ID     string
 	Name   string
 	World  *World
 	Room   *Room
@@ -15,14 +15,14 @@ type Character struct {
 func NewCharacter(world *World) *Character {
 	ch := Character{
 		World: world,
-		Id:    utils.UUID(),
+		ID:    utils.UUID(),
 	}
 
 	return &ch
 }
 
 func (ch *Character) Interpret(str string) {
-	err := ch.World.Interpreter.Interpret(str, ch.Id)
+	err := ch.World.Interpreter.Interpret(str, ch.ID)
 	if err != nil {
 		ch.Write("Huh?\n")
 	}
