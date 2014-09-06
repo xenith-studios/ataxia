@@ -1,8 +1,9 @@
 package lua
 
 import (
-	golua "github.com/aarzilli/golua/lua"
 	"log"
+
+	golua "github.com/aarzilli/golua/lua"
 	//	luar "github.com/stevedonovan/luar"
 )
 

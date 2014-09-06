@@ -15,14 +15,14 @@ if [[ -z "$RELEASE" ]]; then
 fi
 
 echo "Updating release constants:"
-echo "  ATAXIA_VERSION  = '$RELEASE'"
-echo "  ATAXIA_COMPILED = '$DATE'"
+echo "  ataxiaVersion  = '$RELEASE'"
+echo "  ataxiaCompiled = '$DATE'"
 
 cat >"$RELFILE" <<EOF
 package main
 
 const (
-	ATAXIA_VERSION  = "$RELEASE"
-	ATAXIA_COMPILED = "$DATE"
+	ataxiaVersion  = "$RELEASE"
+	ataxiaCompiled = "$DATE"
 )
 EOF

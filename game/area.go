@@ -3,10 +3,11 @@ package game
 import (
 	"encoding/json"
 	//	"fmt"
-	"github.com/xenith-studios/ataxia/utils"
 	"io/ioutil"
 	"log"
 	"strconv"
+
+	"github.com/xenith-studios/ataxia/utils"
 )
 
 type MobileTemplate struct {

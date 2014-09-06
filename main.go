@@ -1,20 +1,21 @@
 /*
-   Ataxia Mud Engine
+Ataxia Mud Engine
 
-   Copyright © 2009-2014 Xenith Studios
+Copyright © 2009-2014 Xenith Studios
 */
 package main
 
 import (
 	"flag"
 	"fmt"
-	"github.com/xenith-studios/ataxia/engine"
-	"github.com/xenith-studios/ataxia/lua"
-	"github.com/xenith-studios/ataxia/settings"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/xenith-studios/ataxia/engine"
+	"github.com/xenith-studios/ataxia/lua"
+	"github.com/xenith-studios/ataxia/settings"
 	//	log "log4go.googlecode.com/hg"
 )
 
@@ -36,7 +37,7 @@ Ataxia Engine comes with ABSOLUTELY NO WARRANTY; see COPYING for details.
 This is free software, and you are welcome to redistribute it
 under certain conditions; for details, see the file COPYING.
 
-`, ATAXIA_VERSION, ATAXIA_COMPILED)
+`, ataxiaVersion, ataxiaCompiled)
 
 	shutdown = make(chan bool)
 	// Setup the command-line flags

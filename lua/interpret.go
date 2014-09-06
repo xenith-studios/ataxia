@@ -6,8 +6,9 @@ import (
 	"log"
 	//		"fmt"
 	"errors"
-	golua "github.com/aarzilli/golua/lua"
 	"strings"
+
+	golua "github.com/aarzilli/golua/lua"
 )
 
 type Command struct {

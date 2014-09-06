@@ -2,13 +2,19 @@
 
 sh tools/release-edit.sh
 
-echo "Running go fmt..."
+echo "Running go fmt, go vet, and golint..."
 for dir in {engine,lua,game,handler,settings,utils}; do
     cd $dir;
     go fmt;
+    goimports -w .;
+    go vet *.go;
+    golint;
     cd ..;
 done
 go fmt
+goimports -w .
+go vet *.go
+golint
 
 echo "Building ataxia..."
 go build

@@ -2,8 +2,9 @@ package engine
 
 import (
 	"fmt"
-	golua "github.com/aarzilli/golua/lua"
 	"log"
+
+	golua "github.com/aarzilli/golua/lua"
 	//	"github.com/xenith-studios/ataxia/lua"
 	luar "github.com/stevedonovan/luar"
 )
