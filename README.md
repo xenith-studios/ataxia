@@ -2,7 +2,8 @@
 
 ## About ##
 
-Ataxia is a modern MUD engine written Go. It heavily utilizes concurrency and uses Lua for configuration and game logic.
+Ataxia is a modern MUD engine written Go. It heavily utilizes concurrency and uses Lua for commands
+and game logic.
 
 ## Install ##
 
