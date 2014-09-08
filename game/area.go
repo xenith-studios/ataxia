@@ -10,6 +10,7 @@ import (
 	"github.com/xenith-studios/ataxia/utils"
 )
 
+// MobileTemplate is the template data structure for mobs
 type MobileTemplate struct {
 	keywords    string
 	short_descr string
@@ -46,6 +47,7 @@ type MobileTemplate struct {
 	// mobprogs
 }
 
+// ObjectTemplate is the template data structure for objects
 type ObjectTemplate struct {
 	keywords    string
 	short_descr string
@@ -68,6 +70,7 @@ type ObjectTemplate struct {
 	extra_descr map[string]string
 }
 
+// RoomTemplate is the template data structure for rooms
 type RoomTemplate struct {
 	Name        string
 	Description string
@@ -83,6 +86,7 @@ type RoomTemplate struct {
 	Extra_descr map[string]string
 }
 
+// RoomExitTemplate is the template data structure for room exits
 type RoomExitTemplate struct {
 	Description string
 	Keywords    string
@@ -91,6 +95,7 @@ type RoomExitTemplate struct {
 	Vnum        int
 }
 
+// Room is a single room
 type Room struct {
 	ID          string
 	Vnum        string
@@ -99,33 +104,36 @@ type Room struct {
 	exits       map[int]*RoomExit
 }
 
+// NewRoom returns a new room
 func NewRoom() *Room {
-	o := Room{
+	return &Room{
 		ID:    utils.UUID(),
 		exits: make(map[int]*RoomExit),
 	}
-	return &o
 }
 
+// RoomExit is a single room exit
 type RoomExit struct {
 	ID          string
 	dest_vnum   string
 	destination *Room
 }
 
+// NewRoomExit returns a new room exit
 func NewRoomExit() *RoomExit {
-	o := RoomExit{
+	return &RoomExit{
 		ID: utils.UUID(),
 	}
-	return &o
 }
 
+// AreaHeader ##TODO
 type AreaHeader struct {
 	Credits  string
 	Name     string
 	Filename string
 }
 
+// AreaPrototype ##TODO
 type AreaPrototype struct {
 	Area          AreaHeader              `json:"AREA"`
 	RoomTemplates map[string]RoomTemplate `json:"ROOMS"`
@@ -137,6 +145,7 @@ type AreaPrototype struct {
 	// specials
 }
 
+// Area is a single area
 type Area struct {
 	ID        string
 	World     *World
@@ -144,15 +153,16 @@ type Area struct {
 	rooms     map[string]*Room
 }
 
+// NewArea returns a new area
 func NewArea(world *World) *Area {
-	o := Area{
+	return &Area{
 		ID:    utils.UUID(),
 		World: world,
 		rooms: make(map[string]*Room),
 	}
-	return &o
 }
 
+// Load an area from a file
 func (area *Area) Load(filename string) {
 	bytes, err := ioutil.ReadFile(filename)
 
@@ -171,6 +181,7 @@ func (area *Area) Load(filename string) {
 	log.Println("Loaded area", area.Prototype.Area.Name)
 }
 
+// Initialize a new area
 func (area *Area) Initialize() {
 	log.Println("Initializing area", area.Prototype.Area.Name)
 	// make instance of each room, add the exits

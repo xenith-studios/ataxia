@@ -10,6 +10,7 @@ import (
 	luar "github.com/stevedonovan/luar"
 )
 
+// PublishAccessors publishes Go functions into Lua
 func (world *World) PublishAccessors(state *golua.State) {
 	luar.Register(state, "", luar.Map{
 		"SendToAll":        world.SendToAll,
@@ -27,6 +28,7 @@ func (world *World) PublishAccessors(state *golua.State) {
 	})
 }
 
+// TestList does something ##TODO
 func TestList() map[string]string {
 	m := make(map[string]string)
 	m["1"] = "foo"
@@ -35,6 +37,7 @@ func TestList() map[string]string {
 	return m
 }
 
+// SendToAll sends to all connected characters
 func (world *World) SendToAll(msg string) {
 	msg = fmt.Sprintf("%s\n", msg)
 	for _, ch := range world.Characters {
@@ -46,9 +49,10 @@ func (world *World) SendToAll(msg string) {
 	}
 }
 
-func (world *World) SendToOthers(char_id string, msg string) {
+// SendToOthers sends to all other characters (aside from the specified character)
+func (world *World) SendToOthers(charID string, msg string) {
 	for id, ch := range world.Characters {
-		if id == char_id {
+		if id == charID {
 			continue
 		}
 
@@ -60,6 +64,7 @@ func (world *World) SendToOthers(char_id string, msg string) {
 	}
 }
 
+// SendToChar sends to the specified character
 func (world *World) SendToChar(id string, msg string) {
 	ch := world.Characters[id]
 	if ch != nil {
@@ -70,6 +75,7 @@ func (world *World) SendToChar(id string, msg string) {
 	}
 }
 
+// GetObjectData ##TODO
 func (world *World) GetObjectData(id string, field string) (ret string) {
 	if world.Characters[id] != nil {
 		return world.GetCharacterData(id, field)
@@ -83,6 +89,7 @@ func (world *World) GetObjectData(id string, field string) (ret string) {
 	return ""
 }
 
+// SetObjectData ##TODO
 func (world *World) SetObjectData(id string, field string, value string) {
 	if world.Characters[id] != nil {
 		world.SetCharacterData(id, field, value)
@@ -91,7 +98,8 @@ func (world *World) SetObjectData(id string, field string, value string) {
 	//	if world.RoomExits[id] != nil { world.SetRoomExitData(id, field, value) }
 }
 
-func (world *World) GetDictData(id string, field string, key string) (ret string) {
+// GetDictData ##TODO
+func (world *World) GetDictData(id string, field string, key string) string {
 	if world.Rooms[id] == nil {
 		return ""
 	}
@@ -108,7 +116,8 @@ func (world *World) GetDictData(id string, field string, key string) (ret string
 	return ""
 }
 
-func (world *World) GetCharacterData(id string, field string) (ret string) {
+// GetCharacterData ##TODO
+func (world *World) GetCharacterData(id string, field string) string {
 	ch := world.Characters[id]
 	if ch == nil {
 		return ""
@@ -120,9 +129,10 @@ func (world *World) GetCharacterData(id string, field string) (ret string) {
 	if field == "room" {
 		return ch.Room.ID
 	}
-	return
+	return ""
 }
 
+// SetCharacterData ##TODO
 func (world *World) SetCharacterData(id string, field string, value string) {
 	ch := world.Characters[id]
 	if ch == nil {
@@ -135,7 +145,8 @@ func (world *World) SetCharacterData(id string, field string, value string) {
 	}
 }
 
-func (world *World) GetRoomData(id string, field string) (ret string) {
+// GetRoomData ##TODO
+func (world *World) GetRoomData(id string, field string) string {
 	ch := world.Rooms[id]
 	if ch == nil {
 		return ""
@@ -150,8 +161,9 @@ func (world *World) GetRoomData(id string, field string) (ret string) {
 	return ""
 }
 
-func (world *World) GetRoomExit(room_id string, dir int) (ret string) {
-	room := world.Rooms[room_id]
+// GetRoomExit ##TODO
+func (world *World) GetRoomExit(roomID string, dir int) string {
+	room := world.Rooms[roomID]
 	if room == nil {
 		return ""
 	}
@@ -163,8 +175,9 @@ func (world *World) GetRoomExit(room_id string, dir int) (ret string) {
 	return ""
 }
 
-func (world *World) GetRoomExitData(exit_id string, field string) (ret string) {
-	exit := world.RoomExits[exit_id]
+// GetRoomExitData ##TODO
+func (world *World) GetRoomExitData(exitID string, field string) string {
+	exit := world.RoomExits[exitID]
 	if exit == nil {
 		return ""
 	}

@@ -44,7 +44,7 @@ type connection struct {
 }
 
 // NewAccount returns a pointer to a newly connected player
-func NewAccount(server *Server, conn *connection) (account *Account) {
+func NewAccount(server *Server, conn *connection) *Account {
 	return &Account{
 		ID:     utils.UUID(),
 		conn:   conn,
@@ -55,6 +55,7 @@ func NewAccount(server *Server, conn *connection) (account *Account) {
 	}
 }
 
+// Run is the main goroutine for players that handles login and sets up the input and output goroutines.
 func (account *Account) Run() {
 	buf := make([]byte, 1024)
 
@@ -130,6 +131,7 @@ func (account *Account) Run() {
 	}()
 }
 
+// Close handles closing all the relevant structures for the player, such as their socket.
 func (account *Account) Close() {
 	if account.conn.socket != nil {
 		account.conn.handler.Close()
@@ -141,6 +143,7 @@ func (account *Account) Close() {
 	}
 }
 
+// Interpret handles interpreting the player input
 func (account *Account) Interpret(input string) {
 	// two level interpeting, do it here (catch account commands), if not found, do it in character
 
@@ -151,6 +154,7 @@ func (account *Account) Interpret(input string) {
 	account.character.Write("> ")
 }
 
+// Write to the player
 func (account *Account) Write(buf []byte) (n int, err error) {
 	if account.conn.socket == nil {
 		return
@@ -159,6 +163,7 @@ func (account *Account) Write(buf []byte) (n int, err error) {
 	return account.conn.handler.Write(buf)
 }
 
+// Read from the player
 func (account *Account) Read(buf []byte) (n int, err error) {
 	if account.conn.socket == nil {
 		return

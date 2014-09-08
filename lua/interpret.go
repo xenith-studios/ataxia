@@ -11,26 +11,28 @@ import (
 	golua "github.com/aarzilli/golua/lua"
 )
 
+// Command defines a single command from a lua script
 type Command struct {
-	Script    string
-	Func_name string
-	Group     string
+	Script   string
+	FuncName string
+	Group    string
 }
 
+// Interpreter defines a single command interpreter
 type Interpreter struct {
 	commandList map[string]Command
 	luaState    *golua.State
 }
 
+// NewInterpreter returns a pointer to a new Interpreter
 func NewInterpreter(luaState *golua.State) *Interpreter {
-	interp := Interpreter{
+	return &Interpreter{
 		luaState: luaState,
 		// init stuff
 	}
-
-	return &interp
 }
 
+// LoadCommands loads all commands from the lua scripts as defined in the commands.json file
 func (interp *Interpreter) LoadCommands(commandFile string) {
 	bytes, err := ioutil.ReadFile(commandFile)
 	if err != nil {
@@ -58,7 +60,8 @@ func (interp *Interpreter) LoadCommands(commandFile string) {
 	log.Printf("Loaded %d commands.", len(interp.commandList))
 }
 
-func (interp *Interpreter) Interpret(str string, actor_id string) (err error) {
+// Interpret does something. ##TODO
+func (interp *Interpreter) Interpret(str string, actorID string) error {
 	parts := strings.SplitN(str, " ", 2) // need better split (other or multiple whitespace)
 	command, found := interp.commandList[parts[0]]
 
@@ -72,6 +75,6 @@ func (interp *Interpreter) Interpret(str string, actor_id string) (err error) {
 	}
 
 	// acquire lock on player here, to pass UID into lua script.
-	ExecuteInterpret(interp.luaState, command.Func_name, actor_id, args)
+	ExecuteInterpret(interp.luaState, command.FuncName, actorID, args)
 	return nil
 }

@@ -9,14 +9,15 @@ import (
 	luar "github.com/stevedonovan/luar"
 )
 
+// PublishAccessors registers exported functions into Lua (this is a weird place, should be in main?  or called from there?)
 func (server *Server) PublishAccessors(state *golua.State) {
-	// register exported functions (this is a weird place, should be in main?  or called from there?)
 	luar.Register(state, "", luar.Map{
 		"GetPlayerData": server.GetPlayerData,
 		"SendToPlayers": server.SendToPlayers,
 	})
 }
 
+// SendToPlayers sends to all connected players
 func (server *Server) SendToPlayers(msg string) {
 	for _, player := range server.PlayerList.players {
 		if player != nil {
@@ -26,10 +27,12 @@ func (server *Server) SendToPlayers(msg string) {
 	}
 }
 
-func (server *Server) GetPlayerData(id string, field string) (ret string) {
+// GetPlayerData returns a single field from a player account structure
+func (server *Server) GetPlayerData(id string, field string) string {
 	player := server.PlayerList.Get(id)
+	var ret string
 	if field == "name" { // replace this with reflection on struct tags?
 		ret = player.Name
 	}
-	return
+	return ret
 }

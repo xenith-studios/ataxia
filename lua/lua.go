@@ -7,8 +7,10 @@ import (
 	//	luar "github.com/stevedonovan/luar"
 )
 
+// MainState is the main LuaState for the engine
 var MainState *golua.State
 
+// NewState returns a newly initalized LuaState
 func NewState() *golua.State {
 	log.Println("Initializing Lua State")
 	st := golua.NewState()
@@ -16,30 +18,31 @@ func NewState() *golua.State {
 	return st
 }
 
+// Shutdown closes the LuaState
 func Shutdown(st *golua.State) {
 	if st != nil {
 		st.Close()
 	}
 }
 
-// simple command, one arg, no results
-func Execute(st *golua.State, func_name string, args string) {
-	st.GetField(golua.LUA_GLOBALSINDEX, func_name)
+// Execute executes a simple command, one arg, no results
+func Execute(st *golua.State, funcName string, args string) {
+	st.GetField(golua.LUA_GLOBALSINDEX, funcName)
 	st.PushString(args)
 	err := st.Call(1, 0)
 	if err != nil {
-		log.Println("Lua script error in '", func_name, "' with args '", args, "':", err)
+		log.Println("Lua script error in '", funcName, "' with args '", args, "':", err)
 	}
 }
 
-// two argument execute, passes executing player id
-func ExecuteInterpret(st *golua.State, func_name string, actor_id string, args string) {
+// ExecuteInterpret executes a two argument command, passes executing player id
+func ExecuteInterpret(st *golua.State, funcName string, actorID string, args string) {
 	st.GetField(golua.LUA_GLOBALSINDEX, "execute_character_action")
-	st.PushString(actor_id)
-	st.PushString(func_name)
+	st.PushString(actorID)
+	st.PushString(funcName)
 	st.PushString(args)
 	err := st.Call(3, 0)
 	if err != nil {
-		log.Println("Lua script error in '", func_name, "' with args '", args, "':", err)
+		log.Println("Lua script error in '", funcName, "' with args '", args, "':", err)
 	}
 }
