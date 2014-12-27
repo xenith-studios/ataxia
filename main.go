@@ -20,33 +20,34 @@ import (
 
 // Variables for the command-line flags and config file values
 var (
-	portFlag       *int
 	configFlag     *string
 	hotbootFlag    *bool
 	descriptorFlag *int
+	portFlag       *int
 	pidFlag        *string
 	chrootFlag     *string
-	daemonizeFlag  *bool
 )
 
 // Do all our basic initialization within the main package's init function.
 func init() {
 	fmt.Printf(`Ataxia Engine %s © 2009-2014, Xenith Studios (see AUTHORS)
 Compiled on %s
-Ataxia Engine comes with ABSOLUTELY NO WARRANTY; see COPYING for details.
+Ataxia Engine comes with ABSOLUTELY NO WARRANTY; see LICENSE for details.
 This is free software, and you are welcome to redistribute it
-under certain conditions; for details, see the file COPYING.
+under certain conditions; for details, see the file LICENSE.
 
 `, ataxiaVersion, ataxiaCompiled)
 
-	// Setup the command-line flags
-	portFlag = flag.Int("main_port", 9000, "Main port")
+	// Setup the command-line only flags
 	configFlag = flag.String("config", "data/config.ini", "Config file")
 	hotbootFlag = flag.Bool("hotboot", false, "Recover from hotboot")
 	descriptorFlag = flag.Int("descriptor", 0, "Hotboot descriptor")
+
+	// Setup the options that are defined in the config file (with defaults) that
+	// can be overrided via the command-line
+	portFlag = flag.Int("main_port", 9000, "Main port")
 	pidFlag = flag.String("pid_file", "data/ataxia.pid", "PID file")
 	chrootFlag = flag.String("chroot", "", "Chroot directory")
-	daemonizeFlag = flag.Bool("daemonize", false, "Daemonize")
 
 	// Parse the command line
 	flag.Parse()
@@ -64,15 +65,15 @@ under certain conditions; for details, see the file COPYING.
 	conf.ParseAll()
 	log.Println("Loaded config file.")
 
+	if !*hotbootFlag {
+		// If previous shutdown was not clean and we are not recovering from a hotboot, clean up state and environment if needed
+	}
+
 	// Initializations
 	// Environment
 	// Logging
 	// Queues
 	// Database
-
-	if !*hotbootFlag {
-		// If previous shutdown was not clean and we are not recovering from a hotboot, clean up state and environment if needed
-	}
 }
 
 // When hotboot is called, this function will save game and world state, save each player state, and save the player list.
@@ -133,16 +134,6 @@ func main() {
 			log.Fatalln("Failed to chdir:", err)
 		}
 		log.Println("Chrooted to", *chrootFlag)
-	}
-
-	// Drop priviledges if configured
-
-	// Daemonize if configured
-	if *daemonizeFlag {
-		log.Println("Daemonize functionality is currently disabled. Continuing as normal...")
-		// log.Println("Daemonizing...")
-		// Daemonize here
-		// TODO: This probably won't be doable until Go supports forking into the background.
 	}
 
 	// Write out pid file
