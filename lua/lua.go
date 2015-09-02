@@ -14,7 +14,6 @@ var MainState *golua.LState
 func NewState() *golua.LState {
 	log.Println("Initializing Lua State")
 	st := golua.NewState()
-	st.OpenLibs()
 	return st
 }
 

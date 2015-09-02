@@ -8,73 +8,31 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/rakyll/globalconf"
+	"github.com/naoina/toml"
 	"github.com/xenith-studios/ataxia/engine"
 	"github.com/xenith-studios/ataxia/lua"
 )
 
-// Variables for the command-line flags and config file values
+// tomlConfig is the struct for parsing the TOML config file
+type tomlConfig struct {
+	MainPort int
+	PidFile  string
+	Chroot   string
+}
+
+// Variables for the command-line flags and config struct
 var (
 	configFlag     *string
 	hotbootFlag    *bool
 	descriptorFlag *int
-	portFlag       *int
-	pidFlag        *string
-	chrootFlag     *string
+	config         tomlConfig
 )
-
-// Do all our basic initialization within the main package's init function.
-func init() {
-	fmt.Printf(`Ataxia Engine %s © 2009-2015, Xenith Studios (see AUTHORS)
-Compiled on %s
-Ataxia Engine comes with ABSOLUTELY NO WARRANTY; see LICENSE for details.
-This is free software, and you are welcome to redistribute it
-under certain conditions; for details, see the file LICENSE.
-
-`, ataxiaVersion, ataxiaCompiled)
-
-	// Setup the command-line only flags
-	configFlag = flag.String("config", "data/config.ini", "Config file")
-	hotbootFlag = flag.Bool("hotboot", false, "Recover from hotboot")
-	descriptorFlag = flag.Int("descriptor", 0, "Hotboot descriptor")
-
-	// Setup the options that are defined in the config file (with defaults) that
-	// can be overrided via the command-line
-	portFlag = flag.Int("main_port", 9000, "Main port")
-	pidFlag = flag.String("pid_file", "data/ataxia.pid", "PID file")
-	chrootFlag = flag.String("chroot", "", "Chroot directory")
-
-	// Parse the command line
-	flag.Parse()
-
-	// Initialize Lua
-	lua.MainState = lua.NewState()
-
-	// Read configuration file
-	conf, err := globalconf.NewWithOptions(&globalconf.Options{
-		Filename: *configFlag,
-	})
-	if err != nil {
-		log.Fatal("Error reading config file.")
-	}
-	conf.ParseAll()
-	log.Println("Loaded config file.")
-
-	if !*hotbootFlag {
-		// If previous shutdown was not clean and we are not recovering from a hotboot, clean up state and environment if needed
-	}
-
-	// Initializations
-	// Environment
-	// Logging
-	// Queues
-	// Database
-}
 
 // When hotboot is called, this function will save game and world state, save each player state, and save the player list.
 // Then it will do some cleanup (including closing the database) and call Exec to reload the running program.
@@ -95,12 +53,61 @@ func recover() {
 	log.Println("Recovering from hotboot.")
 }
 
-//
 func main() {
-	// At this point, basic initialization has completed
+	fmt.Printf(`Ataxia Engine %s © 2009-2015, Xenith Studios (see AUTHORS)
+Compiled on %s
+Ataxia Engine comes with ABSOLUTELY NO WARRANTY; see LICENSE for details.
+This is free software, and you are welcome to redistribute it
+under certain conditions; for details, see the file LICENSE.
+
+`, ataxiaVersion, ataxiaCompiled)
+
+	// Setup the command-line flags (with defaults)
+	configFlag = flag.String("config", "data/config.toml", "Config file")
+	hotbootFlag = flag.Bool("hotboot", false, "Recover from hotboot")
+	descriptorFlag = flag.Int("descriptor", 0, "Hotboot descriptor")
+
+	// Setup the flags that are defined in the config file but can be overriden
+	// via the command-line
+	flag.IntVar(&config.MainPort, "main_port", config.MainPort, "Main port")
+	flag.StringVar(&config.PidFile, "pid_file", config.PidFile, "PID file")
+	flag.StringVar(&config.Chroot, "chroot", config.Chroot, "Chroot directory")
+
+	// Parse the command line
+	flag.Parse()
+
+	// Initialize Lua
+	lua.MainState = lua.NewState()
+
+	// Read configuration file
+	f, err := os.Open(*configFlag)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+	buf, err := ioutil.ReadAll(f)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := toml.Unmarshal(buf, &config); err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Loaded config file.")
+
+	if !*hotbootFlag {
+		// If previous shutdown was not clean and we are not recovering from a hotboot, clean up state and environment if needed
+	}
+
+	// Initializations
+	// Environment
+	// Logging
+	// Queues
+	// Database
+
+	// Create a channel that the engine can send a message on when it shuts down, so we can cleanup in the main goroutine
 	shutdown := make(chan bool)
 
-	// Spin up a goroutine to handle signals
+	// Spin up a goroutine to catch and handle signals
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
 	go func() {
@@ -124,33 +131,33 @@ func main() {
 	}()
 
 	// If configured, chroot into the designated directory
-	if *chrootFlag != "" {
-		err := syscall.Chroot(*chrootFlag)
+	if config.Chroot != "" {
+		err := syscall.Chroot(config.Chroot)
 		if err != nil {
 			log.Fatalln("Failed to chroot:", err)
 		}
-		err = os.Chdir(*chrootFlag)
+		err = os.Chdir(config.Chroot)
 		if err != nil {
 			log.Fatalln("Failed to chdir:", err)
 		}
-		log.Println("Chrooted to", *chrootFlag)
+		log.Println("Chrooted to", config.Chroot)
 	}
 
 	// Write out pid file
 	pid := fmt.Sprint(os.Getpid())
-	pidfile, err := os.Create(*pidFlag)
+	pidfile, err := os.Create(config.PidFile)
 	if err != nil {
 		log.Fatalln("Error writing pid to file:", err)
 	}
 	pidfile.Write([]byte(pid))
-	log.Println("Wrote PID to", *pidFlag)
+	log.Println("Wrote PID to", config.PidFile)
 	pidfile.Close()
-	defer os.Remove(*pidFlag)
+	defer os.Remove(config.PidFile)
 
 	// Initialize the network
 	log.Println("Initializing network")
-	server := engine.NewServer(*portFlag, shutdown)
-	log.Println("Server running on port", *portFlag)
+	server := engine.NewServer(config.MainPort, shutdown)
+	log.Println("Server running on port", config.MainPort)
 
 	// at this point, server and world go functions have been published
 	// to Lua, we can load up some libraries for scripting action

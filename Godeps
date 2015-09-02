@@ -1,5 +1,5 @@
 github.com/xenith-studios/go-telnet
+github.com/naoina/toml
 github.com/nu7hatch/gouuid
-github.com/rakyll/globalconf
 github.com/yuin/gopher-lua
 github.com/layeh/gopher-luar
