@@ -4,17 +4,15 @@ import (
 	"fmt"
 	"log"
 
-	golua "github.com/aarzilli/golua/lua"
+	golua "github.com/yuin/gopher-lua"
 	//	"github.com/xenith-studios/ataxia/lua"
-	luar "github.com/stevedonovan/luar"
+	luar "github.com/layeh/gopher-luar"
 )
 
 // PublishAccessors registers exported functions into Lua (this is a weird place, should be in main?  or called from there?)
-func (server *Server) PublishAccessors(state *golua.State) {
-	luar.Register(state, "", luar.Map{
-		"GetPlayerData": server.GetPlayerData,
-		"SendToPlayers": server.SendToPlayers,
-	})
+func (server *Server) PublishAccessors(state *golua.LState) {
+	state.SetGlobal("GetPlayerData", luar.New(state, server.GetPlayerData))
+	state.SetGlobal("SendToPlayers", luar.New(state, server.SendToPlayers))
 }
 
 // SendToPlayers sends to all connected players

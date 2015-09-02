@@ -8,24 +8,24 @@ import (
 	"errors"
 	"strings"
 
-	golua "github.com/aarzilli/golua/lua"
+	golua "github.com/yuin/gopher-lua"
 )
 
 // Command defines a single command from a lua script
 type Command struct {
-	Script   string
-	FuncName string
-	Group    string
+	Script    string
+	Func_Name string
+	Group     string
 }
 
 // Interpreter defines a single command interpreter
 type Interpreter struct {
 	commandList map[string]Command
-	luaState    *golua.State
+	luaState    *golua.LState
 }
 
 // NewInterpreter returns a pointer to a new Interpreter
-func NewInterpreter(luaState *golua.State) *Interpreter {
+func NewInterpreter(luaState *golua.LState) *Interpreter {
 	return &Interpreter{
 		luaState: luaState,
 		// init stuff
@@ -75,6 +75,6 @@ func (interp *Interpreter) Interpret(str string, actorID string) error {
 	}
 
 	// acquire lock on player here, to pass UID into lua script.
-	ExecuteInterpret(interp.luaState, command.FuncName, actorID, args)
+	ExecuteInterpret(interp.luaState, command.Func_Name, actorID, args)
 	return nil
 }

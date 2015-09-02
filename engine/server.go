@@ -12,10 +12,10 @@ import (
 	"sync"
 	"time"
 	//	"container/list"
-	golua "github.com/aarzilli/golua/lua"
 	"github.com/xenith-studios/ataxia/game"
 	"github.com/xenith-studios/ataxia/handler"
 	"github.com/xenith-studios/ataxia/lua"
+	golua "github.com/yuin/gopher-lua"
 )
 
 // PlayerList maintains a list of connected player accounts
@@ -27,7 +27,7 @@ type PlayerList struct {
 // Server struct defines main engine data structure
 type Server struct {
 	socket     *net.TCPListener
-	luaState   *golua.State
+	luaState   *golua.LState
 	World      *game.World
 	PlayerList *PlayerList
 	In         chan string

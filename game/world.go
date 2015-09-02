@@ -1,8 +1,8 @@
 package game
 
 import (
-	golua "github.com/aarzilli/golua/lua"
 	"github.com/xenith-studios/ataxia/lua"
+	golua "github.com/yuin/gopher-lua"
 )
 
 // World defines a single world (an engine can define multiple worlds)
@@ -17,7 +17,7 @@ type World struct {
 }
 
 // NewWorld returns a new World
-func NewWorld(state *golua.State) *World {
+func NewWorld(state *golua.LState) *World {
 	return &World{
 		Interpreter: lua.NewInterpreter(state),
 		Areas:       make(map[string]*Area),

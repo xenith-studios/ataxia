@@ -3,29 +3,27 @@ package game
 import (
 	"fmt"
 
-	golua "github.com/aarzilli/golua/lua"
+	luar "github.com/layeh/gopher-luar"
+	golua "github.com/yuin/gopher-lua"
 	//	"log"
 	"strconv"
 	//	"github.com/xenith-studios/ataxia/lua"
-	luar "github.com/stevedonovan/luar"
 )
 
 // PublishAccessors publishes Go functions into Lua
-func (world *World) PublishAccessors(state *golua.State) {
-	luar.Register(state, "", luar.Map{
-		"SendToAll":        world.SendToAll,
-		"SendToOthers":     world.SendToOthers,
-		"SendToChar":       world.SendToChar,
-		"GetCharacterData": world.GetCharacterData,
-		"SetCharacterData": world.SetCharacterData,
-		"GetRoomData":      world.GetRoomData,
-		"GetRoomExit":      world.GetRoomExit,
-		"GetRoomExitData":  world.GetRoomExitData,
-		"GetObjectData":    world.GetObjectData,
-		"SetObjectData":    world.SetObjectData,
-		"GetDictData":      world.GetDictData,
-		"TestList":         TestList,
-	})
+func (world *World) PublishAccessors(state *golua.LState) {
+	state.SetGlobal("SendToAll", luar.New(state, world.SendToAll))
+	state.SetGlobal("SendToOthers", luar.New(state, world.SendToOthers))
+	state.SetGlobal("SendToChar", luar.New(state, world.SendToChar))
+	state.SetGlobal("GetCharacterData", luar.New(state, world.GetCharacterData))
+	state.SetGlobal("SetCharacterData", luar.New(state, world.SetCharacterData))
+	state.SetGlobal("GetRoomData", luar.New(state, world.GetRoomData))
+	state.SetGlobal("GetRoomExit", luar.New(state, world.GetRoomExit))
+	state.SetGlobal("GetRoomExitData", luar.New(state, world.GetRoomExitData))
+	state.SetGlobal("GetObjectData", luar.New(state, world.GetObjectData))
+	state.SetGlobal("SetObjectData", luar.New(state, world.SetObjectData))
+	state.SetGlobal("GetDictData", luar.New(state, world.GetDictData))
+	state.SetGlobal("TestList", luar.New(state, TestList))
 }
 
 // TestList does something ##TODO

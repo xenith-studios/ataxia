@@ -11,13 +11,15 @@ for dir in {engine,lua,game,handler,utils}; do
     golint;
     cd ..;
 done
+
+echo "Building ataxia..."
+cd cmd/ataxia
 go fmt
 goimports -w .
 go vet *.go
 golint
-
-echo "Building ataxia..."
 go build
-mv ataxia bin/
+cd ../../
+mv cmd/ataxia/ataxia bin/
 
 echo "Done. Binary found at bin/ataxia."
