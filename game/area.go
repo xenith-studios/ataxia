@@ -12,78 +12,78 @@ import (
 
 // MobileTemplate is the template data structure for mobs
 type MobileTemplate struct {
-	keywords    string
-	short_descr string
-	long_descr  string
-	description string
-	race        string
-	act_flags   string
-	aff_flags   string
-	alignment   int
-	group       string
-	level       int
-	hitroll     int
-	hp_dice     string
-	mana_dice   string
-	damage_dice string
-	damage_type string
-	ac_pierce   int
-	ac_bash     int
-	ac_slash    int
-	ac_exotic   int
-	off_flags   string
-	imm_flags   string
-	res_flags   string
-	vuln_flags  string
-	start_pos   string
-	default_pos string
-	sex         string
-	wealth      int
-	form_flags  string
-	part_flags  string
-	size        string
-	material    string
+	Keywords         string `json:"keywords"`
+	ShortDescription string `json:"short_descr"`
+	LongDescription  string `json:"long_descr"`
+	Description      string `json:"description"`
+	Race             string `json:"race"`
+	ActFlags         string `json:"act_flags"`
+	AffFlags         string `json:"aff_flags"`
+	Alignment        int    `json:"alignment"`
+	Group            string `json:"group"`
+	Level            int    `json:"level"`
+	Hitroll          int    `json:"hitroll"`
+	HPDice           string `json:"hp_dice"`
+	ManaDice         string `json:"mana_dice"`
+	DamageDice       string `json:"damage_dice"`
+	DamageType       string `json:"damage_type"`
+	ACPierce         int    `json:"ac_pierce"`
+	ACBash           int    `json:"ac_bash"`
+	ACSlash          int    `json:"ac_slash"`
+	ACExotic         int    `json:"ac_exotic"`
+	OffFlags         string `json:"off_flags"`
+	ImmFlags         string `json:"imm_flags"`
+	ResFlags         string `json:"res_flags"`
+	VulnFlags        string `json:"vuln_flags"`
+	StartPos         string `json:"start_pos"`
+	DefaultPos       string `json:"default_pos"`
+	Sex              string `json:"sex"`
+	Wealth           int    `json:"wealth"`
+	FormFlags        string `json:"form_flags"`
+	PartFlags        string `json:"part_flags"`
+	Size             string `json:"size"`
+	Material         string `json:"material"`
 	// remove_flags (hack)
 	// mobprogs
 }
 
 // ObjectTemplate is the template data structure for objects
 type ObjectTemplate struct {
-	keywords    string
-	short_descr string
-	description string
-	material    string
-	item_type   string
-	extra_flags string
-	wear_flags  string
-	value0      string
-	value1      string
-	value2      string
-	value3      string
-	value4      string
-	level       int
-	weight      int
-	cost        int
-	condition   string
+	Keywords         string `json:"keywords"`
+	ShortDescription string `json:"short_descr"`
+	Description      string `json:"description"`
+	Material         string `json:"material"`
+	ItemType         string `json:"item_type"`
+	ExtraFlags       string `json:"extra_flags"`
+	WearFlags        string `json:"wear_flags"`
+	Value0           string `json:"value0"`
+	Value1           string `json:"value1"`
+	Value2           string `json:"value2"`
+	Value3           string `json:"value3"`
+	Value4           string `json:"value4"`
+	Level            int    `json:"level"`
+	Weight           int    `json:"weight"`
+	Cost             int    `json:"cost"`
+	Condition        string `json:"condition"`
 	//	added_affects	[]map[string]int
 	//	added_flags		[]map[string]int (more complex, needs struct)
-	extra_descr map[string]string
+	ExtraDescription map[string]string `json:"extra_descr"`
 }
 
 // RoomTemplate is the template data structure for rooms
 type RoomTemplate struct {
-	Name        string
-	Description string
-	Tele_dest   int
-	Room_flags  string
-	Sector_type int
-	Heal_rate   int
-	Mana_rate   int
-	Clan        string
-	Guild       string
-	Owner       string
-	Exits       map[string]RoomExitTemplate
-	Extra_descr map[string]string
+	Name             string                      `json:"name"`
+	Description      string                      `json:"description"`
+	TeleDest         int                         `json:"tele_dest"`
+	RoomFlags        string                      `json:"room_flags"`
+	SectorType       int                         `json:"sector_type"`
+	HealRate         int                         `json:"heal_rate"`
+	ManaRate         int                         `json:"mana_rate"`
+	Clan             string                      `json:"Clan"`
+	Guild            string                      `json:"Guild"`
+	Owner            string                      `json:"Owner"`
+	Exits            map[string]RoomExitTemplate `json:"Exits"`
+	ExtraDescription map[string]string           `json:"extra_descr"`
 }
 
 // RoomExitTemplate is the template data structure for room exits
@@ -114,9 +114,9 @@ func NewRoom() *Room {
 
 // RoomExit is a single room exit
 type RoomExit struct {
-	ID          string
-	dest_vnum   string
-	destination *Room
+	ID          string `json:"id"`
+	DestVnum    string `json:"dest_vnum"`
+	Destination *Room  `json:"destination"`
 }
 
 // NewRoomExit returns a new room exit
@@ -190,10 +190,10 @@ func (area *Area) Initialize() {
 		room.Vnum = vnum
 		room.Name = roomTemplate.Name
 		room.Description = roomTemplate.Description
-		for dir_str, exitTemplate := range roomTemplate.Exits {
-			dir, _ := strconv.Atoi(dir_str)
+		for dirStr, exitTemplate := range roomTemplate.Exits {
+			dir, _ := strconv.Atoi(dirStr)
 			exit := NewRoomExit()
-			exit.dest_vnum = strconv.Itoa(exitTemplate.Vnum)
+			exit.DestVnum = strconv.Itoa(exitTemplate.Vnum)
 			room.exits[dir] = exit
 		}
 
@@ -204,12 +204,12 @@ func (area *Area) Initialize() {
 	// resolve exits to room pointers (for now, this is only intra-area)
 	for _, room := range area.rooms {
 		for dir, exit := range room.exits {
-			dest := area.World.LookupRoom(exit.dest_vnum)
+			dest := area.World.LookupRoom(exit.DestVnum)
 			if dest == nil {
-				log.Println("Couldn't find room destination for vnum", exit.dest_vnum)
+				log.Println("Couldn't find room destination for vnum", exit.DestVnum)
 				delete(room.exits, dir)
 			} else {
-				exit.destination = dest
+				exit.Destination = dest
 				area.World.AddRoomExit(exit)
 			}
 		}

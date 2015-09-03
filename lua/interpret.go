@@ -13,9 +13,9 @@ import (
 
 // Command defines a single command from a lua script
 type Command struct {
-	Script    string
-	Func_Name string
-	Group     string
+	Script   string `json:"script"`
+	FuncName string `json:"func_name"`
+	Group    string `json:"group"`
 }
 
 // Interpreter defines a single command interpreter
@@ -75,6 +75,6 @@ func (interp *Interpreter) Interpret(str string, actorID string) error {
 	}
 
 	// acquire lock on player here, to pass UID into lua script.
-	ExecuteInterpret(interp.luaState, command.Func_Name, actorID, args)
+	ExecuteInterpret(interp.luaState, command.FuncName, actorID, args)
 	return nil
 }

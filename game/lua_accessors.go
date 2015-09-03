@@ -181,11 +181,11 @@ func (world *World) GetRoomExitData(exitID string, field string) string {
 	}
 
 	if field == "destination" {
-		if exit.destination == nil {
+		if exit.Destination == nil {
 			return ""
 		}
 
-		return exit.destination.ID
+		return exit.Destination.ID
 	}
 	return ""
 }
