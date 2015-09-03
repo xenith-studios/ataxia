@@ -3,23 +3,13 @@
 sh tools/release-edit.sh
 
 echo "Running go fmt, go vet, and golint..."
-for dir in {engine,lua,game,handler,utils}; do
-    cd $dir;
-    go fmt;
-    goimports -w .;
-    go vet *.go;
-    golint;
-    cd ..;
-done
+go fmt ./...
+goimports -w .
+go vet ./...
+golint ./... | egrep -v "_string.go"
 
 echo "Building ataxia..."
-cd cmd/ataxia
-go fmt
-goimports -w .
-go vet *.go
-golint
-go build
-cd ../../
-mv cmd/ataxia/ataxia bin/
+go build ./cmd/ataxia
+mv ataxia bin/
 
 echo "Done. Binary found at bin/ataxia."
