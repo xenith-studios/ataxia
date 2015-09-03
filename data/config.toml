@@ -6,10 +6,6 @@ main_port = 9000
 # Location of the PID file
 pid_file = "data/ataxia.pid"
 
-# Set this option to a full directory path to have Ataxia chroot on startup.
-# This option requires starting Ataxia with root priviledges.
-# chroot = ""
-
 # Logging facility to use
 # Options are: stdout, file, syslog
 # log_facility = "stdout"

@@ -23,19 +23,21 @@ import (
 type tomlConfig struct {
 	MainPort int
 	PidFile  string
-	Chroot   string
 }
 
 // Variables for the command-line flags and config struct
 var (
-	configFlag     *string
-	hotbootFlag    *bool
-	descriptorFlag *int
+	configFlag     string
+	hotbootFlag    bool
+	descriptorFlag int
+	mainPortFlag   int
+	pidFlag        string
 	config         tomlConfig
 )
 
 // When hotboot is called, this function will save game and world state, save each player state, and save the player list.
 // Then it will do some cleanup (including closing the database) and call Exec to reload the running program.
+// TODO: This is currently a stub function to lay out future functionality.
 func hotboot() {
 	// Save game state
 	// Save socket and player list
@@ -49,6 +51,7 @@ func hotboot() {
 
 // When recovering from a hotboot, recover will restore the game and world state, restore the player list, and restore each player state.
 // Once that is done, it will then reconnect each active descriptor to the associated player.
+// TODO: This is currently a stub function to lay out future functionality.
 func recover() {
 	log.Println("Recovering from hotboot.")
 }
@@ -63,24 +66,20 @@ under certain conditions; for details, see the file LICENSE.
 `, ataxiaVersion, ataxiaCompiled)
 
 	// Setup the command-line flags (with defaults)
-	configFlag = flag.String("config", "data/config.toml", "Config file")
-	hotbootFlag = flag.Bool("hotboot", false, "Recover from hotboot")
-	descriptorFlag = flag.Int("descriptor", 0, "Hotboot descriptor")
+	flag.StringVar(&configFlag, "config", "data/config.toml", "Config file")
+	flag.BoolVar(&hotbootFlag, "hotboot", false, "Recover from hotboot")
+	flag.IntVar(&descriptorFlag, "descriptor", 0, "Hotboot descriptor")
 
 	// Setup the flags that are defined in the config file but can be overriden
 	// via the command-line
-	flag.IntVar(&config.MainPort, "main_port", config.MainPort, "Main port")
-	flag.StringVar(&config.PidFile, "pid_file", config.PidFile, "PID file")
-	flag.StringVar(&config.Chroot, "chroot", config.Chroot, "Chroot directory")
+	flag.IntVar(&mainPortFlag, "main_port", 0, "Main engine port")
+	flag.StringVar(&pidFlag, "pid_file", "data/ataxia.pid", "PID filename")
 
 	// Parse the command line
 	flag.Parse()
 
-	// Initialize Lua
-	lua.MainState = lua.NewState()
-
-	// Read configuration file
-	f, err := os.Open(*configFlag)
+	// Parse the config file into the config struct and override values if specified on the command line
+	f, err := os.Open(configFlag)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -92,9 +91,15 @@ under certain conditions; for details, see the file LICENSE.
 	if err := toml.Unmarshal(buf, &config); err != nil {
 		log.Fatal(err)
 	}
+	if mainPortFlag != 0 {
+		config.MainPort = mainPortFlag
+	}
+	if pidFlag != "" {
+		config.PidFile = pidFlag
+	}
 	log.Println("Loaded config file.")
 
-	if !*hotbootFlag {
+	if !hotbootFlag {
 		// If previous shutdown was not clean and we are not recovering from a hotboot, clean up state and environment if needed
 	}
 
@@ -130,19 +135,6 @@ under certain conditions; for details, see the file LICENSE.
 		}
 	}()
 
-	// If configured, chroot into the designated directory
-	if config.Chroot != "" {
-		err := syscall.Chroot(config.Chroot)
-		if err != nil {
-			log.Fatalln("Failed to chroot:", err)
-		}
-		err = os.Chdir(config.Chroot)
-		if err != nil {
-			log.Fatalln("Failed to chdir:", err)
-		}
-		log.Println("Chrooted to", config.Chroot)
-	}
-
 	// Write out pid file
 	pid := fmt.Sprint(os.Getpid())
 	pidfile, err := os.Create(config.PidFile)
@@ -154,10 +146,13 @@ under certain conditions; for details, see the file LICENSE.
 	pidfile.Close()
 	defer os.Remove(config.PidFile)
 
-	// Initialize the network
-	log.Println("Initializing network")
+	// Initialize Lua
+	lua.MainState = lua.NewState()
+
+	// Initialize the game engine and network
+	log.Println("Initializing the game engine")
 	server := engine.NewServer(config.MainPort, shutdown)
-	log.Println("Server running on port", config.MainPort)
+	log.Println("Engine is running on port", config.MainPort)
 
 	// at this point, server and world go functions have been published
 	// to Lua, we can load up some libraries for scripting action
@@ -195,7 +190,7 @@ under certain conditions; for details, see the file LICENSE.
 	server.InitializeWorld()
 
 	// Are we recovering from a hotboot?
-	if *hotbootFlag {
+	if hotbootFlag {
 		recover()
 	}
 
@@ -208,7 +203,7 @@ under certain conditions; for details, see the file LICENSE.
 	// Wait for the shutdown signal
 	<-shutdown
 
-	// Cleanup
+	// Signal everything to cleanly shut down
 	log.Println("Shutdown detected. Cleaning up....")
 	lua.Shutdown(lua.MainState)
 	server.Shutdown()

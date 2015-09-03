@@ -100,6 +100,7 @@ func (server *Server) Shutdown() {
 			}
 		}
 		server.socket.Close()
+		server.socket = nil
 	}
 }
 
@@ -155,7 +156,7 @@ func (server *Server) RemovePlayer(player *Account) {
 	server.PlayerList.Delete(player.Name)
 }
 
-// Write is a convenient function to satisfy the io.Writer interface
+// Write is a convenience function to satisfy the io.Writer interface
 func (server *Server) Write(buf []byte) (int, error) {
 	return 0, io.EOF
 }
