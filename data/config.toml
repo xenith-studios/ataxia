@@ -3,6 +3,12 @@
 # Port to run the main engine on
 main_port = 9000
 
+# Port to run the admin engine on
+admin_port = 9001
+
+# Port to run the online build engine on
+build_port = 9002
+
 # Location of the PID file
 pid_file = "data/ataxia.pid"
 
@@ -18,7 +24,7 @@ pid_file = "data/ataxia.pid"
 # email_facility = "none"
 
 # Location of the sendmail binary
-# sendmail = "/usr/sbin/sendmail"
+# sendmail_path = "/usr/sbin/sendmail"
 
 # Administrator's email address for notifications
 # admin_email = ""
@@ -30,14 +36,8 @@ pid_file = "data/ataxia.pid"
 # Options are: file, database
 # storage_facility = "file"
 
-# Location of the world data
-# world_data = "data/world/"
-
-# Location of account data
-# account_data = "data/accounts/"
-
-# Location of character data
-# character_data = "data/characters/"
+# Location of the data files on disk
+# data_path = "data/"
 
 # Max simultaenous connections total
 # max_clients = 1000

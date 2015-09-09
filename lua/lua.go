@@ -7,9 +7,6 @@ import (
 	//	luar "github.com/layeh/gopher-luar"
 )
 
-// MainState is the main LuaState for the engine
-var MainState *golua.LState
-
 // NewState returns a newly initalized LuaState
 func NewState() *golua.LState {
 	log.Println("Initializing Lua State")

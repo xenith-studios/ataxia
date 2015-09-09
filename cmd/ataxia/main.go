@@ -16,13 +16,28 @@ import (
 
 	"github.com/naoina/toml"
 	"github.com/xenith-studios/ataxia/engine"
-	"github.com/xenith-studios/ataxia/lua"
 )
 
 // tomlConfig is the struct for parsing the TOML config file
 type tomlConfig struct {
-	MainPort int
-	PidFile  string
+	MainPort          int
+	AdminPort         int
+	BuildPort         int
+	PidFile           string
+	LogFacility       string
+	LogFile           string
+	EmailFacility     string
+	SendmailPath      string
+	AdminEmail        string
+	AbuseEmail        string
+	StorageFacility   string
+	DataPath          string
+	MaxClients        int
+	MaxClientsPerHost int
+	AccountCreation   bool
+	CharsPerAccount   int
+	Autosave          int
+	BackupCharacters  bool
 }
 
 // Variables for the command-line flags and config struct
@@ -146,36 +161,10 @@ under certain conditions; for details, see the file LICENSE.
 	pidfile.Close()
 	defer os.Remove(config.PidFile)
 
-	// Initialize Lua
-	lua.MainState = lua.NewState()
-
 	// Initialize the game engine and network
 	log.Println("Initializing the game engine")
 	server := engine.NewServer(config.MainPort, shutdown)
 	log.Println("Engine is running on port", config.MainPort)
-
-	// at this point, server and world go functions have been published
-	// to Lua, we can load up some libraries for scripting action
-	err = lua.MainState.DoFile("scripts/interface/context.lua")
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = lua.MainState.DoFile("scripts/interface/accessors.lua")
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = lua.MainState.DoFile("scripts/interface/character.lua")
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = lua.MainState.DoFile("scripts/interface/room.lua")
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = lua.MainState.DoFile("scripts/commands/character_action.lua")
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// Initialize game state
 	// Load database
@@ -205,6 +194,5 @@ under certain conditions; for details, see the file LICENSE.
 
 	// Signal everything to cleanly shut down
 	log.Println("Shutdown detected. Cleaning up....")
-	lua.Shutdown(lua.MainState)
 	server.Shutdown()
 }

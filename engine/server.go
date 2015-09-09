@@ -68,17 +68,38 @@ func NewServer(port int, shutdown chan bool) *Server {
 		return nil
 	}
 
+	// Initiliate engine-local/goroutine-local LuaState
+	L := lua.NewState()
+
 	server := &Server{
-		luaState:   lua.MainState,
-		World:      game.NewWorld(lua.MainState),
+		luaState:   L,
+		World:      game.NewWorld(L),
 		PlayerList: NewPlayerList(),
 		socket:     listener,
 		shutdown:   shutdown,
 		In:         make(chan string, 1024),
 	}
 
-	server.PublishAccessors(server.luaState)
-	server.World.PublishAccessors(server.luaState)
+	server.PublishAccessors(L)
+	server.World.PublishAccessors(L)
+
+	// At this point, server and world go functions have been published
+	// to Lua, we can load up some libraries for scripting action
+	if err := L.DoFile("scripts/interface/context.lua"); err != nil {
+		log.Fatal(err)
+	}
+	if err := L.DoFile("scripts/interface/accessors.lua"); err != nil {
+		log.Fatal(err)
+	}
+	if err := L.DoFile("scripts/interface/character.lua"); err != nil {
+		log.Fatal(err)
+	}
+	if err := L.DoFile("scripts/interface/room.lua"); err != nil {
+		log.Fatal(err)
+	}
+	if err := L.DoFile("scripts/commands/character_action.lua"); err != nil {
+		log.Fatal(err)
+	}
 
 	return server
 }
@@ -101,6 +122,7 @@ func (server *Server) Shutdown() {
 		}
 		server.socket.Close()
 		server.socket = nil
+		lua.Shutdown(server.luaState)
 	}
 }
 
