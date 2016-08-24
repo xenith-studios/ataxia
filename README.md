@@ -2,37 +2,32 @@
 
 ## About ##
 
-Ataxia is a modern MUD engine written Go. It heavily utilizes concurrency and uses Lua for commands
-and game logic.
+Ataxia is a modern MUD engine written Rust. It utilizes concurrency to offload asynchronous tasks to separate
+threads (such as network I/O) and uses Lua for commands and game logic.
 
 ## Install ##
 
-First, install Go. Ataxia is written to work with the current Go1 release. See: http://golang.org/doc/install
+First, install Rust. Ataxia is written to work with Rust 1.11, but it should work with most 1.x versions.
+See: https://www.rust-lang.org/en-US/
 
-Second, you should install gpm and gvp:
+Once Rust is installed:
 
-    https://github.com/pote/gpm
-    https://github.com/pote/gvp
+    $ cargo build
 
-Once everything is installed:
+This will install all dependencies and build ataxia.
 
-    $ gpm install
-    $ ./build.sh
-
-This will install all dependencies and build ataxia, putting the binary in bin/
-
-Modify data/config.lua
+Modify data/config.toml
 
 Run Ataxia:
 
-    $ ./bin/ataxia
+    $ cargo run
 
 ## Directory Layout ##
 
     bin/
         The location of compiled binary files and helper scripts
     doc/
-        User and developer documentation (not godoc documentation)
+        User and developer documentation
     log/
         Location of stored log files
     tools/
@@ -44,6 +39,14 @@ Run Ataxia:
     scripts/
         On-disk storage location for all Lua scripts
     scripts/interface
-        Helper scripts that set up the data interface between Go and Lua
+        Helper scripts that set up the data interface between Rust and Lua
     scripts/command
         All in-game commands
+
+## License ##
+
+`ataxia` is primarily distributed under the terms of both the MIT License and
+the Apache License (Version 2.0), with portions covered by various BSD-like
+licenses. Previous versions of this code were licensed under the BSD three-clause license.
+
+See LICENSE-APACHE and LICENSE-MIT for details.

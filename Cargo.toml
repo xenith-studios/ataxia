@@ -1,0 +1,34 @@
+[package]
+name          = "ataxia"
+version       = "0.0.1-dev"
+license       = "MIT/Apache-2.0"
+authors       = ["Justin Seabrook-Rocha <xenith@xenith.org>"]
+description   = """
+A modern MUD engine using Lua for scripting and game logic
+"""
+homepage      = "https://github.com/xenith-studios/ataxia"
+repository    = "https://github.com/xenith-studios/ataxia"
+readme        = "README.md"
+exclude       = [
+  ".gitignore",
+  "test/**/*",
+]
+build         = "build.rs"
+
+[dependencies]
+env_logger = "0.3.4"
+log = "0.3.6"
+rand = "0.3.14"
+toml = "0.2"
+#tokio = { git = "https://github.com/tokio-rs/tokio" }
+#futures = { git = "https://github.com/alexcrichton/futures-rs" }
+#futures-io = { git = "https://github.com/alexcrichton/futures-rs" }
+#futures-mio = { git = "https://github.com/alexcrichton/futures-rs" }
+
+[dependencies.clap]
+version = "2.10.2"
+default-features = false
+features = [ "suggestions", "color", "wrap_help" ]
+
+[build-dependencies]
+time = "0.1.35"
