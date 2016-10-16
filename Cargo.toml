@@ -15,20 +15,26 @@ exclude       = [
 ]
 build         = "build.rs"
 
+#[lib]
+#name = "ataxia_engine"
+#path = "src/lib.rs"
+
+[[bin]]
+name = "ataxia"
+path = "src/main.rs"
+
 [dependencies]
-env_logger = "0.3.4"
+env_logger = "0.3.5"
 log = "0.3.6"
 rand = "0.3.14"
-toml = "0.2"
-#tokio = { git = "https://github.com/tokio-rs/tokio" }
-#futures = { git = "https://github.com/alexcrichton/futures-rs" }
-#futures-io = { git = "https://github.com/alexcrichton/futures-rs" }
-#futures-mio = { git = "https://github.com/alexcrichton/futures-rs" }
+toml = "0.2.1"
+rustc-serialize = "0.3.19"
+error-chain = "0.5"
 
 [dependencies.clap]
-version = "2.10.2"
+version = "2.12.1"
 default-features = false
-features = [ "suggestions", "color", "wrap_help" ]
+features = [ "color", "wrap_help" ]
 
 [build-dependencies]
 time = "0.1.35"

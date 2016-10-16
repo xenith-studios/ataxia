@@ -1,15 +1,22 @@
 #[macro_use]
+extern crate error_chain;
+#[macro_use]
 extern crate log;
 extern crate env_logger;
 extern crate clap;
+extern crate toml;
+extern crate rustc_serialize;
+
+mod config;
+mod errors;
 
 include!(concat!(env!("OUT_DIR"), "/package.rs"));
+
+use std::path::Path;
 
 use clap::{Arg, App};
 
 fn main() {
-    println!("Compiled on {}", ATAXIA_COMPILED);
-
     // Set up and parse the command-line arguments
     let matches = App::new("Ataxia Engine")
         .version(env!("CARGO_PKG_VERSION"))
@@ -27,15 +34,13 @@ fn main() {
             .short("l")
             .long("listen")
             .value_name("address:port")
-            .takes_value(true)
-            .default_value("*:9000"))
+            .takes_value(true))
         .arg(Arg::with_name("pid_file")
             .help("The filename to write the PID into")
             .short("p")
             .long("pid")
             .value_name("FILE")
-            .takes_value(true)
-            .default_value("data/ataxia.pid"))
+            .takes_value(true))
         .arg(Arg::with_name("hotboot")
             .help("Recover by performing a hotboot (you should never specify this manually!)")
             .short("H")
@@ -45,8 +50,7 @@ fn main() {
             .short("D")
             .long("descriptor")
             .takes_value(true)
-            .requires("hotboot")
-            .default_value("0"))
+            .requires("hotboot"))
         .arg(Arg::with_name("debug")
             .help("Enable debugging output")
             .short("d")
@@ -57,11 +61,19 @@ fn main() {
             .multiple(true))
         .get_matches();
 
-    // Load settings from config file
-    if let Some(c) = matches.value_of("config") {
-        println!("Value for -c: {}", c);
+    // Initialize logging subsystem
+    // TODO: Repalce with a propper logging system.
+    env_logger::init().expect("Failed to initialize logging.");
 
-    }
+    info!("Loading Ataxia Engine, compiled on {}", ATAXIA_COMPILED);
+
+    // Load settings from config file
+    let config_path = Path::new(matches.value_of("config")
+        .expect("Unable to specify config file path."));
+    info!("Loading configuration from: {:?}", config_path);
+    let config = config::Config::read_config(config_path)
+        .expect("Unable to load the configuration.");
+
     // Clean up from previous unclean shutdown if necessary (not hotbooting)
     //   Delete PID file if it exists
 
@@ -70,8 +82,6 @@ fn main() {
 
     // Initialize
     //   Seed rand
-    //   Logging
-    env_logger::init().expect("Failed to initialize logging.");
     //   Environment
     //   Queues
     //   Database
@@ -108,13 +118,14 @@ fn main() {
 // cleanup (including closing the database) and call Exec to reload the
 // running program.
 // TODO: This is currently a stub function to lay out future functionality.
-// fn hotboot() {
-// Save game state
-// Save socket and player list
-// Cleanup and close database connection
-// Exec to reload
-// If we got here, something went wrong. Exit with error.
-// }
+fn hotboot() {
+    // Save game state
+    // Save socket and player list
+    // Cleanup and close database connection
+    // Exec to reload
+    // If we got here, something went wrong. Exit with error.
+    unimplemented!()
+}
 
 
 // When recovering from a hotboot, recover will restore the game and world state,
@@ -123,4 +134,5 @@ fn main() {
 // TODO: This is currently a stub function to lay out future functionality.
 fn recover() {
     // Fill out functionality
+    unimplemented!()
 }

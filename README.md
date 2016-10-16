@@ -24,6 +24,8 @@ Run Ataxia:
 
 ## Directory Layout ##
 
+    src/
+        All source code
     bin/
         The location of compiled binary files and helper scripts
     doc/
