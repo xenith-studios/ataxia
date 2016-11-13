@@ -23,6 +23,10 @@ build         = "build.rs"
 name = "ataxia"
 path = "src/main.rs"
 
+[[bin]]
+name = "ataxia-proxy"
+path = "src/proxy.rs"
+
 [dependencies]
 env_logger = "0.3.5"
 log = "0.3.6"

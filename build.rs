@@ -7,12 +7,13 @@ use std::path::Path;
 
 fn main() {
     let out_dir = env::var("OUT_DIR").unwrap();
-    let dest_path = Path::new(&out_dir).join("package.rs");
+    let dest_path = Path::new(&out_dir).join("version.rs");
     let mut f = File::create(&dest_path).unwrap();
 
-	let output: String = format!("
+    let output: String = format!("
 		static ATAXIA_COMPILED: &'static str = \"{}\";
-	", time::now().rfc822());
+	",
+                                 time::now().rfc822());
 
     f.write_all(output.as_bytes()).unwrap();
 }

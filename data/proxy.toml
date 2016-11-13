@@ -1,7 +1,16 @@
 # Ataxia Configuration file
 
+# Port to run the main engine on
+main_port = 9000
+
+# Port to run the admin engine on
+admin_port = 9001
+
+# Port to run the online build engine on
+build_port = 9002
+
 # Location of the PID file
-pid_file = "data/ataxia.pid"
+pid_file = "data/ataxia-proxy.pid"
 
 # Logging facility to use
 # Options are: stdout, file, syslog
@@ -30,11 +39,18 @@ pid_file = "data/ataxia.pid"
 # Location of the data files on disk
 # data_path = "data/"
 
+# Max simultaenous connections total
+# max_clients = 1000
+
+# Max simultaneous connections per IP
+# max_clients_per_host = 5
+
 # Allow creation of new accounts
 # account_creation = true
 
-# Autosave interval in minutes
-# autosave = 15
+# Maximum number of characters per account
+# chars_per_account = 3
 
-# Allow character backups
-# backup_characters = true
+# Maximum number of simultaneous characters online per account (multiplaying support)
+# active_per_account = 1
+
