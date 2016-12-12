@@ -1,5 +1,5 @@
 *.swp
-bin/ataxia
+bin/ataxia*
 *.pid
 *~
 

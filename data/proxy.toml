@@ -9,6 +9,9 @@ admin_port = 9001
 # Port to run the online build engine on
 build_port = 9002
 
+# Server address of the main engine process
+engine_address = "127.0.0.1:9005"
+
 # Location of the PID file
 pid_file = "data/ataxia-proxy.pid"
 

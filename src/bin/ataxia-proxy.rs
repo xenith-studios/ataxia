@@ -1,20 +1,23 @@
 #[macro_use]
 extern crate error_chain;
 #[macro_use]
+extern crate slog;
+extern crate slog_term;
+extern crate slog_stdlog;
+#[macro_use]
 extern crate log;
-extern crate env_logger;
 extern crate clap;
 extern crate toml;
 extern crate rustc_serialize;
 
-mod config;
-mod errors;
+extern crate ataxia;
 
 include!(concat!(env!("OUT_DIR"), "/version.rs"));
 
 use std::path::Path;
 
 use clap::{Arg, App};
+use slog::DrainExt;
 
 fn main() {
     // Set up and parse the command-line arguments
@@ -52,9 +55,10 @@ fn main() {
         .get_matches();
 
     // Initialize logging subsystem
-    // TODO: Repalce with a propper logging system.
-    env_logger::init().expect("Failed to initialize logging.");
-
+    // TODO: Implement file logging
+    let drain = slog_term::streamer().build().fuse();
+    let root_logger = slog::Logger::root(drain, o!("version" => env!("CARGO_PKG_VERSION")));
+    slog_stdlog::set_logger(root_logger).expect("Failed to initalize logging.");
     info!("Loading Ataxia Engine Proxy Daemon, compiled on {}",
           ATAXIA_COMPILED);
 
@@ -62,11 +66,10 @@ fn main() {
     let config_path = Path::new(matches.value_of("config")
         .expect("Unable to specify config file path."));
     info!("Loading configuration from: {:?}", config_path);
-    let config = config::Config::read_config(config_path)
+    let config = ataxia::proxy::config::Config::read_config(config_path)
         .expect("Unable to load the configuration.");
 
     // Clean up from previous unclean shutdown if necessary
-    //   Delete PID file if it exists
 
     // Set up callbacks for signals
     // Write PID file
@@ -79,6 +82,7 @@ fn main() {
 
     // Initialize engine
     //   Load database
+
 
     // Initialize networking event loop in dedicated thread
     // Spawn other threads?

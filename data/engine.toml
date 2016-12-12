@@ -1,5 +1,8 @@
 # Ataxia Configuration file
 
+# Listen address for the proxy process
+listen_addr = "127.0.0.1:9005"
+
 # Location of the PID file
 pid_file = "data/ataxia.pid"
 
