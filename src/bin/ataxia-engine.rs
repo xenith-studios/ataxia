@@ -1,9 +1,6 @@
 #[macro_use]
 extern crate slog;
 extern crate slog_term;
-extern crate slog_stdlog;
-#[macro_use]
-extern crate log;
 extern crate clap;
 
 extern crate ataxia;
@@ -13,7 +10,7 @@ include!(concat!(env!("OUT_DIR"), "/version.rs"));
 use std::path::Path;
 
 use clap::{Arg, App};
-use slog::DrainExt;
+use slog::Drain;
 
 fn main() {
     // Set up and parse the command-line arguments
@@ -27,7 +24,7 @@ fn main() {
             .long("config")
             .value_name("FILE")
             .takes_value(true)
-            .default_value("data/engine.toml"))
+            .default_value("data/ataxia.toml"))
         .arg(Arg::with_name("listen_addr")
             .help("Listen address and port")
             .short("l")
@@ -52,16 +49,18 @@ fn main() {
 
     // Initialize logging subsystem
     // TODO: Implement file logging
-    let drain = slog_term::streamer().build().fuse();
+    let decorator = slog_term::PlainSyncDecorator::new(std::io::stdout());
+    let drain = slog_term::FullFormat::new(decorator).build().fuse();
     let root_logger = slog::Logger::root(drain, o!("version" => env!("CARGO_PKG_VERSION")));
-    slog_stdlog::set_logger(root_logger).expect("Failed to initalize logging.");
-    info!("Loading Ataxia Engine, compiled on {}", ATAXIA_COMPILED);
+    info!(root_logger,
+          "Loading Ataxia Engine, compiled on {}",
+          ATAXIA_COMPILED);
 
     // Load settings from config file
     let config_path = Path::new(matches.value_of("config")
         .expect("Unable to specify config file path."));
-    info!("Loading configuration from: {:?}", config_path);
-    let config = ataxia::engine::config::Config::read_config(config_path)
+    info!(root_logger, "Loading configuration from: {:?}", config_path);
+    let config = ataxia::config::Config::read_config(config_path)
         .expect("Unable to load the configuration.");
 
     // Clean up from previous unclean shutdown if necessary

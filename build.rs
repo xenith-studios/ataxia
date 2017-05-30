@@ -11,8 +11,8 @@ fn main() {
     let mut f = File::create(&dest_path).unwrap();
 
     let output: String = format!("
-		static ATAXIA_COMPILED: &'static str = \"{}\";
-	",
+        static ATAXIA_COMPILED: &'static str = \"{}\";
+    ",
                                  time::now().rfc822());
 
     f.write_all(output.as_bytes()).unwrap();

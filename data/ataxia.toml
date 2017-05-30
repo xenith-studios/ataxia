@@ -12,8 +12,14 @@ build_port = 9002
 # Server address of the main engine process
 engine_address = "127.0.0.1:9005"
 
+# Listen address for the proxy process
+listen_addr = "127.0.0.1:9005"
+
+# Location of the proxy PID file
+proxy_pid_file = "data/ataxia-proxy.pid"
+
 # Location of the PID file
-pid_file = "data/ataxia-proxy.pid"
+engine_pid_file = "data/ataxia.pid"
 
 # Logging facility to use
 # Options are: stdout, file, syslog
@@ -57,3 +63,8 @@ pid_file = "data/ataxia-proxy.pid"
 # Maximum number of simultaneous characters online per account (multiplaying support)
 # active_per_account = 1
 
+# Autosave interval in minutes
+# autosave = 15
+
+# Allow character backups
+# backup_characters = true

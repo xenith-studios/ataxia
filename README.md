@@ -2,25 +2,26 @@
 
 ## About ##
 
-Ataxia is a modern MUD engine written Rust. It utilizes concurrency to offload asynchronous tasks to separate
-threads (such as network I/O) and uses Lua for commands and game logic.
+Ataxia is a modern MUD engine written in Rust. It utilizes asynchronous I/O via Futures to offload network
+tasks to separate threads and uses Lua for commands and game logic.
 
 ## Install ##
 
-First, install Rust. Ataxia is written to work with Rust 1.11, but it should work with most 1.x versions.
+First, install Rust. Ataxia is written to work with Rust 1.16, but it should work with most 1.x versions.
 See: https://www.rust-lang.org/en-US/
 
 Once Rust is installed:
 
-    $ cargo build
+    $ make
 
 This will install all dependencies and build ataxia.
 
-Modify data/config.toml
+Modify data/ataxia.toml
 
 Run Ataxia:
 
-    $ cargo run
+    $ cargo run --bin ataxia-proxy
+    $ cargo run --bin ataxia-engine
 
 ## Directory Layout ##
 
