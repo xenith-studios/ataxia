@@ -7,14 +7,14 @@ tasks to separate threads and uses Lua for commands and game logic.
 
 ## Install ##
 
-First, install Rust. Ataxia is written to work with Rust 1.16, but it should work with most 1.x versions.
+First, install Rust. Ataxia is written to work with Rust 1.19, but it should work with most 1.x versions.
 See: https://www.rust-lang.org/en-US/
 
 Once Rust is installed:
 
     $ make
 
-This will install all dependencies and build ataxia.
+This will install all dependencies and build ataxia. (Make will automatically call cargo build.)
 
 Modify data/ataxia.toml
 
