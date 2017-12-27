@@ -7,20 +7,26 @@ tasks to separate threads and uses Lua for commands and game logic.
 
 ## Install ##
 
-First, install Rust. Ataxia is written to work with Rust 1.19, but it should work with most 1.x versions.
+First, install Rust. Ataxia is written to work with Rust 1.22, but it should work with most 1.x versions.
 See: https://www.rust-lang.org/en-US/
 
-Once Rust is installed:
+The network proxy is written in Go. It is written to work with Go 1.9, but it should work with most 1.x versions.
+See: https://golang.org/
+
+You will also want to install Dep, Go's upcoming dependency management tool.
+See: https://github.com/golang/dep
+
+Once Rust and Go are installed:
 
     $ make
 
-This will install all dependencies and build ataxia. (Make will automatically call cargo build.)
+This will install all dependencies and build ataxia. (Make will automatically call cargo build and go build.)
 
-Modify data/ataxia.toml
+Modify data/ataxia.toml and data/proxy.toml
 
 Run Ataxia:
 
-    $ cargo run --bin ataxia-proxy
+    $ bin/ataxia-proxy &
     $ cargo run --bin ataxia-engine
 
 ## Directory Layout ##

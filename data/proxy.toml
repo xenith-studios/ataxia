@@ -1,0 +1,61 @@
+# Ataxia Configuration file
+
+# Port to run the main engine on
+main_port = 9000
+
+# Port to run the admin engine on
+admin_port = 9001
+
+# Port to run the online build engine on
+build_port = 9002
+
+# Location of the PID file
+pid_file = "data/ataxia-proxy.pid"
+
+# Logging facility to use
+# Options are: stdout, file, syslog
+# log_facility = "stdout"
+
+# Location of the default log file for the file logger
+# log_file = "log/proxy.log"
+
+# Email facility to use
+# Options are: none, smtp, sendmail
+# email_facility = "none"
+
+# Location of the sendmail binary
+# sendmail_path = "/usr/sbin/sendmail"
+
+# Administrator's email address for notifications
+# admin_email = ""
+
+# Email address to send abuse notifications
+# abuse_email = ""
+
+# Storage facility to use
+# Options are: file, database
+# storage_facility = "file"
+
+# Location of the data files on disk
+# data_path = "data/"
+
+# Max simultaenous connections total
+# max_clients = 1000
+
+# Max simultaneous connections per IP
+# max_clients_per_host = 5
+
+# Allow creation of new accounts
+# account_creation = true
+
+# Maximum number of characters per account
+# chars_per_account = 3
+
+# Maximum number of simultaneous characters online per account (multiplaying support)
+# active_per_account = 1
+
+# Autosave interval in minutes
+# autosave = 15
+
+# Allow character backups
+# backup_characters = true

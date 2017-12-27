@@ -7,7 +7,7 @@ use std::path::Path;
 
 use toml;
 
-use ::errors::{ConfigResult, ConfigResultExt};
+use errors::{ConfigResult, ConfigResultExt};
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
