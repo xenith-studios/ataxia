@@ -1,5 +1,6 @@
 *.swp
 bin/ataxia*
+cmd/*/package.go
 *.pid
 *~
 
