@@ -24,7 +24,7 @@ fn main() {
             .long("config")
             .value_name("FILE")
             .takes_value(true)
-            .default_value("data/ataxia.toml"))
+            .default_value("data/engine.toml"))
         .arg(Arg::with_name("listen_addr")
             .help("Listen address and port")
             .short("l")

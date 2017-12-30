@@ -41,11 +41,13 @@ clean:
 	rm -f bin/ataxia-{engine,proxy}
 
 check:
+	$(GO) build github.com/xenith-studios/ataxia/cmd/proxy
+	rm -f proxy
 	$(CARGO) $(CARGO_OPTS) check
 
 test:
-	$(CARGO) $(CARGO_OPTS) test
 	$(GO) test github.com/xenith-studios/ataxia/{cmd/proxy,engine,handler,utils}
+	$(CARGO) $(CARGO_OPTS) test
 
 bench:
 	$(CARGO) $(CARGO_OPTS) bench

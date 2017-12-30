@@ -13,3 +13,6 @@ cmd/*/package.go
 
 # Ignore the rust target directory
 target
+
+# Ignore the Go vendor directory
+vendor/
