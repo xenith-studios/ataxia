@@ -9,10 +9,6 @@ A modern MUD engine using Lua for scripting and game logic
 homepage      = "https://github.com/xenith-studios/ataxia"
 repository    = "https://github.com/xenith-studios/ataxia"
 readme        = "README.md"
-exclude       = [
-  ".gitignore",
-  "test/**/*",
-]
 build         = "build.rs"
 
 [lib]

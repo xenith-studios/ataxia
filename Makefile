@@ -1,4 +1,5 @@
 CARGO = cargo
+GO = go
 
 CARGO_OPTS =
 
@@ -6,29 +7,34 @@ all: build-quick
 
 full: build-full doc
 
+proxy: lint-proxy build-proxy
+
+engine: lint-engine build-engine
+
 build-quick: build-proxy build-engine
+
+build-full: lint-proxy build-proxy lint-engine build-engine
 
 build-proxy:
 	sh tools/release-edit.sh
-	go build github.com/xenith-studios/ataxia/cmd/ataxia-proxy
-	mv ataxia-proxy bin/
+	$(GO) build github.com/xenith-studios/ataxia/cmd/proxy
+	mv proxy bin/ataxia-proxy
 
 build-engine:
-	$(CARGO) $(CARGO_OPTS) build --bin ataxia-engine
-	cp -f target/debug/ataxia-engine bin/
+	$(CARGO) $(CARGO_OPTS) build --bin engine
+	cp -f target/debug/engine bin/ataxia-engine
 
-build-full: full-build-proxy build-proxy full-build-engine build-engine
-
-full-build-proxy:
-	#dep ensure
-	go fmt ./...
+lint-proxy:
 	goimports -w .
-	go vet ./...
-	golint ./... #| egrep -v "_string.go"
+	$(GO) vet ./...
+	golint {cmd/proxy,engine,handler,utils}
 
-full-build-engine:
+lint-engine:
 	$(CARGO) +nightly-2017-12-20 fmt
 	env CARGO_TARGET_DIR=./target/clippy $(CARGO) +nightly clippy
+
+bootstrap:
+	dep ensure
 
 clean:
 	$(CARGO) $(CARGO_OPTS) clean
@@ -39,6 +45,7 @@ check:
 
 test:
 	$(CARGO) $(CARGO_OPTS) test
+	$(GO) test github.com/xenith-studios/ataxia/{cmd/proxy,engine,handler,utils}
 
 bench:
 	$(CARGO) $(CARGO_OPTS) bench

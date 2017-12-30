@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-RELFILE="cmd/ataxia-proxy/package.go"
+RELFILE="cmd/proxy/package.go"
 
 if [[ ! -d ".git" ]]; then
   echo "Must be run at the root of the git repository (.git directory not found)"
