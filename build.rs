@@ -10,10 +10,12 @@ fn main() {
     let dest_path = Path::new(&out_dir).join("version.rs");
     let mut f = File::create(&dest_path).unwrap();
 
-    let output: String = format!("
+    let output: String = format!(
+        "
         static ATAXIA_COMPILED: &'static str = \"{}\";
     ",
-                                 time::now().rfc822());
+        time::now().rfc822()
+    );
 
     f.write_all(output.as_bytes()).unwrap();
 }

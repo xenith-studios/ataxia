@@ -30,7 +30,7 @@ lint-proxy:
 	golint {cmd/proxy,engine,handler,utils}
 
 lint-engine:
-	$(CARGO) +nightly-2017-12-20 fmt
+	$(CARGO) +nightly fmt
 	env CARGO_TARGET_DIR=./target/clippy $(CARGO) +nightly clippy
 
 bootstrap:
