@@ -27,7 +27,7 @@ build-engine:
 lint-proxy:
 	goimports -w .
 	$(GO) vet ./...
-	golint {cmd/proxy,engine,handler,utils}
+	golint {cmd/proxy,internal/*}
 
 lint-engine:
 	$(CARGO) +nightly fmt
@@ -46,7 +46,7 @@ check:
 	$(CARGO) $(CARGO_OPTS) check
 
 test:
-	$(GO) test github.com/xenith-studios/ataxia/{cmd/proxy,engine,handler,utils}
+	$(GO) test ./...
 	$(CARGO) $(CARGO_OPTS) test
 
 bench:

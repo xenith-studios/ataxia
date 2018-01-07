@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 	//	"container/list"
-	"github.com/xenith-studios/ataxia/handler"
+	"github.com/xenith-studios/ataxia/internal/handler"
 )
 
 // PlayerList maintains a list of connected player accounts

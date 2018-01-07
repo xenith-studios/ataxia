@@ -15,7 +15,7 @@ import (
 	"syscall"
 
 	"github.com/naoina/toml"
-	"github.com/xenith-studios/ataxia/engine"
+	"github.com/xenith-studios/ataxia/internal/engine"
 )
 
 // tomlConfig is the struct for parsing the TOML config file

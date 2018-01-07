@@ -65,7 +65,7 @@ If you would also like to develop Ataxia, you will need to install the following
     - goimports
     - golint
 - Rust
-    - rustfmt (This will be part of cargo, but it is currently in heavy flux)
+    - rustfmt (This will eventually be installed as part of cargo by rustup, but it is currently in heavy flux)
     - clippy (It currently only works with nightly, so you will have to install the nightly toolchain alongside the stable toolchain with rustup)
 
 To perform a full compile, including all lints:
@@ -86,20 +86,18 @@ $ make test
         All Rust source code for the engine
     cmd/
         Go binary code for the proxy
-    engine/, handler/, utils/
-        Go library code for the proxy
+    internal/
+        Go internal library code for the proxy
     bin/
-        The location of compiled binary files and helper scripts
-    doc/
+        The location of compiled binary files and scripts for running the engine
+    docs/
         User and developer documentation
     log/
         Location of stored log files
     tools/
         Helper scripts and tools for developers
     data/
-        On-disk data files, such as config files
-    data/world
-        World data files
+        On-disk data files, such as config files and world files
     scripts/
         On-disk storage location for all Lua scripts
     scripts/interface
