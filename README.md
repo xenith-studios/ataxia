@@ -92,7 +92,7 @@ $ make test
         The location of compiled binary files and scripts for running the engine
     docs/
         User and developer documentation
-    log/
+    logs/
         Location of stored log files
     tools/
         Helper scripts and tools for developers

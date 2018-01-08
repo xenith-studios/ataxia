@@ -1,7 +1,7 @@
 /*
-Ataxia Mud Engine
+Ataxia MUD Engine Network Proxy
 
-Copyright © 2009-2015 Xenith Studios
+Copyright © 2009-2017 Xenith Studios
 */
 package main
 

@@ -12,11 +12,9 @@ use errors::{ConfigResult, ConfigResultExt};
 #[derive(Deserialize, Debug)]
 pub struct Config {
     main_port: u16,
-    admin_port: u16,
-    build_port: u16,
-    proxy_pid_file: String,
+    proxy_addr: String,
     engine_pid_file: String,
-    listen_addr: String,
+    engine_log_file: String,
 }
 
 impl Config {
@@ -32,7 +30,15 @@ impl Config {
         self.main_port
     }
 
-    pub fn get_listen_addr(&self) -> &str {
-        self.listen_addr.as_ref()
+    pub fn get_proxy_addr(&self) -> &str {
+        self.proxy_addr.as_ref()
+    }
+
+    pub fn get_pid_file(&self) -> &str {
+        self.engine_pid_file.as_ref()
+    }
+
+    pub fn get_log_file(&self) -> &str {
+        self.engine_log_file.as_ref()
     }
 }

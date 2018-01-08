@@ -1,16 +1,17 @@
 extern crate clap;
 #[macro_use]
-extern crate slog;
-extern crate slog_term;
+extern crate log;
+extern crate simplelog;
 
 extern crate ataxia;
 
 include!(concat!(env!("OUT_DIR"), "/version.rs"));
 
 use std::path::Path;
+use std::fs::File;
 
 use clap::{App, Arg};
-use slog::Drain;
+use simplelog::*;
 
 fn main() {
     // Set up and parse the command-line arguments
@@ -25,11 +26,11 @@ fn main() {
                 .long("config")
                 .value_name("FILE")
                 .takes_value(true)
-                .default_value("data/engine.toml"),
+                .default_value("data/ataxia.toml"),
         )
         .arg(
-            Arg::with_name("listen_addr")
-                .help("Listen address and port")
+            Arg::with_name("proxy_addr")
+                .help("Listen address and port of the proxy")
                 .short("l")
                 .long("listen")
                 .value_name("address:port")
@@ -46,26 +47,24 @@ fn main() {
         .arg(
             Arg::with_name("debug")
                 .help("Enable debugging output")
-                .short("d")
-                .multiple(true),
+                .short("d"),
         )
         .arg(
             Arg::with_name("verbose")
                 .help("Enable verbose output")
-                .short("v")
-                .multiple(true),
+                .short("v"),
         )
         .get_matches();
 
-    // Initialize logging subsystem
-    // TODO: Implement file logging
-    let decorator = slog_term::PlainSyncDecorator::new(std::io::stdout());
-    let drain = slog_term::FullFormat::new(decorator).build().fuse();
-    let root_logger = slog::Logger::root(drain, o!("version" => env!("CARGO_PKG_VERSION")));
-    info!(
-        root_logger,
-        "Loading Ataxia Engine, compiled on {}", ATAXIA_COMPILED
-    );
+    let debug = match matches.occurrences_of("debug") {
+        0 => false,
+        1 | _ => true,
+    };
+
+    let verbose = match matches.occurrences_of("verbose") {
+        0 => false,
+        1 | _ => true,
+    };
 
     // Load settings from config file
     let config_path = Path::new(
@@ -73,9 +72,32 @@ fn main() {
             .value_of("config")
             .expect("Unable to specify config file path."),
     );
-    info!(root_logger, "Loading configuration from: {:?}", config_path);
     let config = ataxia::config::Config::read_config(config_path)
         .expect("Unable to load the configuration.");
+
+    // Initialize logging subsystem
+    CombinedLogger::init(vec![
+        TermLogger::new(
+            if debug {
+                LogLevelFilter::Debug
+            } else if verbose {
+                LogLevelFilter::Info
+            } else {
+                LogLevelFilter::Warn
+            },
+            Config::default(),
+        ).expect("Failed to intitialize terminal logging"),
+        WriteLogger::new(
+            if debug {
+                LogLevelFilter::Debug
+            } else {
+                LogLevelFilter::Info
+            },
+            Config::default(),
+            File::create(config.get_log_file()).expect("Failed to create logfile"),
+        ),
+    ]).expect("Failed to initialize logging!");
+    info!("Loading Ataxia Engine, compiled on {}", ATAXIA_COMPILED);
 
     // Clean up from previous unclean shutdown if necessary
 

@@ -1,19 +1,14 @@
 CARGO = cargo
 GO = go
-
 CARGO_OPTS =
 
-all: build-quick
+quick: build-proxy build-engine
 
-full: build-full doc
+full: proxy engine doc
 
 proxy: lint-proxy build-proxy
 
 engine: lint-engine build-engine
-
-build-quick: build-proxy build-engine
-
-build-full: lint-proxy build-proxy lint-engine build-engine
 
 build-proxy:
 	sh tools/release-edit.sh
@@ -30,8 +25,8 @@ lint-proxy:
 	golint {cmd/proxy,internal/*}
 
 lint-engine:
-	$(CARGO) +nightly fmt
-	env CARGO_TARGET_DIR=./target/clippy $(CARGO) +nightly clippy
+	$(CARGO) $(CARGO_OPTS) +nightly fmt
+	env CARGO_TARGET_DIR=./target/clippy $(CARGO) $(CARGO_OPTS) +nightly clippy
 
 bootstrap:
 	dep ensure
@@ -55,4 +50,4 @@ bench:
 doc:
 	$(CARGO) $(CARGO_OPTS) doc
 
-.PHONY: all build build-proxy build-engine clean check test bench doc
+.PHONY: quick full proxy engine build-proxy build-engine lint-proxy lint-engine bootstrap clean check test bench doc

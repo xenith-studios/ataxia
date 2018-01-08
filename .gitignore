@@ -3,6 +3,7 @@ bin/ataxia*
 cmd/*/package.go
 *.pid
 *~
+logs/
 
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
