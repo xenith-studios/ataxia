@@ -4,7 +4,9 @@
 
 Ataxia is a modern MUD engine written in Rust and Go. It utilizes Lua for commands and game logic. It uses separate processes for the game engine (written in Rust) and network proxy (written in Go).
 
-### Features
+PLEASE NOTE THAT CURRENTLY THERE IS VERY LITTLE CODE WRITTEN.
+
+### Planned Features
 
 The separate process model allows Ataxia to support the following features:
 
@@ -16,7 +18,7 @@ The separate process model allows Ataxia to support the following features:
 - Allows the network proxy to present a unified front-end to allow connecting to multiple backend game engines:
   - Live game
   - Building server
-  - Test game for live feature testing
+  - Test game for feature/bug testing
 
 ## Install
 
@@ -48,7 +50,7 @@ $ make
 
 This will install all dependencies and build ataxia. (Make will automatically call cargo build and go build.)
 
-Modify data/engine.toml and data/proxy.toml
+Modify data/ataxia.toml
 
 Run Ataxia:
 
