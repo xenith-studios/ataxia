@@ -1,10 +1,7 @@
 # Ataxia Configuration file
 
-# Port to listen on for player connections via telnet
-main_port = 9000
-
 # Listen address for the proxy process for incoming telnet connections
-listen_addr = "127.0.0.1:9000"
+listen_addr = "0.0.0.0:9000"
 
 # Listen address for the proxy process for incoming engine connections
 proxy_addr = "127.0.0.1:9005"

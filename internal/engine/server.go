@@ -24,7 +24,7 @@ type PlayerList struct {
 
 // Server struct defines main engine data structure
 type Server struct {
-	socket     *net.TCPListener
+	socket     net.Listener
 	PlayerList *PlayerList
 	In         chan string
 	shutdown   chan bool
@@ -57,8 +57,8 @@ func (list *PlayerList) Get(name string) *Account {
 }
 
 // NewServer creates a new server and returns a pointer to it
-func NewServer(port int, shutdown chan bool) *Server {
-	listener, err := net.ListenTCP("tcp", &net.TCPAddr{IP: net.ParseIP(""), Port: port, Zone: ""})
+func NewServer(listenAddr string, shutdown chan bool) *Server {
+	listener, err := net.Listen("tcp", listenAddr)
 	if err != nil {
 		log.Fatalln("Failed to create server:", err)
 		return nil

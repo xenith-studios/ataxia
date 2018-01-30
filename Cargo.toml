@@ -11,10 +11,6 @@ repository    = "https://github.com/xenith-studios/ataxia"
 readme        = "README.md"
 build         = "build.rs"
 
-#[lib]
-#name = "ataxia"
-#path = "src/lib.rs"
-
 [dependencies]
 rand = "^0.4"
 toml = "^0.4"
@@ -25,7 +21,6 @@ simplelog = "0.4.4"
 failure = "~0.1.1"
 #slog = "^2.1"
 #slog-term = "^2.3"
-error-chain = "0.11.0"
 
 [dependencies.clap]
 version = "~2"

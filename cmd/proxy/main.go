@@ -20,12 +20,13 @@ import (
 
 // tomlConfig is the struct for parsing the TOML config file
 type tomlConfig struct {
-	MainPort          int
-	AdminPort         int
-	BuildPort         int
-	PidFile           string
+	ListenAddr        string
+	ProxyAddr         string
+	ProxyPidFile      string
+	EnginePidFile     string
 	LogFacility       string
-	LogFile           string
+	ProxyLogFile      string
+	EngineLogFile     string
 	EmailFacility     string
 	SendmailPath      string
 	AdminEmail        string
@@ -36,8 +37,6 @@ type tomlConfig struct {
 	MaxClientsPerHost int
 	AccountCreation   bool
 	CharsPerAccount   int
-	Autosave          int
-	BackupCharacters  bool
 }
 
 // Variables for the command-line flags and config struct
@@ -45,7 +44,7 @@ var (
 	configFlag     string
 	hotbootFlag    bool
 	descriptorFlag int
-	mainPortFlag   int
+	listenAddrFlag string
 	pidFlag        string
 	config         tomlConfig
 )
@@ -81,13 +80,13 @@ under certain conditions; for details, see the file LICENSE.
 `, ataxiaVersion, ataxiaCompiled)
 
 	// Setup the command-line flags (with defaults)
-	flag.StringVar(&configFlag, "config", "data/proxy.toml", "Config file")
+	flag.StringVar(&configFlag, "config", "data/ataxia.toml", "Config file")
 	flag.BoolVar(&hotbootFlag, "hotboot", false, "Recover from hotboot")
 	flag.IntVar(&descriptorFlag, "descriptor", 0, "Hotboot descriptor")
 
 	// Setup the flags that are defined in the config file but can be overriden
 	// via the command-line
-	flag.IntVar(&mainPortFlag, "main_port", 0, "Main engine port")
+	flag.StringVar(&listenAddrFlag, "listen_addr", "0.0.0.0:9000", "Listen address for telnet connections")
 	flag.StringVar(&pidFlag, "pid_file", "data/ataxia-proxy.pid", "PID filename")
 
 	// Parse the command line
@@ -106,11 +105,11 @@ under certain conditions; for details, see the file LICENSE.
 	if err := toml.Unmarshal(buf, &config); err != nil {
 		log.Fatal(err)
 	}
-	if mainPortFlag != 0 {
-		config.MainPort = mainPortFlag
+	if listenAddrFlag != "" {
+		config.ListenAddr = listenAddrFlag
 	}
 	if pidFlag != "" {
-		config.PidFile = pidFlag
+		config.ProxyPidFile = pidFlag
 	}
 	log.Println("Loaded config file.")
 
@@ -152,19 +151,19 @@ under certain conditions; for details, see the file LICENSE.
 
 	// Write out pid file
 	pid := fmt.Sprint(os.Getpid())
-	pidfile, err := os.Create(config.PidFile)
+	pidfile, err := os.Create(config.ProxyPidFile)
 	if err != nil {
 		log.Fatalln("Error writing pid to file:", err)
 	}
 	pidfile.Write([]byte(pid))
-	log.Println("Wrote PID to", config.PidFile)
+	log.Println("Wrote PID to", config.ProxyPidFile)
 	pidfile.Close()
-	defer os.Remove(config.PidFile)
+	defer os.Remove(config.ProxyPidFile)
 
 	// Initialize the network engine
 	log.Println("Initializing the network engine")
-	server := engine.NewServer(config.MainPort, shutdown)
-	log.Println("Engine is running on port", config.MainPort)
+	server := engine.NewServer(config.ListenAddr, shutdown)
+	log.Println("Proxy is listening on", config.ListenAddr)
 
 	// Load database
 
