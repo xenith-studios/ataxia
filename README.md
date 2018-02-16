@@ -24,7 +24,7 @@ The separate process model allows Ataxia to support the following features:
 
 ### Dependencies
 
-First, install Rust. The game engine is written to work with Rust 1.22, but it should work with most 1.x versions.
+First, install Rust. The game engine is written to work with Rust 1.24, but it should work with most 1.x versions.
 See: https://www.rust-lang.org/
 
 Next, install Go. The network proxy is written to work with Go 1.9, but it should work with most 1.x versions.

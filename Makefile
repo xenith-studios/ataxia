@@ -25,7 +25,7 @@ lint-proxy:
 	golint {cmd/proxy,internal/*}
 
 lint-engine:
-	$(CARGO) $(CARGO_OPTS) +nightly fmt
+	$(CARGO) $(CARGO_OPTS) fmt
 	env CARGO_TARGET_DIR=./target/clippy $(CARGO) $(CARGO_OPTS) +nightly clippy
 
 bootstrap:
