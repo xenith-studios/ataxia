@@ -3,8 +3,8 @@ package game
 import (
 	"fmt"
 
-	luar "github.com/layeh/gopher-luar"
 	golua "github.com/yuin/gopher-lua"
+	luar "layeh.com/gopher-luar"
 	//	"log"
 	"strconv"
 	//	"github.com/xenith-studios/ataxia/lua"

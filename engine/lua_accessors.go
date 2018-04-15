@@ -6,7 +6,7 @@ import (
 
 	golua "github.com/yuin/gopher-lua"
 	//	"github.com/xenith-studios/ataxia/lua"
-	luar "github.com/layeh/gopher-luar"
+	luar "layeh.com/gopher-luar"
 )
 
 // PublishAccessors registers exported functions into Lua (this is a weird place, should be in main?  or called from there?)
