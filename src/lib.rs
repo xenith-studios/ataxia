@@ -3,6 +3,6 @@ extern crate failure;
 extern crate serde_derive;
 extern crate toml;
 
+pub mod config;
 pub mod engine;
 pub mod proxy;
-pub mod config;

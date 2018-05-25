@@ -7,8 +7,8 @@ extern crate ataxia;
 
 include!(concat!(env!("OUT_DIR"), "/version.rs"));
 
-use std::path::Path;
 use std::fs::File;
+use std::path::Path;
 
 use clap::{App, Arg};
 use simplelog::*;
@@ -79,19 +79,19 @@ fn main() {
     CombinedLogger::init(vec![
         TermLogger::new(
             if debug {
-                LogLevelFilter::Debug
+                LevelFilter::Debug
             } else if verbose {
-                LogLevelFilter::Info
+                LevelFilter::Info
             } else {
-                LogLevelFilter::Warn
+                LevelFilter::Warn
             },
             Config::default(),
         ).expect("Failed to intitialize terminal logging"),
         WriteLogger::new(
             if debug {
-                LogLevelFilter::Debug
+                LevelFilter::Debug
             } else {
-                LogLevelFilter::Info
+                LevelFilter::Info
             },
             Config::default(),
             File::create(config.get_log_file()).expect("Failed to create logfile"),
