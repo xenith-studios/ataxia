@@ -28,9 +28,15 @@ impl Config {
     pub fn get_proxy_addr(&self) -> &str {
         self.proxy_addr.as_ref()
     }
+    pub fn set_proxy_addr(&mut self, addr: &str) {
+        self.proxy_addr = addr.to_string();
+    }
 
     pub fn get_pid_file(&self) -> &str {
         self.engine_pid_file.as_ref()
+    }
+    pub fn set_pid_file(&mut self, file: &str) {
+        self.engine_pid_file = file.to_string();
     }
 
     pub fn get_log_file(&self) -> &str {

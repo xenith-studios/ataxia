@@ -8,7 +8,9 @@ extern crate ataxia;
 include!(concat!(env!("OUT_DIR"), "/version.rs"));
 
 use std::fs::File;
+use std::io::Write;
 use std::path::Path;
+use std::process;
 
 use clap::{App, Arg};
 use simplelog::*;
@@ -21,7 +23,7 @@ fn main() {
         .about(env!("CARGO_PKG_DESCRIPTION"))
         .arg(
             Arg::with_name("config")
-                .help("The config file to use")
+                .help("The filesystem path to the config file")
                 .short("c")
                 .long("config")
                 .value_name("FILE")
@@ -30,15 +32,15 @@ fn main() {
         )
         .arg(
             Arg::with_name("proxy_addr")
-                .help("Listen address and port of the proxy")
-                .short("l")
-                .long("listen")
+                .help("Address and port of the network proxy process")
+                .short("a")
+                .long("addr")
                 .value_name("address:port")
                 .takes_value(true),
         )
         .arg(
             Arg::with_name("pid_file")
-                .help("The filename to write the PID into")
+                .help("The filesystem path to the PID file")
                 .short("p")
                 .long("pid")
                 .value_name("FILE")
@@ -66,14 +68,25 @@ fn main() {
         1 | _ => true,
     };
 
-    // Load settings from config file
+    // Load settings from config file while allowing command-line overrides
     let config_path = Path::new(
         matches
             .value_of("config")
-            .expect("Unable to specify config file path."),
+            .expect("Unable to specify config file path"),
     );
-    let config = ataxia::config::Config::read_config(config_path)
-        .expect("Unable to load the configuration.");
+
+    let mut config =
+        ataxia::config::Config::read_config(config_path).expect("Unable to load the configuration");
+
+    if let Some(pid_file) = matches.value_of("pid_file") {
+        config.set_pid_file(pid_file);
+    }
+
+    if let Some(proxy_addr) = matches.value_of("proxy_addr") {
+        config.set_proxy_addr(proxy_addr);
+    }
+
+    let config = config;
 
     // Initialize logging subsystem
     CombinedLogger::init(vec![
@@ -96,13 +109,23 @@ fn main() {
             Config::default(),
             File::create(config.get_log_file()).expect("Failed to create logfile"),
         ),
-    ]).expect("Failed to initialize logging!");
+    ]).expect("Failed to initialize logging");
     info!("Loading Ataxia Engine, compiled on {}", ATAXIA_COMPILED);
 
     // Clean up from previous unclean shutdown if necessary
+    // TODO: Should this be handled by the startup/supervisor script?
+    let pid_file = Path::new(config.get_pid_file());
+    if pid_file.exists() {
+        std::fs::remove_file(pid_file).expect("Couldn't remove stale PID file");
+    }
 
-    // Set up callbacks for signals
-    // Write PID file
+    // Write PID to file
+    File::create(config.get_pid_file())
+        .expect("Couldn't create PID file")
+        .write_all(format!("{}", process::id()).as_ref())
+        .expect("Couldn't write PID to file");
+
+    // TODO: Set up callbacks for catching signals
 
     // Initialize
     //   Seed rand
@@ -129,5 +152,9 @@ fn main() {
     //   Shutdown Lua
     //   Flush pending database writes
     //   Close database connection
-    //   Remove PID file
+
+    // TODO: Should this be handled by the startup/supervisor script? Or should the engine do it to signal a clean shutdown?
+    if pid_file.exists() {
+        std::fs::remove_file(pid_file).expect("Couldn't remove PID file");
+    }
 }
