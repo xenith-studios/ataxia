@@ -2,32 +2,38 @@
 
 ## About
 
-Ataxia is a modern MUD engine written in Rust and Go. It utilizes Lua for commands and game logic. It uses separate processes for the game engine (written in Rust) and network proxy (written in Go).
+Ataxia is a modern MUD/MUSH engine written in Rust and Go. It utilizes Lua for commands and game logic. It uses separate processes for the game engine (written in Rust) and network proxy (written in Go).
 
-PLEASE NOTE THAT CURRENTLY THERE IS VERY LITTLE CODE WRITTEN.
+PLEASE NOTE THAT CURRENTLY THERE IS VERY LITTLE CODE/FEATURES WRITTEN.
 
 ### Planned Features
 
 The separate process model allows Ataxia to support the following features:
 
 - Reload the engine process without disconnecting players. Avoids common "copyover/hotboot" hacks.
-- The proxy can support various different communication technologies such as:
-  - telnet
+  - Adds the ability to rollback players to a previous version of code if needed
+- The proxy can support various different communication protocols such as:
+  - telnet (with or without tls)
   - ssh
   - websockets (to enable an HTML client)
-- Allows the network proxy to present a unified front-end to allow connecting to multiple backend game engines:
+- Allows the network proxy to present a unified front-end to allow connecting to multiple backend game engines through a single connection/port:
   - Live game
-  - Building server
-  - Test game for feature/bug testing
+  - Test game (for feature/bug testing)
+  - Building interface
+  - Admin interface
+- The network proxy will manage the account and login/permissions system:
+  - Allows granting permissions (building interface, test access) on a per-account basis
+  - Allows tying multiple characters to a single account/login
+- If you really want to, you can run the network proxy on a different server than the game engine
 
 ## Install
 
 ### Dependencies
 
-First, install Rust. The game engine is written to work with Rust 1.24, but it should work with most 1.x versions.
+First, install Rust. The game engine is written to work with Rust 1.27 and Rust 2018 edition, but it should work with most 1.x versions.
 See: https://www.rust-lang.org/
 
-Next, install Go. The network proxy is written to work with Go 1.9, but it should work with most 1.x versions.
+Next, install Go. The network proxy is written to work with Go 1.10, but it should work with most 1.x versions.
 See: https://golang.org/
 
 You will also want to install Dep, Go's upcoming dependency management tool.
@@ -59,7 +65,7 @@ $ bin/ataxia-proxy &
 $ bin/ataxia-engine
 ```
 
-# Contributing
+### Development
 
 If you would also like to develop Ataxia, you will need to install the following additional tools:
 
@@ -67,8 +73,8 @@ If you would also like to develop Ataxia, you will need to install the following
     - goimports
     - golint
 - Rust
-    - rustfmt (This will eventually be installed as part of cargo by rustup, but it is currently in heavy flux)
-    - clippy (It currently only works with nightly, so you will have to install the nightly toolchain alongside the stable toolchain with rustup)
+    - rustfmt (This is installed via rustup by default)
+    - clippy (This currently only works with nightly, so you will have to install the nightly toolchain alongside the stable toolchain with rustup. Install clippy via `cargo +nightly install clippy`)
 
 To perform a full compile, including all lints:
 
@@ -82,35 +88,40 @@ To run all tests:
 $ make test
 ```
 
-# Directory Layout
+## Directory Layout
 
     src/
-        All Rust source code for the engine
-    cmd/
-        Go binary code for the proxy
-    internal/
-        Go internal library code for the proxy
+        Rust source code for the engine
+    cmd/ (binary),internal/ (library)
+        Go source code for the proxy
     bin/
-        The location of compiled binary files and scripts for running the engine
+        The location of compiled binary files and scripts for running the game
     docs/
         User and developer documentation
     logs/
-        Location of stored log files
+        Log files
     tools/
         Helper scripts and tools for developers
     data/
-        On-disk data files, such as config files and world files
+        On-disk data files (ex. config files, world files)
     scripts/
-        On-disk storage location for all Lua scripts
+        Lua scripts
     scripts/interface
         Helper scripts that set up the data interface between Rust and Lua
-    scripts/command
+    scripts/commands
         All in-game commands
 
-# License
+## License
 
-`ataxia` is primarily distributed under the terms of both the MIT License and
-the Apache License (Version 2.0), with portions covered by various BSD-like
-licenses. Previous versions of this code were licensed under the BSD three-clause license.
+Licensed under either of:
 
-See LICENSE-APACHE and LICENSE-MIT for details.
+- Apache License, Version 2.0, (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0)
+- MIT license (LICENSE-MIT or http://opensource.org/licenses/MIT)
+
+at your option.
+
+Previous versions of this code were licensed under the BSD three-clause license.
+
+### Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
