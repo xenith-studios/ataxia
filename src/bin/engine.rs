@@ -1,6 +1,13 @@
+//! Binary source for the game engine
+//! There should be minimal functionality in this code. It exists mainly to call out to the library code.
+#![deny(
+    trivial_casts, trivial_numeric_casts, unsafe_code, unstable_features, unused_import_braces,
+    unused_qualifications
+)]
 extern crate clap;
 #[macro_use]
 extern crate log;
+extern crate failure;
 extern crate simplelog;
 
 extern crate ataxia;
@@ -15,7 +22,7 @@ use std::process;
 use clap::{App, Arg};
 use simplelog::*;
 
-fn main() {
+fn main() -> Result<(), failure::Error> {
     // Set up and parse the command-line arguments
     let matches = App::new("Ataxia Engine")
         .version(env!("CARGO_PKG_VERSION"))
@@ -58,103 +65,74 @@ fn main() {
         )
         .get_matches();
 
-    let debug = match matches.occurrences_of("debug") {
-        0 => false,
-        1 | _ => true,
-    };
-
-    let verbose = match matches.occurrences_of("verbose") {
-        0 => false,
-        1 | _ => true,
-    };
-
     // Load settings from config file while allowing command-line overrides
-    let config_path = Path::new(
-        matches
-            .value_of("config")
-            .expect("Unable to specify config file path"),
-    );
-
-    let mut config =
-        ataxia::config::Config::read_config(config_path).expect("Unable to load the configuration");
-
-    if let Some(pid_file) = matches.value_of("pid_file") {
-        config.set_pid_file(pid_file);
-    }
-
-    if let Some(proxy_addr) = matches.value_of("proxy_addr") {
-        config.set_proxy_addr(proxy_addr);
-    }
-
-    let config = config;
+    let config = ataxia::Config::new(&matches).unwrap_or_else(|err| {
+        eprintln!("Unable to load the configuration file: {}", err);
+        std::process::exit(1);
+    });
 
     // Initialize logging subsystem
     CombinedLogger::init(vec![
         TermLogger::new(
-            if debug {
+            if config.debug() {
                 LevelFilter::Debug
-            } else if verbose {
+            } else if config.verbose() {
                 LevelFilter::Info
             } else {
                 LevelFilter::Warn
             },
             Config::default(),
-        ).expect("Failed to intitialize terminal logging"),
+        ).expect("Failed to initialize terminal logging"),
         WriteLogger::new(
-            if debug {
+            if config.debug() {
                 LevelFilter::Debug
             } else {
                 LevelFilter::Info
             },
             Config::default(),
-            File::create(config.get_log_file()).expect("Failed to create logfile"),
+            File::create(config.get_log_file())?,
         ),
-    ]).expect("Failed to initialize logging");
+    ])?;
     info!("Loading Ataxia Engine, compiled on {}", ATAXIA_COMPILED);
 
     // Clean up from previous unclean shutdown if necessary
     // TODO: Should this be handled by the startup/supervisor script?
     let pid_file = Path::new(config.get_pid_file());
     if pid_file.exists() {
-        std::fs::remove_file(pid_file).expect("Couldn't remove stale PID file");
+        std::fs::remove_file(pid_file)?;
     }
 
     // Write PID to file
-    File::create(config.get_pid_file())
-        .expect("Couldn't create PID file")
-        .write_all(format!("{}", process::id()).as_ref())
-        .expect("Couldn't write PID to file");
+    File::create(config.get_pid_file())?.write_all(format!("{}", process::id()).as_ref())?;
 
-    // TODO: Set up callbacks for catching signals
+    // TODO: Figure out a system for catching/handling signals (SIGINT, SIGQUIT, SIGHUP)
 
-    // Initialize
+    // Initialize support subsystems
     //   Seed rand
     //   Environment
     //   Queues
     //   Database
     //   Lua
 
-    // Initialize engine
-    // Load initial game state
-    //   Load database
-    //   Load commands
-    //   Load scripts
-    //   Load world
-    //   Load entities
+    // Initialize engine subsystem
+    if let Err(e) = ataxia::init() {
+        eprintln!("Unresolved engine error during setup: {}", e);
+        std::process::exit(1);
+    }
 
-    // Initialize networking event loop in dedicated thread
-    // Spawn other threads?
+    // Initialize async networking subsystem in a dedicated thread?
+
     // Start main game loop
+    if let Err(e) = ataxia::run() {
+        eprintln!("Unresolved engine error: {}", e);
+        std::process::exit(1);
+    }
 
-    // Shutdown is caught here?
-    // Clean up
-    //   Save the world
-    //   Shutdown Lua
-    //   Flush pending database writes
-    //   Close database connection
-
+    // If the game loop exited without an error, we have a clean shutdown
     // TODO: Should this be handled by the startup/supervisor script? Or should the engine do it to signal a clean shutdown?
     if pid_file.exists() {
-        std::fs::remove_file(pid_file).expect("Couldn't remove PID file");
+        std::fs::remove_file(pid_file)?;
     }
+
+    Ok(())
 }
