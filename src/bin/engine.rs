@@ -1,16 +1,14 @@
 //! Binary source for the game engine
 //! There should be minimal functionality in this code. It exists mainly to call out to the library code.
 #![deny(
-    trivial_casts, trivial_numeric_casts, unsafe_code, unstable_features, unused_import_braces,
+    trivial_casts,
+    trivial_numeric_casts,
+    unsafe_code,
+    unused_import_braces,
     unused_qualifications
 )]
-extern crate clap;
-#[macro_use]
-extern crate log;
-extern crate failure;
-extern crate simplelog;
-
-extern crate ataxia;
+#![feature(rust_2018_preview)]
+#![warn(rust_2018_idioms)]
 
 include!(concat!(env!("OUT_DIR"), "/version.rs"));
 
@@ -20,6 +18,7 @@ use std::path::Path;
 use std::process;
 
 use clap::{App, Arg};
+use log::{error, info, log};
 use simplelog::*;
 
 fn main() -> Result<(), failure::Error> {
@@ -95,18 +94,18 @@ fn main() -> Result<(), failure::Error> {
     ])?;
     info!("Loading Ataxia Engine, compiled on {}", ATAXIA_COMPILED);
 
-    // Clean up from previous unclean shutdown if necessary
-    // TODO: Should this be handled by the startup/supervisor script?
-    let pid_file = Path::new(config.get_pid_file());
+    // Write PID to file
+    let pid_path = config.get_pid_file().to_string();
+    let pid_file = Path::new(&pid_path);
+    // TODO: Only delete the old file here until we have a startup/supervisor system in place to handle unclean shutdown
     if pid_file.exists() {
         std::fs::remove_file(pid_file)?;
     }
-
-    // Write PID to file
-    File::create(config.get_pid_file())?.write_all(format!("{}", process::id()).as_ref())?;
+    File::create(pid_file)?.write_all(format!("{}", process::id()).as_ref())?;
 
     // TODO: Figure out a system for catching/handling signals (SIGINT, SIGQUIT, SIGHUP)
 
+    // Clean up from previous unclean shutdown if necessary
     // Initialize support subsystems
     //   Seed rand
     //   Environment
@@ -115,16 +114,16 @@ fn main() -> Result<(), failure::Error> {
     //   Lua
 
     // Initialize engine subsystem
-    if let Err(e) = ataxia::init() {
-        eprintln!("Unresolved engine error during setup: {}", e);
+    let server = ataxia::Server::new(config).unwrap_or_else(|err| {
+        error!("Unable to initialize the engine: {}", err);
         std::process::exit(1);
-    }
+    });
 
     // Initialize async networking subsystem in a dedicated thread?
 
     // Start main game loop
-    if let Err(e) = ataxia::run() {
-        eprintln!("Unresolved engine error: {}", e);
+    if let Err(e) = server.run() {
+        error!("Unresolved engine error: {}", e);
         std::process::exit(1);
     }
 

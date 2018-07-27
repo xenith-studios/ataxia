@@ -1,6 +1,6 @@
 CARGO = cargo
 GO = go
-CARGO_OPTS =
+CARGO_OPTS = +nightly
 
 quick: build-proxy build-engine
 
@@ -26,7 +26,7 @@ lint-proxy:
 
 lint-engine:
 	$(CARGO) $(CARGO_OPTS) fmt
-	env CARGO_TARGET_DIR=./target/clippy $(CARGO) $(CARGO_OPTS) +nightly clippy
+	env CARGO_TARGET_DIR=./target/clippy $(CARGO) $(CARGO_OPTS) clippy
 
 bootstrap:
 	dep ensure

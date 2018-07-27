@@ -1,12 +1,8 @@
 //! Configuration module for Ataxia
+use serde_derive::Deserialize;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
-
-use clap::ArgMatches;
-use toml;
-
-use failure::Error;
 
 /// Config structure for holding internal and external configuration data
 #[derive(Deserialize, Debug)]
@@ -31,7 +27,7 @@ impl Config {
     /// # Errors
     ///
     ///
-    pub fn new(matches: &ArgMatches) -> Result<Config, Error> {
+    pub fn new(matches: &clap::ArgMatches<'_>) -> Result<Config, failure::Error> {
         let path = Path::new(matches.value_of("config").unwrap_or("data/ataxia.toml"));
 
         let mut input = String::new();
