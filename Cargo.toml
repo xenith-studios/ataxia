@@ -12,7 +12,7 @@ homepage      = "https://github.com/xenith-studios/ataxia"
 repository    = "https://github.com/xenith-studios/ataxia"
 readme        = "README.md"
 build         = "build.rs"
-edition       = '2018'
+edition       = "2018"
 
 [dependencies]
 rand = "^0.5"
@@ -22,6 +22,7 @@ serde_derive = "^1.0"
 log = "0.4.1"
 simplelog = "0.5.1"
 failure = "~0.1.1"
+specs = "0.12"
 #slog = "^2.1"
 #slog-term = "^2.3"
 
