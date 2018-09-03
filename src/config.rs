@@ -56,7 +56,7 @@ impl Config {
     }
 
     /// Returns the listen address of the network proxy process
-    pub fn get_proxy_addr(&self) -> &str {
+    pub fn proxy_addr(&self) -> &str {
         self.proxy_addr.as_ref()
     }
     /// Set the listen address of the network proxy process
@@ -65,7 +65,7 @@ impl Config {
     }
 
     /// Returns the file path to the pid file
-    pub fn get_pid_file(&self) -> &str {
+    pub fn pid_file(&self) -> &str {
         self.engine_pid_file.as_ref()
     }
     /// Set the file path to the pid file
@@ -74,7 +74,7 @@ impl Config {
     }
 
     /// Returns the file path to the log file
-    pub fn get_log_file(&self) -> &str {
+    pub fn log_file(&self) -> &str {
         self.engine_log_file.as_ref()
     }
 

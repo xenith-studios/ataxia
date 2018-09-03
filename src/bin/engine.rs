@@ -7,8 +7,6 @@
     unused_import_braces,
     unused_qualifications
 )]
-#![feature(rust_2018_preview)]
-#![warn(rust_2018_idioms)]
 
 include!(concat!(env!("OUT_DIR"), "/version.rs"));
 
@@ -35,34 +33,29 @@ fn main() -> Result<(), failure::Error> {
                 .value_name("FILE")
                 .takes_value(true)
                 .default_value("data/ataxia.toml"),
-        )
-        .arg(
+        ).arg(
             Arg::with_name("proxy_addr")
                 .help("Address and port of the network proxy process")
                 .short("a")
                 .long("addr")
                 .value_name("address:port")
                 .takes_value(true),
-        )
-        .arg(
+        ).arg(
             Arg::with_name("pid_file")
                 .help("The filesystem path to the PID file")
                 .short("p")
                 .long("pid")
                 .value_name("FILE")
                 .takes_value(true),
-        )
-        .arg(
+        ).arg(
             Arg::with_name("debug")
                 .help("Enable debugging output")
                 .short("d"),
-        )
-        .arg(
+        ).arg(
             Arg::with_name("verbose")
                 .help("Enable verbose output")
                 .short("v"),
-        )
-        .get_matches();
+        ).get_matches();
 
     // Load settings from config file while allowing command-line overrides
     let config = ataxia::Config::new(&matches).unwrap_or_else(|err| {
@@ -89,29 +82,29 @@ fn main() -> Result<(), failure::Error> {
                 LevelFilter::Info
             },
             Config::default(),
-            File::create(config.get_log_file())?,
+            File::create(config.log_file())?,
         ),
     ])?;
     info!("Loading Ataxia Engine, compiled on {}", ATAXIA_COMPILED);
 
+    // TODO: Figure out a system for catching/handling signals (SIGINT, SIGQUIT, SIGHUP)
+
+    // Clean up from previous unclean shutdown if necessary
+
     // Write PID to file
-    let pid_path = config.get_pid_file().to_string();
+    // TODO: Acquire lock on PID file as additional method of insuring only a single instance is running?
+    let pid_path = config.pid_file().to_string();
     let pid_file = Path::new(&pid_path);
-    // TODO: Only delete the old file here until we have a startup/supervisor system in place to handle unclean shutdown
+    // FIXME: Remove once we have a startup/supervisor system in place to handle unclean shutdown
     if pid_file.exists() {
         std::fs::remove_file(pid_file)?;
     }
     File::create(pid_file)?.write_all(format!("{}", process::id()).as_ref())?;
 
-    // TODO: Figure out a system for catching/handling signals (SIGINT, SIGQUIT, SIGHUP)
-
-    // Clean up from previous unclean shutdown if necessary
     // Initialize support subsystems
-    //   Seed rand
     //   Environment
     //   Queues
     //   Database
-    //   Lua
 
     // Initialize engine subsystem
     let server = ataxia::Server::new(config).unwrap_or_else(|err| {
@@ -119,7 +112,7 @@ fn main() -> Result<(), failure::Error> {
         std::process::exit(1);
     });
 
-    // Initialize async networking subsystem in a dedicated thread?
+    // Initialize async networking subsystem in a dedicated thread
 
     // Start main game loop
     if let Err(e) = server.run() {
@@ -128,7 +121,8 @@ fn main() -> Result<(), failure::Error> {
     }
 
     // If the game loop exited without an error, we have a clean shutdown
-    // TODO: Should this be handled by the startup/supervisor script? Or should the engine do it to signal a clean shutdown?
+    // Flush pending database writes and close database connection
+    // Remove the PID file
     if pid_file.exists() {
         std::fs::remove_file(pid_file)?;
     }
