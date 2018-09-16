@@ -1,5 +1,3 @@
-cargo-features = ['edition']
-
 [package]
 name          = "ataxia"
 version       = "0.0.1-dev"
@@ -19,12 +17,10 @@ rand = "^0.5"
 toml = "^0.4"
 serde = "^1.0"
 serde_derive = "^1.0"
-log = "0.4.1"
-simplelog = "0.5.1"
-failure = "~0.1.1"
-specs = "0.12"
-#slog = "^2.1"
-#slog-term = "^2.3"
+log = "^0.4"
+simplelog = "^0.5"
+failure = "^0.1"
+specs = "^0.12"
 
 [dependencies.clap]
 version = "~2"
@@ -32,4 +28,4 @@ default-features = false
 features = [ "color", "wrap_help" ]
 
 [build-dependencies]
-time = "^0.1.39"
+time = "^0.1"
