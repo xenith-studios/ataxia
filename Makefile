@@ -1,5 +1,4 @@
 CARGO = cargo
-GO = go
 CARGO_OPTS = +nightly
 
 quick: build-proxy build-engine
@@ -11,37 +10,33 @@ proxy: lint-proxy build-proxy
 engine: lint-engine build-engine
 
 build-proxy:
-	sh tools/release-edit.sh
-	$(GO) build github.com/xenith-studios/ataxia/cmd/proxy
-	mv proxy bin/ataxia-proxy
+	$(CARGO) $(CARGO_OPTS) build --bin proxy
+	cp -f target/debug/proxy bin/ataxia-proxy
 
 build-engine:
 	$(CARGO) $(CARGO_OPTS) build --bin engine
 	cp -f target/debug/engine bin/ataxia-engine
 
 lint-proxy:
-	goimports -w .
-	$(GO) vet ./...
-	golint {cmd/proxy,internal/*}
+	$(CARGO) $(CARGO_OPTS) fmt
+	env CARGO_TARGET_DIR=./target/clippy $(CARGO) $(CARGO_OPTS) clippy --bin proxy
 
 lint-engine:
 	$(CARGO) $(CARGO_OPTS) fmt
-	env CARGO_TARGET_DIR=./target/clippy $(CARGO) $(CARGO_OPTS) clippy
+	env CARGO_TARGET_DIR=./target/clippy $(CARGO) $(CARGO_OPTS) clippy --bin engine
 
 bootstrap:
-	dep ensure
+	rustup component add --toolchain nightly rustfmt-preview
+	rustup component add --toolchain nightly clippy-preview
 
 clean:
 	$(CARGO) $(CARGO_OPTS) clean
 	rm -f bin/ataxia-{engine,proxy}
 
 check:
-	$(GO) build github.com/xenith-studios/ataxia/cmd/proxy
-	rm -f proxy
 	$(CARGO) $(CARGO_OPTS) check
 
 test:
-	$(GO) test ./...
 	$(CARGO) $(CARGO_OPTS) test
 
 bench:

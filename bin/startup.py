@@ -4,9 +4,10 @@ import subprocess
 # right places
 # If game data doesn't exist, print a message to run the game data seed script
 
-# Check for exiting PID file to hint that a copy of the engine is already
+# Check for exiting PID files to hint that a copy of the programs are already
 # running or possibly crashed
 
-proxy = subprocess.Popen(["bin/ataxia-proxy"])
-subprocess.call(["bin/ataxia-engine"])
+proxy = subprocess.Popen(["./bin/ataxia-proxy"])
+engine = subprocess.Popen(["./bin/ataxia-engine"])
+engine.wait()
 proxy.wait()

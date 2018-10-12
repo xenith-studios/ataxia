@@ -2,7 +2,7 @@
 
 ## About
 
-Ataxia is a modern MUD/MUSH engine written in Rust and Go. It utilizes Lua for commands and game logic. It uses separate processes for the game engine (written in Rust) and network proxy (written in Go).
+Ataxia is a modern MUD/MUSH engine written in [Rust](https://www.rust-lang.org/). It utilizes Lua for commands and game logic. It uses separate processes for the game engine and network proxy.
 
 PLEASE NOTE THAT CURRENTLY THERE IS VERY LITTLE CODE/FEATURES WRITTEN.
 
@@ -30,51 +30,43 @@ The separate process model allows Ataxia to support the following features:
 
 ### Dependencies
 
-First, install Rust. The game engine is written to work with the Rust 2018 edition, and it currently requires the nightly compiler until the edition stabilizes.
-See: https://www.rust-lang.org/
+The only dependency at this time is the Rust toolchain, which can be installed from the official channels via [rustup](https://www.rust-lang.org/en-US/install.html). The game is written to work with the Rust 2018 edition, and it currently requires the nightly compiler until some features we rely on stabilize.
 
-Next, install Go. The network proxy is written to work with Go 1.10, but it should work with most 1.x versions.
-See: https://golang.org/
+Currently nightly build that has been tested: 1.31.0-nightly
 
-You will also want to install Dep, Go's upcoming dependency management tool.
-See: https://github.com/golang/dep
+For further information: https://www.rust-lang.org/
 
 ### Building from Source
 
-You will need to clone this repository into your `$GOPATH` to allow Go to build properly. I'll admit, the Go tooling is a little odd, so you'll want to do something similar to:
+Compiling from source is straightforward:
 
 ```sh
-$ git clone https://github.com/xenith-studios/ataxia/ $GOPATH/src/github.com/xenith-studios/
-```
-
-After that, you can build the game:
-
-```sh
-$ make bootstrap
 $ make
 ```
 
-This will install all dependencies and build ataxia. (Make will automatically call cargo build and go build.)
+This will install all library dependencies and build ataxia. (Make will automatically call `cargo build` as needed.)
 
-Modify data/ataxia.toml
+Modify the configuration files in `data/proxy.toml` and `data/engine.toml`
 
 Run Ataxia:
 
 ```sh
-$ bin/ataxia-proxy &
-$ bin/ataxia-engine
+$ ./bin/startup.py
 ```
 
 ### Development
 
 If you would also like to develop Ataxia, you will need to install the following additional tools:
 
-- Go
-    - goimports
-    - golint
 - Rust
-    - rustfmt (This is installed via rustup by default)
-    - clippy (This currently only works with nightly, so you will have to install the nightly toolchain alongside the stable toolchain with rustup. Install clippy via `cargo +nightly install clippy`)
+    - rustfmt
+    - clippy
+
+You can install both tools via make:
+
+```sh
+$ make bootstrap
+```
 
 To perform a full compile, including all lints:
 
@@ -91,9 +83,7 @@ $ make test
 ## Directory Layout
 
     src/
-        Rust source code for the engine
-    cmd/ (binary),internal/ (library)
-        Go source code for the proxy
+        Rust source code
     bin/
         The location of compiled binary files and scripts for running the game
     docs/

@@ -1,0 +1,40 @@
+# Ataxia Engine Configuration file
+
+# The proxy process listens in this address for internal engine connections
+proxy_addr = "127.0.0.1:9005"
+
+# Location of the PID file
+pid_file = "data/ataxia-engine.pid"
+
+# Logging facility to use
+# Options are: stdout, file, syslog
+# log_facility = "stdout"
+
+# Location of the log file
+log_file = "logs/engine.log"
+
+# Email facility to use
+# Options are: none, smtp, sendmail
+# email_facility = "none"
+
+# Location of the sendmail binary
+# sendmail_path = "/usr/sbin/sendmail"
+
+# Administrator's email address for notifications
+# admin_email = ""
+
+# Email address to send abuse notifications
+# abuse_email = ""
+
+# Storage facility to use
+# Options are: file, database
+# storage_facility = "file"
+
+# Location of the data files on disk
+# data_path = "data/"
+
+# Autosave interval in minutes
+# autosave = 15
+
+# Allow character backups
+# backup_characters = true

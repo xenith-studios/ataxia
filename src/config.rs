@@ -7,9 +7,14 @@ use std::path::Path;
 /// Config structure for holding internal and external configuration data
 #[derive(Deserialize, Debug)]
 pub struct Config {
+    #[serde(default)]
+    http_addr: String,
+    #[serde(default)]
+    telnet_addr: String,
+    #[serde(default)]
     proxy_addr: String,
-    engine_pid_file: String,
-    engine_log_file: String,
+    pid_file: String,
+    log_file: String,
     #[serde(default)]
     debug: bool,
     #[serde(default)]
@@ -66,16 +71,16 @@ impl Config {
 
     /// Returns the file path to the pid file
     pub fn pid_file(&self) -> &str {
-        self.engine_pid_file.as_ref()
+        self.pid_file.as_ref()
     }
     /// Set the file path to the pid file
     pub fn set_pid_file(&mut self, file: &str) {
-        self.engine_pid_file = file.to_string();
+        self.pid_file = file.to_string();
     }
 
     /// Returns the file path to the log file
     pub fn log_file(&self) -> &str {
-        self.engine_log_file.as_ref()
+        self.log_file.as_ref()
     }
 
     /// Returns true if the debug CLI flag was specified

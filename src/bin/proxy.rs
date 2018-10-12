@@ -1,5 +1,5 @@
 //! Binary source for the game engine
-//! There should be minimal functionality in this file. It exists mainly to set up the engine and
+//! There should be minimal functionality in this file. It exists mainly to set up the proxy and
 //! call out to the library code.
 #![deny(
     trivial_casts,
@@ -22,7 +22,7 @@ use simplelog::*;
 
 fn main() -> Result<(), failure::Error> {
     // Set up and parse the command-line arguments
-    let matches = App::new("Ataxia Engine")
+    let matches = App::new("Ataxia Network Proxy")
         .version(env!("CARGO_PKG_VERSION"))
         .author("Xenith Studios (see AUTHORS)")
         .about(env!("CARGO_PKG_DESCRIPTION"))
@@ -33,7 +33,7 @@ fn main() -> Result<(), failure::Error> {
                 .long("config")
                 .value_name("FILE")
                 .takes_value(true)
-                .default_value("data/engine.toml"),
+                .default_value("data/proxy.toml"),
         )
         .arg(
             Arg::with_name("proxy_addr")
@@ -92,7 +92,10 @@ fn main() -> Result<(), failure::Error> {
             File::create(config.log_file())?,
         ),
     ])?;
-    info!("Loading Ataxia Engine, compiled on {}", ATAXIA_COMPILED);
+    info!(
+        "Loading Ataxia Network Proxy, compiled on {}",
+        ATAXIA_COMPILED
+    );
 
     // TODO: Figure out a system for catching/handling signals (SIGINT, SIGQUIT, SIGHUP)
 
@@ -115,7 +118,7 @@ fn main() -> Result<(), failure::Error> {
 
     // Initialize engine subsystem
     let server = ataxia::Server::new(config).unwrap_or_else(|err| {
-        error!("Unable to initialize the engine: {}", err);
+        error!("Unable to initialize the network proxy: {}", err);
         std::process::exit(1);
     });
 
