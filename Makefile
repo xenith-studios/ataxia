@@ -1,29 +1,24 @@
 CARGO = cargo
 CARGO_OPTS = +nightly
 
-quick: build-proxy build-engine
+build:
+	$(CARGO) $(CARGO_OPTS) build
+	cp -f target/debug/proxy bin/ataxia-proxy
+	cp -f target/debug/engine bin/ataxia-engine
 
-full: proxy engine doc
+full: lint build doc
 
-proxy: lint-proxy build-proxy
-
-engine: lint-engine build-engine
-
-build-proxy:
+proxy: lint build-proxy
 	$(CARGO) $(CARGO_OPTS) build --bin proxy
 	cp -f target/debug/proxy bin/ataxia-proxy
 
-build-engine:
+engine: lint build-engine
 	$(CARGO) $(CARGO_OPTS) build --bin engine
 	cp -f target/debug/engine bin/ataxia-engine
 
-lint-proxy:
+lint:
 	$(CARGO) $(CARGO_OPTS) fmt
-	env CARGO_TARGET_DIR=./target/clippy $(CARGO) $(CARGO_OPTS) clippy --bin proxy
-
-lint-engine:
-	$(CARGO) $(CARGO_OPTS) fmt
-	env CARGO_TARGET_DIR=./target/clippy $(CARGO) $(CARGO_OPTS) clippy --bin engine
+	env CARGO_TARGET_DIR=./target/clippy $(CARGO) $(CARGO_OPTS) clippy
 
 bootstrap:
 	rustup component add --toolchain nightly rustfmt-preview
