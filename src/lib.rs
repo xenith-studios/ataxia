@@ -6,12 +6,16 @@
     trivial_numeric_casts,
     unsafe_code,
     unused_import_braces,
-    unused_qualifications
+    unused_qualifications,
+    clippy::all,
+    clippy::pedantic
 )]
 #![warn(missing_docs)]
 
 pub mod config;
-pub mod server;
+pub mod engine;
+pub mod proxy;
 
 pub use crate::config::Config;
-pub use crate::server::Server;
+pub use crate::engine::Engine;
+pub use crate::proxy::Proxy;

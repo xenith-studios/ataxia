@@ -6,7 +6,9 @@
     trivial_numeric_casts,
     unsafe_code,
     unused_import_braces,
-    unused_qualifications
+    unused_qualifications,
+    clippy::all,
+    clippy::pedantic
 )]
 
 include!(concat!(env!("OUT_DIR"), "/version.rs"));
@@ -36,10 +38,10 @@ fn main() -> Result<(), failure::Error> {
                 .default_value("data/engine.toml"),
         )
         .arg(
-            Arg::with_name("proxy_addr")
+            Arg::with_name("internal_addr")
                 .help("Address and port of the network proxy process")
-                .short("a")
-                .long("addr")
+                .short("I")
+                .long("internal_addr")
                 .value_name("address:port")
                 .takes_value(true),
         )
@@ -114,7 +116,7 @@ fn main() -> Result<(), failure::Error> {
     //   Database
 
     // Initialize engine subsystem
-    let server = ataxia::Server::new(config).unwrap_or_else(|err| {
+    let server = ataxia::Engine::new(config).unwrap_or_else(|err| {
         error!("Unable to initialize the engine: {}", err);
         std::process::exit(1);
     });

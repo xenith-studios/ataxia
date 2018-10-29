@@ -12,7 +12,7 @@ pub struct Config {
     #[serde(default)]
     telnet_addr: String,
     #[serde(default)]
-    proxy_addr: String,
+    internal_addr: String,
     pid_file: String,
     log_file: String,
     #[serde(default)]
@@ -22,6 +22,7 @@ pub struct Config {
 }
 
 impl Config {
+    #![allow(clippy::new_ret_no_self)]
     /// Returns a new Config
     /// Read configuration from the file path specified in the argument structure.
     ///
@@ -31,20 +32,30 @@ impl Config {
     ///
     /// # Errors
     ///
+    /// * Returns std::io::Error if the config file can't be opened or read
+    /// * Returns toml::de::Error if TOML parsing fails
     ///
-    pub fn new(matches: &clap::ArgMatches<'_>) -> Result<Config, failure::Error> {
+    pub fn new(matches: &clap::ArgMatches<'_>) -> Result<Self, failure::Error> {
         let path = Path::new(matches.value_of("config").unwrap_or("data/ataxia.toml"));
 
         let mut input = String::new();
         File::open(path)?.read_to_string(&mut input)?;
-        let mut config = toml::from_str::<Config>(&input)?;
+        let mut config = toml::from_str::<Self>(&input)?;
 
         if let Some(pid_file) = matches.value_of("pid_file") {
             config.set_pid_file(pid_file);
         }
 
-        if let Some(proxy_addr) = matches.value_of("proxy_addr") {
-            config.set_proxy_addr(proxy_addr);
+        if let Some(http_addr) = matches.value_of("http_addr") {
+            config.set_http_addr(http_addr);
+        }
+
+        if let Some(telnet_addr) = matches.value_of("telnet_addr") {
+            config.set_telnet_addr(telnet_addr);
+        }
+
+        if let Some(internal_addr) = matches.value_of("internal_addr") {
+            config.set_internal_addr(internal_addr);
         }
 
         config.debug = match matches.occurrences_of("debug") {
@@ -60,13 +71,31 @@ impl Config {
         Ok(config)
     }
 
-    /// Returns the listen address of the network proxy process
-    pub fn proxy_addr(&self) -> &str {
-        self.proxy_addr.as_ref()
+    /// Returns the listen address of the network proxy process for http connections
+    pub fn http_addr(&self) -> &str {
+        self.http_addr.as_ref()
     }
-    /// Set the listen address of the network proxy process
-    pub fn set_proxy_addr(&mut self, addr: &str) {
-        self.proxy_addr = addr.to_string();
+    /// Set the listen address of the network proxy process for http connections
+    pub fn set_http_addr(&mut self, addr: &str) {
+        self.http_addr = addr.to_string();
+    }
+
+    /// Returns the listen address of the network proxy process for telnet connections
+    pub fn telnet_addr(&self) -> &str {
+        self.telnet_addr.as_ref()
+    }
+    /// Set the listen address of the network proxy process for telnet connections
+    pub fn set_telnet_addr(&mut self, addr: &str) {
+        self.telnet_addr = addr.to_string();
+    }
+
+    /// Returns the listen address of the network proxy process for internal connections
+    pub fn internal_addr(&self) -> &str {
+        self.internal_addr.as_ref()
+    }
+    /// Set the listen address of the network proxy process for internal connections
+    pub fn set_internal_addr(&mut self, addr: &str) {
+        self.internal_addr = addr.to_string();
     }
 
     /// Returns the file path to the pid file

@@ -1,25 +1,26 @@
-//! Server module and related methods
+//! Engine module and related methods
 
 use crate::Config;
 
-/// Server data structure contains all related low-level data for running the game
+/// Engine data structure contains all related low-level data for running the game
 /// TODO: This is a stub data structure for now
 #[derive(Debug)]
-pub struct Server {
+pub struct Engine {
     config: Config,
 }
 
-impl Server {
-    /// Returns a new Server
+impl Engine {
+    #![allow(clippy::new_ret_no_self)]
+    /// Returns a new fully initialized game `Engine`
     ///
     /// # Arguments
     ///
-    /// * `config` - A Config structure, contains all necessary engine configuration
+    /// * `config` - A Config structure, contains all necessary configuration
     ///
     /// # Errors
     ///
     ///
-    pub fn new(config: Config) -> Result<Server, failure::Error> {
+    pub fn new(config: Config) -> Result<Self, failure::Error> {
         // Initialize game
         //   Set game start time
         //   Initialize Lua
@@ -27,7 +28,7 @@ impl Server {
         //   Load commands
         //   Load world data
         //   Load all entities (populate world)
-        Ok(Server { config })
+        Ok(Self { config })
     }
 
     /// Run the big game loop
@@ -37,10 +38,10 @@ impl Server {
             // Read network input channel and process all pending external events
             //   Did we get a new player login? If so, create the entity and add them to the game
             //   Did the player just quit? If so, remove them from the game and delete the entity
-            // Process all server events (weather, time, zone updates, etc)
+            //   Process all player commands
+            // Process all server events (weather, time, zone updates, NPC updates, etc)
             // Process all output events and write them to the network output channel
-            // Something something timing (ticks/pulses)
-            break;
+            // Something something timing (ticks/pulses, sleep(pulse_time - how_long_this_loop_took))
         }*/
 
         // Game loop ends

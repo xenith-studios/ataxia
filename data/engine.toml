@@ -1,14 +1,14 @@
 # Ataxia Engine Configuration file
 
-# The proxy process listens in this address for internal engine connections
-proxy_addr = "127.0.0.1:9005"
+# The proxy process listens on this address for internal engine connections
+internal_addr = "[::1]:9005"
 
 # Location of the PID file
 pid_file = "data/ataxia-engine.pid"
 
 # Logging facility to use
 # Options are: stdout, file, syslog
-# log_facility = "stdout"
+# log_facility = "file"
 
 # Location of the log file
 log_file = "logs/engine.log"
@@ -35,6 +35,3 @@ log_file = "logs/engine.log"
 
 # Autosave interval in minutes
 # autosave = 15
-
-# Allow character backups
-# backup_characters = true

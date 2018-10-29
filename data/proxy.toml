@@ -1,20 +1,20 @@
 # Ataxia Proxy Configuration file
 
-# The proxy process listens in this address for player http/websockets connections
-http_addr = "127.0.0.1:9000"
+# The proxy process listens on this address for player http/websockets connections
+http_addr = "0.0.0.0:9000"
 
-# The proxy process listens in this address for player telnet connections
-telnet_addr = "127.0.0.1:9001"
+# The proxy process listens on this address for player telnet connections
+telnet_addr = "0.0.0.0:9001"
 
-# The proxy process listens in this address for internal engine connections
-proxy_addr = "127.0.0.1:9002"
+# The proxy process listens on this address for internal engine connections
+internal_addr = "[::1]:9005"
 
 # Location of the PID file
 pid_file = "data/ataxia-proxy.pid"
 
 # Logging facility to use
 # Options are: stdout, file, syslog
-# log_facility = "stdout"
+# log_facility = "file"
 
 # Location of the log file
 log_file = "logs/proxy.log"
@@ -43,16 +43,13 @@ log_file = "logs/proxy.log"
 # max_clients = 1000
 
 # Max simultaneous connections per IP
-# max_clients_per_host = 5
+# max_clients_per_host = 25
 
 # Allow creation of new accounts
 # account_creation = true
 
 # Maximum number of characters per account
-# chars_per_account = 3
+# chars_per_account = 5
 
 # Maximum number of simultaneous characters online per account (multiplaying support)
 # active_per_account = 1
-
-# Allow character backups
-# backup_characters = true

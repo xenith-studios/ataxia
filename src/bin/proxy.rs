@@ -1,4 +1,4 @@
-//! Binary source for the game engine
+//! Binary source for the network proxy
 //! There should be minimal functionality in this file. It exists mainly to set up the proxy and
 //! call out to the library code.
 #![deny(
@@ -6,7 +6,9 @@
     trivial_numeric_casts,
     unsafe_code,
     unused_import_braces,
-    unused_qualifications
+    unused_qualifications,
+    clippy::all,
+    clippy::pedantic
 )]
 
 include!(concat!(env!("OUT_DIR"), "/version.rs"));
@@ -36,10 +38,26 @@ fn main() -> Result<(), failure::Error> {
                 .default_value("data/proxy.toml"),
         )
         .arg(
-            Arg::with_name("proxy_addr")
-                .help("Address and port of the network proxy process")
-                .short("a")
-                .long("addr")
+            Arg::with_name("http_addr")
+                .help("Address and port for http connections")
+                .short("H")
+                .long("http_addr")
+                .value_name("address:port")
+                .takes_value(true),
+        )
+        .arg(
+            Arg::with_name("telnet_addr")
+                .help("Address and port for telnet connections")
+                .short("T")
+                .long("telnet_addr")
+                .value_name("address:port")
+                .takes_value(true),
+        )
+        .arg(
+            Arg::with_name("internal_addr")
+                .help("Address and port for internal connections")
+                .short("I")
+                .long("internal_addr")
                 .value_name("address:port")
                 .takes_value(true),
         )
@@ -116,21 +134,21 @@ fn main() -> Result<(), failure::Error> {
     //   Queues
     //   Database
 
-    // Initialize engine subsystem
-    let server = ataxia::Server::new(config).unwrap_or_else(|err| {
-        error!("Unable to initialize the network proxy: {}", err);
+    // Initialize proxy subsystem
+    let server = ataxia::Proxy::new(config).unwrap_or_else(|err| {
+        error!("Unable to initialize the proxy: {}", err);
         std::process::exit(1);
     });
 
     // Initialize async networking subsystem in a dedicated thread
 
-    // Start main game loop
+    // Start main loop
     if let Err(e) = server.run() {
         error!("Unresolved system error: {}", e);
         std::process::exit(1);
     }
 
-    // If the game loop exited without an error, we have a clean shutdown
+    // If the loop exited without an error, we have a clean shutdown
     // Flush pending database writes and close database connection
     // Remove the PID file
     if pid_file.exists() {
