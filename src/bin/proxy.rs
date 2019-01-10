@@ -15,7 +15,7 @@ include!(concat!(env!("OUT_DIR"), "/version.rs"));
 
 use std::fs::File;
 use std::io::Write;
-use std::path::Path;
+use std::path::PathBuf;
 use std::process;
 
 use clap::{App, Arg};
@@ -121,13 +121,12 @@ fn main() -> Result<(), failure::Error> {
 
     // Write PID to file
     // TODO: Acquire lock on PID file as additional method of insuring only a single instance is running?
-    let pid_path = config.pid_file().to_string();
-    let pid_file = Path::new(&pid_path);
+    let pid_file = PathBuf::from(config.pid_file());
     // FIXME: Remove once we have a startup/supervisor system in place to handle unclean shutdown
     if pid_file.exists() {
-        std::fs::remove_file(pid_file)?;
+        std::fs::remove_file(&pid_file)?;
     }
-    File::create(pid_file)?.write_all(format!("{}", process::id()).as_ref())?;
+    File::create(&pid_file)?.write_all(format!("{}", process::id()).as_ref())?;
 
     // Initialize support subsystems
     //   Environment
@@ -152,7 +151,7 @@ fn main() -> Result<(), failure::Error> {
     // Flush pending database writes and close database connection
     // Remove the PID file
     if pid_file.exists() {
-        std::fs::remove_file(pid_file)?;
+        std::fs::remove_file(&pid_file)?;
     }
 
     Ok(())
