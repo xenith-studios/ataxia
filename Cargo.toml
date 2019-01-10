@@ -13,14 +13,13 @@ build         = "build.rs"
 edition       = "2018"
 
 [dependencies]
-rand = "^0.5"
+rand = "^0.6"
 toml = "^0.4"
-serde = "^1.0"
-serde_derive = "^1.0"
+serde = { version = "^1.0", features = ["derive"] }
 log = "^0.4"
 simplelog = "^0.5"
 failure = "^0.1"
-specs = "^0.12"
+specs = "^0.14"
 
 [dependencies.clap]
 version = "~2"
