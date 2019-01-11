@@ -1,5 +1,5 @@
 //! Configuration module for Ataxia
-use serde_derive::Deserialize;
+use serde::Deserialize;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
@@ -24,7 +24,7 @@ pub struct Config {
 impl Config {
     #![allow(clippy::new_ret_no_self)]
     /// Returns a new Config
-    /// Read configuration from the file path specified in the argument structure.
+    /// Read configuration from the file path specified in the Clap arguments struct.
     ///
     /// # Arguments
     ///
@@ -43,19 +43,19 @@ impl Config {
         let mut config = toml::from_str::<Self>(&input)?;
 
         if let Some(pid_file) = matches.value_of("pid_file") {
-            config.set_pid_file(pid_file);
+            config.pid_file = pid_file.to_string();
         }
 
         if let Some(http_addr) = matches.value_of("http_addr") {
-            config.set_http_addr(http_addr);
+            config.http_addr = http_addr.to_string();
         }
 
         if let Some(telnet_addr) = matches.value_of("telnet_addr") {
-            config.set_telnet_addr(telnet_addr);
+            config.telnet_addr = telnet_addr.to_string();
         }
 
         if let Some(internal_addr) = matches.value_of("internal_addr") {
-            config.set_internal_addr(internal_addr);
+            config.internal_addr = internal_addr.to_string();
         }
 
         config.debug = match matches.occurrences_of("debug") {
@@ -76,8 +76,8 @@ impl Config {
         self.http_addr.as_ref()
     }
     /// Set the listen address of the network proxy process for http connections
-    pub fn set_http_addr(&mut self, addr: &str) {
-        self.http_addr = addr.to_string();
+    pub fn set_http_addr(&mut self, addr: String) {
+        self.http_addr = addr;
     }
 
     /// Returns the listen address of the network proxy process for telnet connections
@@ -85,8 +85,8 @@ impl Config {
         self.telnet_addr.as_ref()
     }
     /// Set the listen address of the network proxy process for telnet connections
-    pub fn set_telnet_addr(&mut self, addr: &str) {
-        self.telnet_addr = addr.to_string();
+    pub fn set_telnet_addr(&mut self, addr: String) {
+        self.telnet_addr = addr;
     }
 
     /// Returns the listen address of the network proxy process for internal connections
@@ -94,8 +94,8 @@ impl Config {
         self.internal_addr.as_ref()
     }
     /// Set the listen address of the network proxy process for internal connections
-    pub fn set_internal_addr(&mut self, addr: &str) {
-        self.internal_addr = addr.to_string();
+    pub fn set_internal_addr(&mut self, addr: String) {
+        self.internal_addr = addr;
     }
 
     /// Returns the file path to the pid file
@@ -103,8 +103,8 @@ impl Config {
         self.pid_file.as_ref()
     }
     /// Set the file path to the pid file
-    pub fn set_pid_file(&mut self, file: &str) {
-        self.pid_file = file.to_string();
+    pub fn set_pid_file(&mut self, file: String) {
+        self.pid_file = file;
     }
 
     /// Returns the file path to the log file
