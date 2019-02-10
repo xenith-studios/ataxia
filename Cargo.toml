@@ -20,6 +20,9 @@ log = "^0.4"
 simplelog = "^0.5"
 failure = "^0.1"
 specs = "^0.14"
+ws = "^0.7.9"
+serde_json = "^1.0.38"
+uuid = { version = "^0.7.2", features = ["v4"] }
 
 [dependencies.clap]
 version = "~2"
