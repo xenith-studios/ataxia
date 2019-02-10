@@ -9,7 +9,7 @@ use std::sync::{Arc, Mutex};
 #[derive(Clone, Debug)]
 pub enum NetSock {
     Telnet, // Unused for now
-    Websocket(Arc<Mutex<WSocket>>)
+    Websocket(Arc<Mutex<WSocket>>),
 }
 
 impl NetSock {
@@ -19,8 +19,8 @@ impl NetSock {
             NetSock::Websocket(ref socket) => {
                 let mut guard = socket.lock().unwrap();
                 (*guard).send(data).unwrap();
-            },
-            Telnet => ()
+            }
+            Telnet => (),
         }
     }
 }
@@ -32,7 +32,7 @@ pub mod handlers;
 #[derive(Debug)]
 pub struct Proxy {
     config: Config,
-    clients: Arc<Mutex<BTreeMap<String, NetSock>>>
+    clients: Arc<Mutex<BTreeMap<String, NetSock>>>,
 }
 
 impl Proxy {
@@ -46,13 +46,17 @@ impl Proxy {
     pub fn new(config: Config) -> Result<Self, failure::Error> {
         // Initialize the proxy
         //   Set process start time
-        Ok(Self { config, clients: Arc::new(Mutex::new(BTreeMap::new())) })
+        Ok(Self {
+            config,
+            clients: Arc::new(Mutex::new(BTreeMap::new())),
+        })
     }
 
     /// Run the main loop
     pub fn run(self) -> Result<(), failure::Error> {
         // Main loop
-        let websocket_thread = handlers::websockets::create_server(None, 45678, &self.clients.clone());
+        let websocket_thread =
+            handlers::websockets::create_server(None, 45678, &self.clients.clone());
         /*loop {
             // Poll all connections
             //   Handle new connections
