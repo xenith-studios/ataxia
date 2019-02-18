@@ -2,6 +2,8 @@
 
 use crate::Config;
 
+mod lua;
+
 /// Engine data structure contains all related low-level data for running the game
 /// TODO: This is a stub data structure for now
 #[derive(Debug)]
