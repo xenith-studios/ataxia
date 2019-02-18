@@ -1,8 +1,0 @@
-{
-	"reload":
-	{
-		"script":	"scripts/commands/player/reload.lua",
-		"func_name":	"do_reload",
-		"group":	"none"
-	}
-}
