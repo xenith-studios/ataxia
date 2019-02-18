@@ -5,11 +5,13 @@ use uuid::Uuid;
 use ws::{listen, Handler, Sender, Result as WSResult, Message, CloseCode, Handshake};
 use crate::proxy::NetSock;
 use std::collections::BTreeMap;
+use ataxia_events::EventLoop;
 
 #[derive(Clone, Debug)]
 pub struct Socket {
     out: Sender,
     clients: Arc<Mutex<BTreeMap<String, NetSock>>>,
+    events: Arc<EventLoop>,
     uuid: String
 }
 
@@ -42,13 +44,14 @@ impl Handler for Socket {
 }
 
 /// Start a websocket listen server bound to host and port. Returns a handle for the thread this is running in.
-pub fn create_server(host: Option<String>, port: i32, clients: &Arc<Mutex<BTreeMap<String, NetSock>>>) -> thread::JoinHandle<()> {
+pub fn create_server(host: Option<String>, port: i32, clients: &Arc<Mutex<BTreeMap<String, NetSock>>>, eventloop: &Arc<EventLoop>) -> thread::JoinHandle<()> {
     let mut host_bind = String::from("127.0.0.1");
     let cl = clients.clone();
+    let el = eventloop.clone();
     if let Some(h) = host {
         host_bind = h;
     }
     thread::spawn(move || {
-        listen(&format!("{}:{}", host_bind, port), |out| Socket { out: out, clients: cl.clone(), uuid: Uuid::new_v4().to_hyphenated().to_string() } ).unwrap()
+        listen(&format!("{}:{}", host_bind, port), |out| Socket { out, clients: cl.clone(), events: el.clone(), uuid: Uuid::new_v4().to_hyphenated().to_string() } ).unwrap()
     })
 }
