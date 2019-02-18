@@ -23,6 +23,7 @@ specs = "^0.14"
 ws = "^0.7.9"
 serde_json = "^1.0.38"
 uuid = { version = "^0.7.2", features = ["v4"] }
+ataxia-events = { git = "https://github.com/envis10n/ataxia-events.git" }
 
 [dependencies.clap]
 version = "~2"

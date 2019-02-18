@@ -4,6 +4,7 @@ use crate::Config;
 use handlers::websockets::Socket as WSocket;
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex};
+use ataxia_events::EventLoop;
 
 /// Socket enum that stores multiple types of sockets.
 #[derive(Clone, Debug)]
@@ -52,7 +53,8 @@ impl Proxy {
     /// Run the main loop
     pub fn run(self) -> Result<(), failure::Error> {
         // Main loop
-        let websocket_thread = handlers::websockets::create_server(None, 45678, &self.clients.clone());
+        let eventloop: Arc<EventLoop> = Arc::new(EventLoop::new());
+        let websocket_thread = handlers::websockets::create_server(None, 45678, &self.clients.clone(), &eventloop);
         /*loop {
             // Poll all connections
             //   Handle new connections
