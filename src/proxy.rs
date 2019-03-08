@@ -1,16 +1,16 @@
 //! Proxy module and related methods
 
 use crate::Config;
+use ataxia_events::EventLoop;
 use handlers::websockets::Socket as WSocket;
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex};
-use ataxia_events::EventLoop;
 
 /// Socket enum that stores multiple types of sockets.
 #[derive(Clone, Debug)]
 pub enum NetSock {
     Telnet, // Unused for now
-    Websocket(Arc<Mutex<WSocket>>)
+    Websocket(Arc<Mutex<WSocket>>),
 }
 
 impl NetSock {
@@ -20,8 +20,8 @@ impl NetSock {
             NetSock::Websocket(ref socket) => {
                 let mut guard = socket.lock().unwrap();
                 (*guard).send(data).unwrap();
-            },
-            Telnet => ()
+            }
+            Telnet => (),
         }
     }
 }
@@ -33,7 +33,7 @@ pub mod handlers;
 #[derive(Debug)]
 pub struct Proxy {
     config: Config,
-    clients: Arc<Mutex<BTreeMap<String, NetSock>>>
+    clients: Arc<Mutex<BTreeMap<String, NetSock>>>,
 }
 
 impl Proxy {
@@ -47,14 +47,18 @@ impl Proxy {
     pub fn new(config: Config) -> Result<Self, failure::Error> {
         // Initialize the proxy
         //   Set process start time
-        Ok(Self { config, clients: Arc::new(Mutex::new(BTreeMap::new())) })
+        Ok(Self {
+            config,
+            clients: Arc::new(Mutex::new(BTreeMap::new())),
+        })
     }
 
     /// Run the main loop
     pub fn run(self) -> Result<(), failure::Error> {
         // Main loop
         let eventloop: Arc<EventLoop> = Arc::new(EventLoop::new());
-        let websocket_thread = handlers::websockets::create_server(None, 45678, &self.clients.clone(), &eventloop);
+        let websocket_thread =
+            handlers::websockets::create_server(None, 45678, &self.clients.clone(), &eventloop);
         /*loop {
             // Poll all connections
             //   Handle new connections

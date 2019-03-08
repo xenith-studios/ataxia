@@ -1,11 +1,13 @@
-use rlua::{Lua, Function};
+use rlua::{Function, Lua};
 
 /// Run a sample command to show how to use rlua
 pub fn test() {
     let lua = Lua::new();
     lua.context(|context| {
         let args: Vec<String> = vec!["test".to_string(), "123".to_string()];
-        context.load(r#"
+        context
+            .load(
+                r#"
             function(uid, args)
                 local res = "UID: "..uid.."\nArgs: "
                 for i,v in ipairs(args) do
@@ -13,6 +15,10 @@ pub fn test() {
                 end
                 print(res)
             end
-        "#).eval::<Function>()?.call::<_, ()>(("1", args))
-    }).unwrap();
+        "#,
+            )
+            .eval::<Function>()?
+            .call::<_, ()>(("1", args))
+    })
+    .unwrap();
 }
