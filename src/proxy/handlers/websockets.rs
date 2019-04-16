@@ -1,12 +1,14 @@
+//! Websocket contains code specifically to handle network I/O for a websocket connection
+//!
 use crate::proxy::NetSock;
 use ataxia_events::EventLoop;
-use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use uuid::Uuid;
 use ws::{listen, CloseCode, Handler, Handshake, Message, Result as WSResult, Sender};
 
+/// An player connection
 #[derive(Clone, Debug)]
 pub struct Socket {
     out: Sender,
@@ -16,13 +18,14 @@ pub struct Socket {
 }
 
 impl Socket {
+    /// Send a message to a websocket connection
     pub fn send(&mut self, msg: &str) -> WSResult<()> {
         self.out.send(Message::from(msg))
     }
 }
 
 impl Handler for Socket {
-    fn on_open(&mut self, shake: Handshake) -> WSResult<()> {
+    fn on_open(&mut self, _shake: Handshake) -> WSResult<()> {
         let mut guard = self.clients.lock().unwrap();
         (*guard).insert(
             self.uuid.clone(),
@@ -31,7 +34,7 @@ impl Handler for Socket {
         Ok(())
     }
 
-    fn on_message(&mut self, msg: Message) -> WSResult<()> {
+    fn on_message(&mut self, _msg: Message) -> WSResult<()> {
         // Handle message data
         Ok(())
     }

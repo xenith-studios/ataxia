@@ -1,5 +1,7 @@
 //! Proxy module and related methods
 
+pub mod handlers;
+
 use crate::Config;
 use ataxia_events::EventLoop;
 use handlers::websockets::Socket as WSocket;
@@ -9,11 +11,14 @@ use std::sync::{Arc, Mutex};
 /// Socket enum that stores multiple types of sockets.
 #[derive(Clone, Debug)]
 pub enum NetSock {
+    /// Telnet connection
     Telnet, // Unused for now
+    /// Websocket connection
     Websocket(Arc<Mutex<WSocket>>),
 }
 
 impl NetSock {
+    /// Send data to a connection
     pub fn send(&mut self, data: &str) {
         //TODO: Add send handler for telnet sockets.
         match self {
@@ -21,12 +26,10 @@ impl NetSock {
                 let mut guard = socket.lock().unwrap();
                 (*guard).send(data).unwrap();
             }
-            Telnet => (),
+            NetSock::Telnet => {}
         }
     }
 }
-
-pub mod handlers;
 
 /// Proxy data structure contains all related low-level data for running the network proxy
 /// TODO: This is a stub data structure for now
