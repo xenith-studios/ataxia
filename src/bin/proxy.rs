@@ -1,7 +1,7 @@
 //! Binary source for the network proxy
 //! There should be minimal functionality in this file. It exists mainly to set up the proxy and
 //! call out to the library code.
-#![deny(
+#![warn(
     trivial_casts,
     trivial_numeric_casts,
     unsafe_code,

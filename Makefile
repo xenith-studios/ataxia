@@ -1,18 +1,23 @@
 CARGO = cargo
 CARGO_OPTS = +nightly
 
-build:
+debug:
 	$(CARGO) $(CARGO_OPTS) build
 	cp -f target/debug/proxy bin/ataxia-proxy
 	cp -f target/debug/engine bin/ataxia-engine
 
-full: lint build doc
+release:
+	$(CARGO) $(CARGO_OPTS) --release build
+	cp -f target/release/proxy bin/ataxia-proxy
+	cp -f target/release/engine bin/ataxia-engine
 
-proxy: lint build-proxy
+full: lint debug doc
+
+proxy: lint
 	$(CARGO) $(CARGO_OPTS) build --bin proxy
 	cp -f target/debug/proxy bin/ataxia-proxy
 
-engine: lint build-engine
+engine: lint
 	$(CARGO) $(CARGO_OPTS) build --bin engine
 	cp -f target/debug/engine bin/ataxia-engine
 
