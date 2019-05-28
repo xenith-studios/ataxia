@@ -2,7 +2,7 @@
 
 pub mod handlers;
 
-use crate::Config;
+use ataxia_core::Config;
 use ataxia_events::EventLoop;
 use handlers::websockets::Socket as WSocket;
 use std::collections::BTreeMap;

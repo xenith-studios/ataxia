@@ -1,0 +1,27 @@
+[package]
+name          = "ataxia-core"
+version       = "0.0.1-dev"
+license       = "MIT/Apache-2.0"
+authors       = ["Justin Seabrook-Rocha <xenith@xenith.org>"]
+description   = """
+A modern MUD engine using Lua for scripting and game logic
+"""
+homepage      = "https://github.com/xenith-studios/ataxia"
+repository    = "https://github.com/xenith-studios/ataxia"
+readme        = "README.md"
+build         = "build.rs"
+edition       = "2018"
+
+[dependencies]
+toml = "^0.5"
+serde = { version = "^1.0", features = ["derive"] }
+failure = "^0.1"
+serde_json = "^1.0.38"
+
+[dependencies.clap]
+version = "~2"
+default-features = false
+features = [ "color", "wrap_help" ]
+
+[build-dependencies]
+time = "^0.1"

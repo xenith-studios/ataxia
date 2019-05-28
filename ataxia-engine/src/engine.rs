@@ -1,6 +1,6 @@
 //! Engine module and related methods
 
-use crate::Config;
+use ataxia_core::Config;
 
 mod lua;
 

@@ -82,7 +82,7 @@ fn main() -> Result<(), failure::Error> {
         .get_matches();
 
     // Load settings from config file while allowing command-line overrides
-    let config = ataxia::Config::new(&matches).unwrap_or_else(|err| {
+    let config = ataxia_core::Config::new(&matches).unwrap_or_else(|err| {
         eprintln!("Unable to load the configuration file: {}", err);
         std::process::exit(1);
     });
@@ -134,7 +134,7 @@ fn main() -> Result<(), failure::Error> {
     //   Database
 
     // Initialize proxy subsystem
-    let server = ataxia::Proxy::new(config).unwrap_or_else(|err| {
+    let server = ataxia_proxy::Proxy::new(config).unwrap_or_else(|err| {
         error!("Unable to initialize the proxy: {}", err);
         std::process::exit(1);
     });

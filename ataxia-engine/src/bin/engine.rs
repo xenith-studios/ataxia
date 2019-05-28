@@ -66,7 +66,7 @@ fn main() -> Result<(), failure::Error> {
         .get_matches();
 
     // Load settings from config file while allowing command-line overrides
-    let config = ataxia::Config::new(&matches).unwrap_or_else(|err| {
+    let config = ataxia_core::Config::new(&matches).unwrap_or_else(|err| {
         eprintln!("Unable to load the configuration file: {}", err);
         std::process::exit(1);
     });
@@ -115,7 +115,7 @@ fn main() -> Result<(), failure::Error> {
     //   Database
 
     // Initialize engine subsystem
-    let server = ataxia::Engine::new(config).unwrap_or_else(|err| {
+    let server = ataxia_engine::Engine::new(config).unwrap_or_else(|err| {
         error!("Unable to initialize the engine: {}", err);
         std::process::exit(1);
     });
