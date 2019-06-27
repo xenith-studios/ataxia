@@ -16,7 +16,7 @@ edition       = "2018"
 ataxia-core = { path = "../ataxia-core" }
 rand = "^0.6"
 log = "^0.4"
-simplelog = "^0.5"
+simplelog = "^0.6"
 failure = "^0.1"
 specs = "^0.14"
 uuid = { version = "^0.7.2", features = ["v4"] }

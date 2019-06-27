@@ -14,13 +14,15 @@ edition       = "2018"
 
 [dependencies]
 ataxia-core = { path = "../ataxia-core" }
+ataxia-events = { git = "https://github.com/envis10n/ataxia-events.git" }
 rand = "^0.6"
 log = "^0.4"
-simplelog = "^0.5"
+simplelog = "^0.6"
 failure = "^0.1"
 ws = "^0.8"
 uuid = { version = "^0.7.2", features = ["v4"] }
-ataxia-events = { git = "https://github.com/envis10n/ataxia-events.git" }
+futures-preview = "0.3.0-alpha.16"
+runtime = "0.3.0-alpha.6"
 
 [dependencies.clap]
 version = "~2"

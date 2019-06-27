@@ -82,6 +82,7 @@ fn main() -> Result<(), failure::Error> {
                 LevelFilter::Warn
             },
             Config::default(),
+            TerminalMode::Mixed,
         )
         .expect("Failed to initialize terminal logging"), // FIXME: Remove expect once ? is supported for Option in failure
         WriteLogger::new(
