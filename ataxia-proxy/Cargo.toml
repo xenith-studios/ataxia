@@ -15,7 +15,7 @@ edition       = "2018"
 [dependencies]
 ataxia-core = { path = "../ataxia-core" }
 ataxia-events = { git = "https://github.com/envis10n/ataxia-events.git" }
-rand = "^0.6"
+rand = "^0.7"
 log = "^0.4"
 simplelog = "^0.6"
 failure = "^0.1"
