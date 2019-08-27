@@ -32,7 +32,7 @@ The separate process model allows Ataxia to support the following features:
 
 The only dependency at this time is the Rust toolchain, which can be installed from the official channels via [rustup](https://www.rust-lang.org/en-US/install.html). The game is written to work with the Rust 2018 edition, and it currently requires the nightly compiler until some features we rely on stabilize.
 
-Current nightly build that has been tested: 1.38.0-nightly (2d1a551e1 2019-08-08)
+For best results, the current nightly build that has been tested is 1.39.0-nightly (9eae1fc0e 2019-08-23)
 
 For further information: https://www.rust-lang.org/
 
