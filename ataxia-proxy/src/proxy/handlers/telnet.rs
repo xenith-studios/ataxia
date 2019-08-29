@@ -1,4 +1,4 @@
-//! Websocket contains code specifically to handle network I/O for a websocket connection
+//! Telnet contains code specifically to handle network I/O for a telnet connection
 //!
 use crate::proxy::NetSock;
 use failure;
@@ -25,10 +25,10 @@ pub struct Server {
 }
 
 impl Server {
-    /// Async entry point for the websocket server
+    /// Async entry point for the telnet server
     pub async fn run(self, address: String, id_counter: Arc<AtomicUsize>) -> Result<(), failure::Error> {
         let mut socket = TcpListener::bind(&address)?;
-        info!("Listening for websocket clients on {}", address);
+        info!("Listening for telnet clients on {}", address);
         let mut incoming = socket.incoming();
         while let Some(stream) = incoming.next().await {
             let id_ref = id_counter.clone();

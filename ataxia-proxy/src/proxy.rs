@@ -2,41 +2,41 @@
 
 pub mod handlers;
 
+use self::handlers::{telnet, websockets};
 use ataxia_core::Config;
-use ataxia_events::EventLoop;
-use handlers::websockets::Socket as WSocket;
 use std::collections::BTreeMap;
+use std::sync::atomic::AtomicUsize;
 use std::sync::{Arc, Mutex};
 
 /// Socket enum that stores multiple types of sockets.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Copy)]
 pub enum NetSock {
     /// Telnet connection
-    Telnet, // Unused for now
+    Telnet(usize),
     /// Websocket connection
-    Websocket(Arc<Mutex<WSocket>>),
+    Websocket(usize),
 }
 
 impl NetSock {
     /// Send data to a connection
-    pub fn send(&mut self, data: &str) {
+    pub fn send(&mut self, _data: &str) {
         //TODO: Add send handler for telnet sockets.
         match self {
-            NetSock::Websocket(ref socket) => {
-                let mut guard = socket.lock().unwrap();
-                (*guard).send(data).unwrap();
+            Self::Websocket(ref _socket) => {
+                unimplemented!();
             }
-            NetSock::Telnet => {}
+            Self::Telnet(ref _socket) => {}
         }
     }
 }
 
 /// Proxy data structure contains all related low-level data for running the network proxy
-/// TODO: This is a stub data structure for now
 #[derive(Debug)]
 pub struct Proxy {
     config: Config,
-    clients: Arc<Mutex<BTreeMap<String, NetSock>>>,
+    clients: Arc<Mutex<BTreeMap<usize, NetSock>>>,
+    ws_server: websockets::Server,
+    telnet_server: telnet::Server,
 }
 
 impl Proxy {
@@ -50,18 +50,22 @@ impl Proxy {
     pub fn new(config: Config) -> Result<Self, failure::Error> {
         // Initialize the proxy
         //   Set process start time
+        let client_list = Arc::new(Mutex::new(BTreeMap::new()));
         Ok(Self {
             config,
-            clients: Arc::new(Mutex::new(BTreeMap::new())),
+            clients: client_list.clone(),
+            ws_server: websockets::Server { clients: client_list.clone() },
+            telnet_server: telnet::Server { clients: client_list.clone() },
         })
     }
 
     /// Run the main loop
-    pub fn run(self) -> Result<(), failure::Error> {
+    pub async fn run(self) -> Result<(), failure::Error> {
         // Main loop
-        let eventloop: Arc<EventLoop> = Arc::new(EventLoop::new());
-        let websocket_thread =
-            handlers::websockets::create_server(None, 45678, &self.clients.clone(), &eventloop);
+        let id_counter = Arc::new(AtomicUsize::new(1));
+
+        let telnet = runtime::spawn(self.telnet_server.run(self.config.telnet_addr().to_string(), id_counter.clone()));
+        let websocket = runtime::spawn(self.ws_server.run(self.config.ws_addr().to_string(), id_counter.clone()));
         /*loop {
             // Poll all connections
             //   Handle new connections
@@ -73,7 +77,8 @@ impl Proxy {
             // Something something timing
         }*/
         // Hold main thread open until server thread is done.
-        websocket_thread.join().unwrap();
+        telnet.await?;
+        websocket.await?;
         // Main loop ends
         // Clean up
         Ok(())

@@ -8,11 +8,11 @@ use std::path::Path;
 #[derive(Deserialize, Debug)]
 pub struct Config {
     #[serde(default)]
-    http_addr: String,
+    ws_addr: String,
     #[serde(default)]
     telnet_addr: String,
     #[serde(default)]
-    internal_addr: String,
+    mq_addr: String,
     pid_file: String,
     log_file: String,
     #[serde(default)]
@@ -46,16 +46,16 @@ impl Config {
             config.pid_file = pid_file.to_string();
         }
 
-        if let Some(http_addr) = matches.value_of("http_addr") {
-            config.http_addr = http_addr.to_string();
+        if let Some(ws_addr) = matches.value_of("ws_addr") {
+            config.ws_addr = ws_addr.to_string();
         }
 
         if let Some(telnet_addr) = matches.value_of("telnet_addr") {
             config.telnet_addr = telnet_addr.to_string();
         }
 
-        if let Some(internal_addr) = matches.value_of("internal_addr") {
-            config.internal_addr = internal_addr.to_string();
+        if let Some(mq_addr) = matches.value_of("mq_addr") {
+            config.mq_addr = mq_addr.to_string();
         }
 
         config.debug = match matches.occurrences_of("debug") {
@@ -71,31 +71,31 @@ impl Config {
         Ok(config)
     }
 
-    /// Returns the listen address of the network proxy process for http connections
-    pub fn http_addr(&self) -> &str {
-        self.http_addr.as_ref()
+    /// Returns the listen address for player websocket connections
+    pub fn ws_addr(&self) -> &str {
+        self.ws_addr.as_ref()
     }
-    /// Set the listen address of the network proxy process for http connections
-    pub fn set_http_addr(&mut self, addr: String) {
-        self.http_addr = addr;
+    /// Set the listen address for player websocket connections
+    pub fn set_ws_addr(&mut self, addr: String) {
+        self.ws_addr = addr;
     }
 
-    /// Returns the listen address of the network proxy process for telnet connections
+    /// Returns the listen address player telnet connections
     pub fn telnet_addr(&self) -> &str {
         self.telnet_addr.as_ref()
     }
-    /// Set the listen address of the network proxy process for telnet connections
+    /// Set the listen address for player telnet connections
     pub fn set_telnet_addr(&mut self, addr: String) {
         self.telnet_addr = addr;
     }
 
-    /// Returns the listen address of the network proxy process for internal connections
-    pub fn internal_addr(&self) -> &str {
-        self.internal_addr.as_ref()
+    /// Returns the listen address of the message queue
+    pub fn mq_addr(&self) -> &str {
+        self.mq_addr.as_ref()
     }
-    /// Set the listen address of the network proxy process for internal connections
-    pub fn set_internal_addr(&mut self, addr: String) {
-        self.internal_addr = addr;
+    /// Set the listen address of the message queue
+    pub fn set_mq_addr(&mut self, addr: String) {
+        self.mq_addr = addr;
     }
 
     /// Returns the file path to the pid file

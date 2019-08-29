@@ -22,7 +22,8 @@ use clap::{App, Arg};
 use log::{error, info};
 use simplelog::*;
 
-fn main() -> Result<(), failure::Error> {
+#[runtime::main]
+async fn main() -> Result<(), failure::Error> {
     // Set up and parse the command-line arguments
     let matches = App::new("Ataxia Network Proxy")
         .version(env!("CARGO_PKG_VERSION"))
@@ -38,26 +39,26 @@ fn main() -> Result<(), failure::Error> {
                 .default_value("data/proxy.toml"),
         )
         .arg(
-            Arg::with_name("http_addr")
-                .help("Address and port for http connections")
-                .short("H")
-                .long("http_addr")
+            Arg::with_name("ws_addr")
+                .help("Address and port for player websocket connections")
+                .short("W")
+                .long("ws_addr")
                 .value_name("address:port")
                 .takes_value(true),
         )
         .arg(
             Arg::with_name("telnet_addr")
-                .help("Address and port for telnet connections")
+                .help("Address and port for player telnet connections")
                 .short("T")
                 .long("telnet_addr")
                 .value_name("address:port")
                 .takes_value(true),
         )
         .arg(
-            Arg::with_name("internal_addr")
-                .help("Address and port for internal connections")
-                .short("I")
-                .long("internal_addr")
+            Arg::with_name("mq_addr")
+                .help("Address and port for the message queue")
+                .short("M")
+                .long("mq_addr")
                 .value_name("address:port")
                 .takes_value(true),
         )
@@ -143,7 +144,7 @@ fn main() -> Result<(), failure::Error> {
     // Initialize async networking subsystem in a dedicated thread
 
     // Start main loop
-    if let Err(e) = server.run() {
+    if let Err(e) = server.run().await {
         error!("Unresolved system error: {}", e);
         std::process::exit(1);
     }

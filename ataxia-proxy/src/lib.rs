@@ -11,6 +11,7 @@
     clippy::pedantic
 )]
 #![warn(missing_docs)]
+#![feature(async_closure)]
 
 pub mod proxy;
 
