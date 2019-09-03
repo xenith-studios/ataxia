@@ -2,12 +2,12 @@
 //!
 use crate::proxy::NetSock;
 use failure;
-use std::collections::BTreeMap;
-use std::sync::{Arc, Mutex};
-use std::sync::atomic::{AtomicUsize, Ordering};
-use runtime::net::TcpListener;
 use futures::prelude::*;
 use log::info;
+use runtime::net::TcpListener;
+use std::collections::BTreeMap;
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::{Arc, Mutex};
 //use uuid::Uuid;
 
 /// An player connection
@@ -26,7 +26,11 @@ pub struct Server {
 
 impl Server {
     /// Async entry point for the websocket server
-    pub async fn run(self, address: String, id_counter: Arc<AtomicUsize>) -> Result<(), failure::Error> {
+    pub async fn run(
+        self,
+        address: String,
+        id_counter: Arc<AtomicUsize>,
+    ) -> Result<(), failure::Error> {
         let mut socket = TcpListener::bind(&address)?;
         info!("Listening for websocket clients on {}", address);
         let mut incoming = socket.incoming();

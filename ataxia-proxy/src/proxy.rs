@@ -54,8 +54,12 @@ impl Proxy {
         Ok(Self {
             config,
             clients: client_list.clone(),
-            ws_server: websockets::Server { clients: client_list.clone() },
-            telnet_server: telnet::Server { clients: client_list.clone() },
+            ws_server: websockets::Server {
+                clients: client_list.clone(),
+            },
+            telnet_server: telnet::Server {
+                clients: client_list.clone(),
+            },
         })
     }
 
@@ -64,8 +68,14 @@ impl Proxy {
         // Main loop
         let id_counter = Arc::new(AtomicUsize::new(1));
 
-        let telnet = runtime::spawn(self.telnet_server.run(self.config.telnet_addr().to_string(), id_counter.clone()));
-        let websocket = runtime::spawn(self.ws_server.run(self.config.ws_addr().to_string(), id_counter.clone()));
+        let telnet = runtime::spawn(
+            self.telnet_server
+                .run(self.config.telnet_addr().to_string(), id_counter.clone()),
+        );
+        let websocket = runtime::spawn(
+            self.ws_server
+                .run(self.config.ws_addr().to_string(), id_counter.clone()),
+        );
         /*loop {
             // Poll all connections
             //   Handle new connections
