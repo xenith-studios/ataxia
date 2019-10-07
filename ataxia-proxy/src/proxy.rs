@@ -2,11 +2,13 @@
 
 pub mod handlers;
 
-use self::handlers::{telnet, websockets};
-use ataxia_core::Config;
 use std::collections::BTreeMap;
 use std::sync::atomic::AtomicUsize;
 use std::sync::{Arc, Mutex};
+
+use self::handlers::{telnet, websockets};
+use ataxia_core::Config;
+use tokio::runtime::Runtime;
 
 /// Socket enum that stores multiple types of sockets.
 #[derive(Clone, Debug, Copy)]
@@ -35,8 +37,9 @@ impl NetSock {
 pub struct Proxy {
     config: Config,
     clients: Arc<Mutex<BTreeMap<usize, NetSock>>>,
-    ws_server: websockets::Server,
     telnet_server: telnet::Server,
+    ws_server: websockets::Server,
+    runtime: Runtime,
 }
 
 impl Proxy {
@@ -46,36 +49,39 @@ impl Proxy {
     /// # Arguments
     ///
     /// * `config` - A Config structure, contains all necessary configuration
+    /// * 'rt' - The tokio::runtime::Runtime used to run the async I/O
     ///
-    pub fn new(config: Config) -> Result<Self, failure::Error> {
+    pub fn new(config: Config, rt: Runtime) -> Result<Self, failure::Error> {
         // Initialize the proxy
-        //   Set process start time
+        let id_counter = Arc::new(AtomicUsize::new(1));
         let client_list = Arc::new(Mutex::new(BTreeMap::new()));
+        let telnet_addr = config.telnet_addr().to_string();
+        let ws_addr = config.ws_addr().to_string();
+        //TODO: Set proxy start time
+
         Ok(Self {
             config,
             clients: client_list.clone(),
-            ws_server: websockets::Server {
-                clients: client_list.clone(),
-            },
-            telnet_server: telnet::Server {
-                clients: client_list.clone(),
-            },
+            telnet_server: rt.block_on(telnet::Server::new(
+                telnet_addr,
+                client_list.clone(),
+                id_counter.clone(),
+            ))?,
+            ws_server: rt.block_on(websockets::Server::new(
+                ws_addr,
+                client_list.clone(),
+                id_counter.clone(),
+            ))?,
+            runtime: rt,
         })
     }
 
     /// Run the main loop
-    pub async fn run(self) -> Result<(), failure::Error> {
+    pub fn run(self) -> Result<(), failure::Error> {
         // Main loop
-        let id_counter = Arc::new(AtomicUsize::new(1));
 
-        let telnet = runtime::spawn(
-            self.telnet_server
-                .run(self.config.telnet_addr().to_string(), id_counter.clone()),
-        );
-        let websocket = runtime::spawn(
-            self.ws_server
-                .run(self.config.ws_addr().to_string(), id_counter.clone()),
-        );
+        self.runtime.spawn(self.telnet_server.run());
+        self.runtime.spawn(self.ws_server.run());
         /*loop {
             // Poll all connections
             //   Handle new connections
@@ -86,9 +92,8 @@ impl Proxy {
             //   Send all processed output events to connections
             // Something something timing
         }*/
-        // Hold main thread open until server thread is done.
-        telnet.await?;
-        websocket.await?;
+        // Hold main thread open until runtime has shutdown.
+        self.runtime.shutdown_on_idle();
         // Main loop ends
         // Clean up
         Ok(())

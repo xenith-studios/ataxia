@@ -4,13 +4,14 @@ use crate::proxy::NetSock;
 use failure;
 use futures::prelude::*;
 use log::info;
-use runtime::net::TcpListener;
+use tokio::net::TcpListener;
+//use tokio::prelude::*;
 use std::collections::BTreeMap;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 //use uuid::Uuid;
 
-/// An player connection
+/// A player connection
 #[derive(Clone, Debug)]
 pub struct Socket {
     uuid: String,
@@ -19,31 +20,50 @@ pub struct Socket {
 impl Socket {}
 
 /// Server data structure holding all the server state
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct Server {
-    pub clients: Arc<Mutex<BTreeMap<usize, NetSock>>>,
+    listener: TcpListener,
+    clients: Arc<Mutex<BTreeMap<usize, NetSock>>>,
+    id_counter: Arc<AtomicUsize>,
 }
 
 impl Server {
-    /// Async entry point for the websocket server
-    pub async fn run(
-        self,
+    /// Returns a new Server
+    ///
+    /// # Arguments
+    ///
+    /// * `address` - A String containing the listen addr:port
+    /// * `clients` - A shared binding to the client list
+    /// * `id_counter` - A shared binding to a global connection counter
+    ///
+    /// # Errors
+    ///
+    /// * Returns tokio::io::Error if the server can't bind to the listen port
+    ///
+    pub async fn new(
         address: String,
+        clients: Arc<Mutex<BTreeMap<usize, NetSock>>>,
         id_counter: Arc<AtomicUsize>,
-    ) -> Result<(), failure::Error> {
-        let mut socket = TcpListener::bind(&address)?;
+    ) -> Result<Self, failure::Error> {
+        let listener = TcpListener::bind(&address).await?;
         info!("Listening for websocket clients on {}", address);
-        let mut incoming = socket.incoming();
+        Ok(Self {
+            listener,
+            clients,
+            id_counter,
+        })
+    }
+    /// Start the listener loop, which will spawn individual connections into the runtime
+    pub async fn run(self) {
+        let mut incoming = self.listener.incoming();
         while let Some(stream) = incoming.next().await {
-            let id_ref = id_counter.clone();
+            let id_ref = self.id_counter.clone();
             let _clients_ref = self.clients.clone();
-            runtime::spawn(async move {
+            tokio::spawn(async move {
                 let _client_id = id_ref.fetch_add(1, Ordering::SeqCst);
-                let stream = stream?;
-                info!("Client connected: {}", stream.peer_addr()?);
-                Ok::<(), failure::Error>(())
+                let stream = stream.unwrap();
+                info!("Client connected: {}", stream.peer_addr().unwrap());
             });
         }
-        Ok(())
     }
 }

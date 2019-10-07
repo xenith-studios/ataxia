@@ -22,8 +22,8 @@ use clap::{App, Arg};
 use log::{error, info};
 use simplelog::*;
 
-#[runtime::main]
-async fn main() -> Result<(), failure::Error> {
+#[allow(clippy::too_many_lines)]
+fn main() -> Result<(), failure::Error> {
     // Set up and parse the command-line arguments
     let matches = App::new("Ataxia Network Proxy")
         .version(env!("CARGO_PKG_VERSION"))
@@ -135,16 +135,17 @@ async fn main() -> Result<(), failure::Error> {
     //   Queues
     //   Database
 
-    // Initialize proxy subsystem
-    let server = ataxia_proxy::Proxy::new(config).unwrap_or_else(|err| {
+    // Initialize Tokio async runtime and spin up the worker threadpool
+    let rt = tokio::runtime::Runtime::new().expect("Unable to initialize the Tokio Runtime");
+
+    // Initialize proxy and networking subsystems
+    let server = ataxia_proxy::Proxy::new(config, rt).unwrap_or_else(|err| {
         error!("Unable to initialize the proxy: {}", err);
         std::process::exit(1);
     });
 
-    // Initialize async networking subsystem in a dedicated thread
-
     // Start main loop
-    if let Err(e) = server.run().await {
+    if let Err(e) = server.run() {
         error!("Unresolved system error: {}", e);
         std::process::exit(1);
     }
@@ -156,5 +157,6 @@ async fn main() -> Result<(), failure::Error> {
         std::fs::remove_file(&pid_file)?;
     }
 
+    info!("Clean shutdown");
     Ok(())
 }
