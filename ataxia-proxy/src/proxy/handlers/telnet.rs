@@ -9,12 +9,12 @@ use tokio::net::TcpListener;
 use std::collections::BTreeMap;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
-//use uuid::Uuid;
+use uuid::Uuid;
 
 /// A player connection
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Socket {
-    uuid: String,
+    uuid: Uuid,
 }
 
 impl Socket {}
@@ -38,7 +38,7 @@ impl Server {
     ///
     /// # Errors
     ///
-    /// * Returns tokio::io::Error if the server can't bind to the listen port
+    /// * Returns `tokio::io::Error` if the server can't bind to the listen port
     ///
     pub async fn new(
         address: String,
@@ -56,13 +56,15 @@ impl Server {
     /// Start the listener loop, which will spawn individual connections into the runtime
     pub async fn run(self) {
         let mut incoming = self.listener.incoming();
-        while let Some(stream) = incoming.next().await {
-            let id_ref = self.id_counter.clone();
-            let _clients_ref = self.clients.clone();
+        while let Some(Ok(mut stream)) = incoming.next().await {
+            let client_id = self.id_counter.fetch_add(1, Ordering::SeqCst);
+            let (mut _reader, mut _writer) = stream.split();
             tokio::spawn(async move {
-                let _client_id = id_ref.fetch_add(1, Ordering::SeqCst);
-                let stream = stream.unwrap();
-                info!("Client connected: {}", stream.peer_addr().unwrap());
+                info!(
+                    "Telnet client connected: ID: {}, remote_addr: {}",
+                    client_id,
+                    stream.peer_addr().unwrap()
+                );
             });
         }
     }

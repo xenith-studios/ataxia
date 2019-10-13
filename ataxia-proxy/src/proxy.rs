@@ -49,7 +49,7 @@ impl Proxy {
     /// # Arguments
     ///
     /// * `config` - A Config structure, contains all necessary configuration
-    /// * 'rt' - The tokio::runtime::Runtime used to run the async I/O
+    /// * 'rt' - The `tokio::runtime::Runtime` used to run the async I/O
     ///
     pub fn new(config: Config, rt: Runtime) -> Result<Self, failure::Error> {
         // Initialize the proxy
@@ -67,11 +67,7 @@ impl Proxy {
                 client_list.clone(),
                 id_counter.clone(),
             ))?,
-            ws_server: rt.block_on(websockets::Server::new(
-                ws_addr,
-                client_list.clone(),
-                id_counter.clone(),
-            ))?,
+            ws_server: rt.block_on(websockets::Server::new(ws_addr, client_list, id_counter))?,
             runtime: rt,
         })
     }

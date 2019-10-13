@@ -38,7 +38,7 @@ impl Server {
     ///
     /// # Errors
     ///
-    /// * Returns tokio::io::Error if the server can't bind to the listen port
+    /// * Returns `tokio::io::Error` if the server can't bind to the listen port
     ///
     pub async fn new(
         address: String,

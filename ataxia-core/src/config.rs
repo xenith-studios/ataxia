@@ -28,12 +28,12 @@ impl Config {
     ///
     /// # Arguments
     ///
-    /// * `matches` - A clap::ArgMatches structure containing command-line arguments and default values
+    /// * `matches` - A `clap::ArgMatches` structure containing command-line arguments and default values
     ///
     /// # Errors
     ///
-    /// * Returns std::io::Error if the config file can't be opened or read
-    /// * Returns toml::de::Error if TOML parsing fails
+    /// * Returns `std::io::Error` if the config file can't be opened or read
+    /// * Returns `toml::de::Error` if TOML parsing fails
     ///
     pub fn new(matches: &clap::ArgMatches<'_>) -> Result<Self, failure::Error> {
         let path = Path::new(matches.value_of("config").unwrap_or("data/ataxia.toml"));
