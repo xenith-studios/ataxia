@@ -35,6 +35,7 @@ impl Engine {
 
     /// Run the big game loop
     pub fn run(self) -> Result<(), failure::Error> {
+        let _ = self;
         // Main game loop
         /*loop {
             // Read network input channel and process all pending external events

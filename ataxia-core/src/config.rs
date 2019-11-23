@@ -72,6 +72,7 @@ impl Config {
     }
 
     /// Returns the listen address for player websocket connections
+    #[must_use]
     pub fn ws_addr(&self) -> &str {
         self.ws_addr.as_ref()
     }
@@ -81,6 +82,7 @@ impl Config {
     }
 
     /// Returns the listen address player telnet connections
+    #[must_use]
     pub fn telnet_addr(&self) -> &str {
         self.telnet_addr.as_ref()
     }
@@ -90,6 +92,7 @@ impl Config {
     }
 
     /// Returns the listen address of the message queue
+    #[must_use]
     pub fn mq_addr(&self) -> &str {
         self.mq_addr.as_ref()
     }
@@ -99,6 +102,7 @@ impl Config {
     }
 
     /// Returns the file path to the pid file
+    #[must_use]
     pub fn pid_file(&self) -> &str {
         self.pid_file.as_ref()
     }
@@ -108,16 +112,19 @@ impl Config {
     }
 
     /// Returns the file path to the log file
+    #[must_use]
     pub fn log_file(&self) -> &str {
         self.log_file.as_ref()
     }
 
     /// Returns true if the debug CLI flag was specified
+    #[must_use]
     pub fn debug(&self) -> bool {
         self.debug
     }
 
     /// Returns true if the verbose CLI flag was specified
+    #[must_use]
     pub fn verbose(&self) -> bool {
         self.verbose
     }

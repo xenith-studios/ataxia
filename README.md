@@ -30,9 +30,9 @@ The separate process model allows Ataxia to support the following features:
 
 ### Dependencies
 
-The only dependency at this time is the Rust toolchain, which can be installed from the official channels via [rustup](https://www.rust-lang.org/en-US/install.html). The game is written to work with the Rust 2018 edition, and it currently requires the nightly compiler until some features we rely on stabilize.
+The only dependency at this time is the Rust toolchain, which can be installed from the official channels via [rustup](https://www.rust-lang.org/en-US/install.html). The game is written to work with the Rust 2018 edition.
 
-For best results, the nightly build version that has been tested is: 1.40.0-nightly (1721c9685 2019-10-12)
+For best results, the minimum required version of Rust is 1.39.0. The code should compile with any stable or nightly version released after 2019-11-08.
 
 For further information: https://www.rust-lang.org/
 

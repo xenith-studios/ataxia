@@ -4,11 +4,11 @@ use crate::proxy::NetSock;
 use failure;
 use futures::prelude::*;
 use log::info;
-use tokio::net::TcpListener;
-//use tokio::prelude::*;
 use std::collections::BTreeMap;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
+use tokio::net::TcpListener;
+use tokio::prelude::*;
 use uuid::Uuid;
 
 /// A player connection
@@ -57,14 +57,20 @@ impl Server {
     pub async fn run(self) {
         let mut incoming = self.listener.incoming();
         while let Some(Ok(mut stream)) = incoming.next().await {
-            let client_id = self.id_counter.fetch_add(1, Ordering::SeqCst);
-            let (mut _reader, mut _writer) = stream.split();
+            let client_id = self.id_counter.fetch_add(1, Ordering::Relaxed);
             tokio::spawn(async move {
                 info!(
                     "Telnet client connected: ID: {}, remote_addr: {}",
                     client_id,
                     stream.peer_addr().unwrap()
                 );
+                // Create account/socket struct
+                //tokio::spawn(socket.run());
+                let (_reader, writer) = &mut stream.split();
+                writer
+                    .write_all(b"You have connected. Goodbye!\r\n")
+                    .await
+                    .unwrap();
             });
         }
     }

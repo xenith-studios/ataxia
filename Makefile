@@ -1,5 +1,5 @@
 CARGO = cargo
-CARGO_OPTS = +nightly
+CARGO_OPTS =+stable
 
 debug:
 	$(CARGO) $(CARGO_OPTS) build
@@ -7,7 +7,7 @@ debug:
 	cp -f target/debug/engine bin/ataxia-engine
 
 release:
-	$(CARGO) $(CARGO_OPTS) --release build
+	$(CARGO) $(CARGO_OPTS) build --release
 	cp -f target/release/proxy bin/ataxia-proxy
 	cp -f target/release/engine bin/ataxia-engine
 
