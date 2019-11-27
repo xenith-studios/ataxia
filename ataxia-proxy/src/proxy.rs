@@ -51,7 +51,7 @@ impl Proxy {
     /// * `config` - A Config structure, contains all necessary configuration
     /// * 'rt' - The `tokio::runtime::Runtime` used to run the async I/O
     ///
-    pub fn new(config: Config, rt: Runtime) -> Result<Self, failure::Error> {
+    pub fn new(config: Config, mut rt: Runtime) -> Result<Self, failure::Error> {
         // Initialize the proxy
         let id_counter = Arc::new(AtomicUsize::new(1));
         let client_list = Arc::new(Mutex::new(BTreeMap::new()));
@@ -73,11 +73,11 @@ impl Proxy {
     }
 
     /// Run the main loop
-    pub fn run(self) -> Result<(), failure::Error> {
+    pub fn run(mut self) -> Result<(), failure::Error> {
         // Main loop
 
-        self.runtime.spawn(self.telnet_server.run());
-        self.runtime.spawn(self.ws_server.run());
+        let telnet = self.runtime.spawn(self.telnet_server.run());
+        let ws = self.runtime.spawn(self.ws_server.run());
         /*loop {
             // Poll all connections
             //   Handle new connections
@@ -89,7 +89,8 @@ impl Proxy {
             // Something something timing
         }*/
         // Hold main thread open until runtime has shutdown.
-        self.runtime.shutdown_on_idle();
+        self.runtime.block_on(telnet);
+        self.runtime.block_on(ws);
         // Main loop ends
         // Clean up
         Ok(())

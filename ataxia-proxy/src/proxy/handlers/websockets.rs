@@ -54,7 +54,7 @@ impl Server {
         })
     }
     /// Start the listener loop, which will spawn individual connections into the runtime
-    pub async fn run(self) {
+    pub async fn run(mut self) {
         let mut incoming = self.listener.incoming();
         while let Some(stream) = incoming.next().await {
             let id_ref = self.id_counter.clone();

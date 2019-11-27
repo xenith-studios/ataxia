@@ -12,12 +12,28 @@ use tokio::prelude::*;
 use uuid::Uuid;
 
 /// A player connection
-#[derive(Clone, Copy, Debug)]
+#[derive(Debug)]
 pub struct Socket {
     uuid: Uuid,
+    stream: tokio::net::TcpStream,
 }
 
-impl Socket {}
+impl Socket {
+    #[must_use]
+    pub fn new(stream: tokio::net::TcpStream) -> Self {
+        Self {
+            uuid: Uuid::new_v4(),
+            stream,
+        }
+    }
+
+    pub async fn handle(mut self) {
+        self.stream
+            .write_all(b"You have connected. Goodbye!\r\n")
+            .await
+            .unwrap();
+    }
+}
 
 /// Server data structure holding all the server state
 #[derive(Debug)]
@@ -54,9 +70,9 @@ impl Server {
         })
     }
     /// Start the listener loop, which will spawn individual connections into the runtime
-    pub async fn run(self) {
+    pub async fn run(mut self) {
         let mut incoming = self.listener.incoming();
-        while let Some(Ok(mut stream)) = incoming.next().await {
+        while let Some(Ok(stream)) = incoming.next().await {
             let client_id = self.id_counter.fetch_add(1, Ordering::Relaxed);
             tokio::spawn(async move {
                 info!(
@@ -65,12 +81,8 @@ impl Server {
                     stream.peer_addr().unwrap()
                 );
                 // Create account/socket struct
-                //tokio::spawn(socket.run());
-                let (_reader, writer) = &mut stream.split();
-                writer
-                    .write_all(b"You have connected. Goodbye!\r\n")
-                    .await
-                    .unwrap();
+                let socket = Socket::new(stream);
+                socket.handle().await;
             });
         }
     }
