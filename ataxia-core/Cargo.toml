@@ -24,4 +24,4 @@ default-features = false
 features = [ "color", "wrap_help" ]
 
 [build-dependencies]
-time = "^0.1"
+time = "^0.2"
