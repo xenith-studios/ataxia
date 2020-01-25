@@ -3,7 +3,7 @@
 use crate::proxy::NetSock;
 use failure;
 use futures::prelude::*;
-use log::info;
+use log::{error, info};
 use std::collections::BTreeMap;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
@@ -20,6 +20,11 @@ pub struct Socket {
 
 impl Socket {
     #[must_use]
+    /// Returns a new Socket
+    ///
+    /// # Arguments
+    ///
+    /// * `stream` - A `TcpStream` from Tokio
     pub fn new(stream: tokio::net::TcpStream) -> Self {
         Self {
             uuid: Uuid::new_v4(),
@@ -27,6 +32,7 @@ impl Socket {
         }
     }
 
+    /// Handle a connection
     pub async fn handle(mut self) {
         self.stream
             .write_all(b"You have connected. Goodbye!\r\n")
@@ -72,18 +78,26 @@ impl Server {
     /// Start the listener loop, which will spawn individual connections into the runtime
     pub async fn run(mut self) {
         let mut incoming = self.listener.incoming();
-        while let Some(Ok(stream)) = incoming.next().await {
-            let client_id = self.id_counter.fetch_add(1, Ordering::Relaxed);
-            tokio::spawn(async move {
-                info!(
-                    "Telnet client connected: ID: {}, remote_addr: {}",
-                    client_id,
-                    stream.peer_addr().unwrap()
-                );
-                // Create account/socket struct
-                let socket = Socket::new(stream);
-                socket.handle().await;
-            });
+        while let Some(connection) = incoming.next().await {
+            // Poll all connections
+            //   Handle new connections
+            //   Handle new disconnects/logouts
+            match connection {
+                Err(e) => error!("Accept failed: {:?}", e),
+                Ok(stream) => {
+                    let client_id = self.id_counter.fetch_add(1, Ordering::Relaxed);
+                    tokio::spawn(async move {
+                        info!(
+                            "Telnet client connected: ID: {}, remote_addr: {}",
+                            client_id,
+                            stream.peer_addr().unwrap()
+                        );
+                        // Create account/socket struct
+                        let socket = Socket::new(stream);
+                        socket.handle().await;
+                    });
+                }
+            }
         }
     }
 }

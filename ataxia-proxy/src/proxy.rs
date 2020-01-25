@@ -19,19 +19,6 @@ pub enum NetSock {
     Websocket(usize),
 }
 
-impl NetSock {
-    /// Send data to a connection
-    pub fn send(&mut self, _data: &str) {
-        //TODO: Add send handler for telnet sockets.
-        match self {
-            Self::Websocket(ref _socket) => {
-                unimplemented!();
-            }
-            Self::Telnet(ref _socket) => {}
-        }
-    }
-}
-
 /// Proxy data structure contains all related low-level data for running the network proxy
 #[derive(Debug)]
 pub struct Proxy {
@@ -74,24 +61,24 @@ impl Proxy {
 
     /// Run the main loop
     pub fn run(mut self) -> Result<(), failure::Error> {
-        // Main loop
-
+        // Start the network I/O
         let telnet = self.runtime.spawn(self.telnet_server.run());
         let ws = self.runtime.spawn(self.ws_server.run());
+
+        // Main loop
         /*loop {
-            // Poll all connections
-            //   Handle new connections
-            //   Handle new disconnects/logouts
             // Process all input events
-            //   Send all processed events over RPC to engine process
+            //   Send all processed events over MQ to engine process
             // Process all output events
             //   Send all processed output events to connections
             // Something something timing
         }*/
-        // Hold main thread open until runtime has shutdown.
-        self.runtime.block_on(telnet);
-        self.runtime.block_on(ws);
         // Main loop ends
+
+        // Hold main thread open until the runtime has shutdown.
+        // TODO: This can definitely be done better, cleanup later
+        let _ = self.runtime.block_on(telnet);
+        let _ = self.runtime.block_on(ws);
         // Clean up
         Ok(())
     }

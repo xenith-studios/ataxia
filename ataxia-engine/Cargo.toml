@@ -14,13 +14,12 @@ edition       = "2018"
 
 [dependencies]
 ataxia-core = { path = "../ataxia-core" }
-rand = "^0.7"
 log = "^0.4"
 simplelog = "^0.7"
 failure = "^0.1"
 specs = "^0.15"
-uuid = { version = "^0.8", features = ["v4"] }
-rlua = "0.17"
+#rand = "^0.7"
+#rlua = "0.17"
 
 [dependencies.clap]
 version = "~2"
