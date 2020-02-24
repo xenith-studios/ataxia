@@ -38,6 +38,9 @@ impl Proxy {
     /// * `config` - A Config structure, contains all necessary configuration
     /// * 'rt' - The `tokio::runtime::Runtime` used to run the async I/O
     ///
+    /// # Errors
+    ///
+    /// * Returns an error if the `Server`s fail to intitialize
     pub fn new(config: Config, mut rt: Runtime) -> Result<Self, failure::Error> {
         // Initialize the proxy
         let id_counter = Arc::new(AtomicUsize::new(1));
@@ -60,6 +63,10 @@ impl Proxy {
     }
 
     /// Run the main loop
+    ///
+    /// # Errors
+    ///
+    /// * Does not currently return any errors
     pub fn run(mut self) -> Result<(), failure::Error> {
         // Start the network I/O
         let telnet = self.runtime.spawn(self.telnet_server.run());

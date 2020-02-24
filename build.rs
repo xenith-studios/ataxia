@@ -12,7 +12,7 @@ fn main() {
 
     let output: String = format!(
         "static ATAXIA_COMPILED: &str = \"{}\";",
-        time::PrimitiveDateTime::now().format("%c")
+        time::OffsetDateTime::now().format("%c")
     );
 
     f.write_all(output.as_bytes()).unwrap();

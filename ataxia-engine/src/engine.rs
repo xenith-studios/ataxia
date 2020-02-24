@@ -19,6 +19,7 @@ impl Engine {
     ///
     /// # Errors
     ///
+    /// * Does not currently return any errors
     ///
     pub fn new(config: Config) -> Result<Self, failure::Error> {
         // Initialize game
@@ -32,6 +33,10 @@ impl Engine {
     }
 
     /// Run the big game loop
+    ///
+    /// # Errors
+    ///
+    /// * Does not currently return any errors
     pub fn run(self) -> Result<(), failure::Error> {
         let _ = self;
         // Main game loop
