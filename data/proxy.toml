@@ -1,10 +1,10 @@
 # Ataxia Proxy Configuration file
 
-# The proxy process listens on this address for player websockets connections
-ws_addr = "0.0.0.0:9000"
-
 # The proxy process listens on this address for player telnet connections
-telnet_addr = "0.0.0.0:9001"
+telnet_addr = "0.0.0.0:9000"
+
+# The proxy process listens on this address for player websockets connections
+ws_addr = "0.0.0.0:9001"
 
 # The proxy process connects to the message queue listening on this address
 mq_addr = "[::1]:9005"
