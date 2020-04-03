@@ -60,12 +60,12 @@ impl Config {
 
         config.debug = match matches.occurrences_of("debug") {
             0 => false,
-            1 | _ => true,
+            _ => true,
         };
 
         config.verbose = match matches.occurrences_of("verbose") {
             0 => false,
-            1 | _ => true,
+            _ => true,
         };
 
         Ok(config)
