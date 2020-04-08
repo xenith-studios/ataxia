@@ -8,9 +8,12 @@
     unused_import_braces,
     unused_qualifications,
     clippy::all,
-    clippy::pedantic
+    clippy::pedantic,
+    clippy::perf,
+    clippy::style
 )]
 
+// Include this file to get access to the datetime of the last time we compiled
 include!(concat!(env!("OUT_DIR"), "/version.rs"));
 
 use std::fs::File;
@@ -18,55 +21,12 @@ use std::io::Write;
 use std::path::PathBuf;
 use std::process;
 
-use clap::{App, Arg};
 use log::{error, info};
 use simplelog::*;
 
 fn main() -> Result<(), failure::Error> {
-    // Set up and parse the command-line arguments
-    let matches = App::new("Ataxia Engine")
-        .version(env!("CARGO_PKG_VERSION"))
-        .author("Xenith Studios (see AUTHORS)")
-        .about(env!("CARGO_PKG_DESCRIPTION"))
-        .arg(
-            Arg::with_name("config")
-                .help("The filesystem path to the config file")
-                .short("c")
-                .long("config")
-                .value_name("FILE")
-                .takes_value(true)
-                .default_value("data/engine.toml"),
-        )
-        .arg(
-            Arg::with_name("internal_addr")
-                .help("Address and port of the network proxy process")
-                .short("I")
-                .long("internal_addr")
-                .value_name("address:port")
-                .takes_value(true),
-        )
-        .arg(
-            Arg::with_name("pid_file")
-                .help("The filesystem path to the PID file")
-                .short("p")
-                .long("pid")
-                .value_name("FILE")
-                .takes_value(true),
-        )
-        .arg(
-            Arg::with_name("debug")
-                .help("Enable debugging output")
-                .short("d"),
-        )
-        .arg(
-            Arg::with_name("verbose")
-                .help("Enable verbose output")
-                .short("v"),
-        )
-        .get_matches();
-
     // Load settings from config file while allowing command-line overrides
-    let config = ataxia_core::Config::new(&matches).unwrap_or_else(|err| {
+    let config = ataxia_core::Config::new().unwrap_or_else(|err| {
         eprintln!("Unable to load the configuration file: {}", err);
         std::process::exit(1);
     });

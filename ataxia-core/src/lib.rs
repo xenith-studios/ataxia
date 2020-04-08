@@ -8,7 +8,9 @@
     unused_import_braces,
     unused_qualifications,
     clippy::all,
-    clippy::pedantic
+    clippy::pedantic,
+    clippy::perf,
+    clippy::style
 )]
 #![warn(missing_docs)]
 
