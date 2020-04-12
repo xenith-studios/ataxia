@@ -1,7 +1,6 @@
 //! Websocket contains code specifically to handle network I/O for a websocket connection
 //!
 use crate::proxy::NetSock;
-use failure;
 use futures::prelude::*;
 use log::info;
 use tokio::net::TcpListener;
@@ -44,7 +43,7 @@ impl Server {
         address: String,
         clients: Arc<Mutex<BTreeMap<usize, NetSock>>>,
         id_counter: Arc<AtomicUsize>,
-    ) -> Result<Self, failure::Error> {
+    ) -> Result<Self, anyhow::Error> {
         let listener = TcpListener::bind(&address).await?;
         info!("Listening for websocket clients on {}", address);
         Ok(Self {

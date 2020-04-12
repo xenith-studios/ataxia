@@ -16,7 +16,7 @@ edition       = "2018"
 ataxia-core = { path = "../ataxia-core" }
 log = "^0.4"
 simplelog = "^0.7"
-failure = "^0.1"
+anyhow = "^1.0"
 specs = "^0.16"
 #rand = "^0.7"
 #rlua = "0.17"

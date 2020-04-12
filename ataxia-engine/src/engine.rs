@@ -21,7 +21,7 @@ impl Engine {
     ///
     /// * Does not currently return any errors
     ///
-    pub fn new(config: Config) -> Result<Self, failure::Error> {
+    pub fn new(config: Config) -> Result<Self, anyhow::Error> {
         // Initialize game
         //   Set game start time
         //   Initialize Lua
@@ -37,7 +37,7 @@ impl Engine {
     /// # Errors
     ///
     /// * Does not currently return any errors
-    pub fn run(self) -> Result<(), failure::Error> {
+    pub fn run(self) -> Result<(), anyhow::Error> {
         let _ = self;
         // Main game loop
         /*loop {

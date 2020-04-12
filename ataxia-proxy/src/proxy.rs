@@ -41,7 +41,7 @@ impl Proxy {
     /// # Errors
     ///
     /// * Returns an error if the `Server`s fail to intitialize
-    pub fn new(config: Config, mut rt: Runtime) -> Result<Self, failure::Error> {
+    pub fn new(config: Config, mut rt: Runtime) -> Result<Self, anyhow::Error> {
         // Initialize the proxy
         let id_counter = Arc::new(AtomicUsize::new(1));
         let client_list = Arc::new(Mutex::new(BTreeMap::new()));
@@ -67,7 +67,7 @@ impl Proxy {
     /// # Errors
     ///
     /// * Does not currently return any errors
-    pub fn run(mut self) -> Result<(), failure::Error> {
+    pub fn run(mut self) -> Result<(), anyhow::Error> {
         // Start the network I/O
         let telnet = self.runtime.spawn(self.telnet_server.run());
         let ws = self.runtime.spawn(self.ws_server.run());

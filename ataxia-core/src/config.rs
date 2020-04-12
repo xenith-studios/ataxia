@@ -48,7 +48,7 @@ impl Config {
     /// * Returns `std::io::Error` if the config file can't be opened or read
     /// * Returns `toml::de::Error` if TOML parsing fails
     ///
-    pub fn new() -> Result<Self, failure::Error> {
+    pub fn new() -> Result<Self, anyhow::Error> {
         let cli = Config::from_args();
 
         let mut input = String::new();

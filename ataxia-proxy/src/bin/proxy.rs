@@ -25,7 +25,7 @@ use log::{error, info};
 use simplelog::*;
 
 #[allow(clippy::too_many_lines)]
-fn main() -> Result<(), failure::Error> {
+fn main() -> Result<(), anyhow::Error> {
     // Load settings from config file while allowing command-line overrides
     let config = ataxia_core::Config::new().unwrap_or_else(|err| {
         eprintln!("Unable to load the configuration file: {}", err);

@@ -1,7 +1,6 @@
 //! Telnet contains code specifically to handle network I/O for a telnet connection
 //!
 use crate::proxy::NetSock;
-use failure;
 use futures::prelude::*;
 use log::{error, info};
 use std::collections::BTreeMap;
@@ -66,7 +65,7 @@ impl Server {
         address: String,
         clients: Arc<Mutex<BTreeMap<usize, NetSock>>>,
         id_counter: Arc<AtomicUsize>,
-    ) -> Result<Self, failure::Error> {
+    ) -> Result<Self, anyhow::Error> {
         let listener = TcpListener::bind(&address).await?;
         info!("Listening for telnet clients on {}", address);
         Ok(Self {
