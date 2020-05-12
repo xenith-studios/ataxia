@@ -23,7 +23,7 @@ use std::process;
 
 use anyhow::anyhow;
 use log::{error, info};
-use simplelog::*;
+use simplelog::{CombinedLogger, Config, LevelFilter, TermLogger, TerminalMode, WriteLogger};
 
 #[allow(clippy::too_many_lines)]
 fn main() -> Result<(), anyhow::Error> {
