@@ -40,7 +40,7 @@ impl Proxy {
     ///
     /// # Errors
     ///
-    /// * Returns an error if the `Server`s fail to intitialize
+    /// * Returns an error if the `Server` fails to initialize
     pub fn new(config: Config, mut rt: Runtime) -> Result<Self, anyhow::Error> {
         // Initialize the proxy
         let id_counter = Arc::new(AtomicUsize::new(1));

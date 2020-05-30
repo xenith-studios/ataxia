@@ -21,7 +21,6 @@ use std::io::Write;
 use std::path::PathBuf;
 use std::process;
 
-use anyhow::anyhow;
 use log::{error, info};
 use simplelog::{CombinedLogger, Config, LevelFilter, TermLogger, TerminalMode, WriteLogger};
 
@@ -45,8 +44,7 @@ fn main() -> Result<(), anyhow::Error> {
             },
             Config::default(),
             TerminalMode::Mixed,
-        )
-        .ok_or_else(|| anyhow!("Can't start TermLogger"))?,
+        ),
         WriteLogger::new(
             if config.debug() {
                 LevelFilter::Debug

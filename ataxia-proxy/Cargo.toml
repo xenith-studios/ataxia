@@ -15,7 +15,7 @@ edition       = "2018"
 [dependencies]
 ataxia-core = { path = "../ataxia-core" }
 log = "^0.4"
-simplelog = "^0.7"
+simplelog = "^0.8"
 anyhow = "^1.0"
 uuid = { version = "^0.8", features = ["v4"] }
 futures = "^0.3"
