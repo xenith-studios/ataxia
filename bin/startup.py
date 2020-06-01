@@ -7,7 +7,7 @@ import subprocess
 # Check for exiting PID files to hint that a copy of the programs are already
 # running or possibly crashed
 
-proxy = subprocess.Popen(["./bin/ataxia-proxy"])
-engine = subprocess.Popen(["./bin/ataxia-engine"])
+proxy = subprocess.Popen(["./bin/ataxia-proxy", "-d", "-c", "data/proxy.toml"])
+engine = subprocess.Popen(["./bin/ataxia-engine", "-d", "-c", "data/engine.toml"])
 engine.wait()
 proxy.wait()
