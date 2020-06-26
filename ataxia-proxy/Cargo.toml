@@ -19,7 +19,7 @@ simplelog = "^0.8"
 anyhow = "^1.0"
 uuid = { version = "^0.8", features = ["v4"] }
 futures = "^0.3"
-tokio = { version = "^0.2", features = ["tcp", "rt-core", "dns", "io-util", "stream"] }
+tokio = { version = "^0.2", features = ["tcp", "rt-core", "dns", "io-util", "stream", "sync"] }
 #rand = "^0.7"
 
 [build-dependencies]
