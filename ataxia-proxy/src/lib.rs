@@ -7,10 +7,9 @@
     unsafe_code,
     unused_import_braces,
     unused_qualifications,
-    clippy::all,
-    clippy::pedantic
+    clippy::all
 )]
-#![warn(missing_docs)]
+#![warn(missing_docs, clippy::pedantic)]
 
 pub mod proxy;
 

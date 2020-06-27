@@ -79,16 +79,19 @@ fn main() -> Result<(), anyhow::Error> {
     //   Database
 
     // Initialize Tokio async runtime and spin up the worker threadpool
-    let rt = tokio::runtime::Runtime::new().expect("Unable to initialize the Tokio Runtime");
+    let mut runtime =
+        tokio::runtime::Runtime::new().expect("Unable to initialize the Tokio Runtime");
 
     // Initialize proxy and networking subsystems
-    let server = ataxia_proxy::Proxy::new(config, rt).unwrap_or_else(|err| {
-        error!("Unable to initialize the proxy: {}", err);
-        std::process::exit(1);
-    });
+    let server = runtime
+        .block_on(ataxia_proxy::Proxy::new(config))
+        .unwrap_or_else(|err| {
+            error!("Unable to initialize the proxy: {}", err);
+            std::process::exit(1);
+        });
 
     // Start main loop
-    if let Err(e) = server.run() {
+    if let Err(e) = server.run(runtime) {
         error!("Unresolved system error: {}", e);
         std::process::exit(1);
     }

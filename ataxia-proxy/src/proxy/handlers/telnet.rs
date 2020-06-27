@@ -1,11 +1,11 @@
 //! Telnet contains code specifically to handle network I/O for a telnet connection
 //!
-use crate::proxy::NetSock;
+use crate::proxy::{Message, Rx, Tx};
+use crossbeam::crossbeam_channel::unbounded;
 use futures::prelude::*;
 use log::{error, info};
-use std::collections::BTreeMap;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use tokio::net::TcpListener;
 use tokio::prelude::*;
 use uuid::Uuid;
@@ -14,7 +14,10 @@ use uuid::Uuid;
 #[derive(Debug)]
 pub struct Socket {
     uuid: Uuid,
+    id: usize,
     stream: tokio::net::TcpStream,
+    rx: Rx,
+    main_tx: Tx,
 }
 
 impl Socket {
@@ -24,10 +27,13 @@ impl Socket {
     /// # Arguments
     ///
     /// * `stream` - A `TcpStream` from Tokio
-    pub fn new(stream: tokio::net::TcpStream) -> Self {
+    pub fn new(stream: tokio::net::TcpStream, id: usize, rx: Rx, main_tx: Tx) -> Self {
         Self {
             uuid: Uuid::new_v4(),
+            id,
             stream,
+            rx,
+            main_tx,
         }
     }
 
@@ -44,8 +50,8 @@ impl Socket {
 #[derive(Debug)]
 pub struct Server {
     listener: TcpListener,
-    clients: Arc<Mutex<BTreeMap<usize, NetSock>>>,
     id_counter: Arc<AtomicUsize>,
+    main_tx: Tx,
 }
 
 impl Server {
@@ -63,36 +69,39 @@ impl Server {
     ///
     pub async fn new(
         address: String,
-        clients: Arc<Mutex<BTreeMap<usize, NetSock>>>,
         id_counter: Arc<AtomicUsize>,
+        tx: Tx,
     ) -> Result<Self, anyhow::Error> {
         let listener = TcpListener::bind(&address).await?;
         info!("Listening for telnet clients on {}", address);
         Ok(Self {
             listener,
-            clients,
             id_counter,
+            main_tx: tx,
         })
     }
     /// Start the listener loop, which will spawn individual connections into the runtime
     pub async fn run(mut self) {
         let mut incoming = self.listener.incoming();
         while let Some(connection) = incoming.next().await {
-            // Poll all connections
-            //   Handle new connections
-            //   Handle new disconnects/logouts
             match connection {
                 Err(e) => error!("Accept failed: {:?}", e),
                 Ok(stream) => {
                     let client_id = self.id_counter.fetch_add(1, Ordering::Relaxed);
+                    let main_tx = self.main_tx.clone();
                     tokio::spawn(async move {
                         info!(
                             "Telnet client connected: ID: {}, remote_addr: {}",
                             client_id,
                             stream.peer_addr().unwrap()
                         );
+                        // Create a channel for this player
+                        let (tx, rx) = unbounded();
+                        main_tx
+                            .send(Message::NewConnection(client_id, tx, "Unknown".to_string()))
+                            .unwrap();
                         // Create account/socket struct
-                        let socket = Socket::new(stream);
+                        let socket = Socket::new(stream, client_id, rx, main_tx);
                         socket.handle().await;
                     });
                 }
