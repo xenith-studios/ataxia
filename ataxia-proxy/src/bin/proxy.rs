@@ -91,7 +91,7 @@ fn main() -> Result<(), anyhow::Error> {
         });
 
     // Start main loop
-    if let Err(e) = server.run(runtime) {
+    if let Err(e) = runtime.block_on(server.run()) {
         error!("Unresolved system error: {}", e);
         std::process::exit(1);
     }

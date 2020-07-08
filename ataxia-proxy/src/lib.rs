@@ -10,6 +10,8 @@
     clippy::all
 )]
 #![warn(missing_docs, clippy::pedantic)]
+// Disable this lint due to Tokio using the binding name _task_context
+#![allow(clippy::used_underscore_binding)]
 
 pub mod proxy;
 

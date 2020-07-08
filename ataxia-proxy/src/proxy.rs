@@ -5,35 +5,36 @@ pub mod handlers;
 use std::collections::BTreeMap;
 use std::sync::atomic::AtomicUsize;
 use std::sync::Arc;
-use std::thread;
 
 use self::handlers::{telnet, websockets};
 use ataxia_core::Config;
-use crossbeam::crossbeam_channel::unbounded;
 use log::info;
-use tokio::runtime::Runtime;
+use tokio::sync::mpsc;
 
 /// Shorthand for the transmit half of the message channel.
-type Tx = crossbeam::channel::Sender<Message>;
+type Tx = mpsc::UnboundedSender<Message>;
 
 /// Shorthand for the receive half of the message channel.
-type Rx = crossbeam::channel::Receiver<Message>;
+type Rx = mpsc::UnboundedReceiver<Message>;
 
 /// Message is a wrapper for data passed between the main thread and the tasks
 #[derive(Debug)]
 pub enum Message {
     /// A message that should be broadcasted to others.
-    Data(String),
+    Data(usize, String),
 
     /// A new connection
     NewConnection(usize, Tx, String),
+
+    /// Remove an existing connection
+    CloseConnection(usize),
 }
 
 /// Proxy data structure contains all related low-level data for running the network proxy
 #[derive(Debug)]
 pub struct Proxy {
     config: Config,
-    client_list: BTreeMap<usize, Tx>,
+    client_list: BTreeMap<usize, (String, Tx)>,
     telnet_server: telnet::Server,
     ws_server: websockets::Server,
     rx: Rx,
@@ -57,7 +58,7 @@ impl Proxy {
         let client_list = BTreeMap::new();
         let telnet_addr = config.telnet_addr().to_string();
         let ws_addr = config.ws_addr().to_string();
-        let (tx, rx) = unbounded();
+        let (tx, rx) = mpsc::unbounded_channel();
         //TODO: Set proxy start time
 
         Ok(Self {
@@ -74,19 +75,13 @@ impl Proxy {
     /// # Errors
     ///
     /// * Does not currently return any errors
-    pub fn run(mut self, mut runtime: Runtime) -> Result<(), anyhow::Error> {
+    pub async fn run(mut self) -> Result<(), anyhow::Error> {
         // Start the network I/O and put the executor into a background thread
-        let telnet = runtime.spawn(self.telnet_server.run());
-        let ws = runtime.spawn(self.ws_server.run());
-        let executor = thread::spawn(move || {
-            // Hold executor thread open until the network tasks have shutdown.
-            // TODO: This can definitely be done better, cleanup later
-            let _ = runtime.block_on(ws);
-            let _ = runtime.block_on(telnet);
-        });
+        tokio::spawn(self.telnet_server.run());
+        tokio::spawn(self.ws_server.run());
 
         // Main loop
-        while let Some(message) = self.rx.iter().next() {
+        while let Some(message) = self.rx.recv().await {
             // Process all input events
             //   Send all processed events over MQ to engine process
             // Process all output events
@@ -94,18 +89,35 @@ impl Proxy {
             // Something something timing
             match message {
                 Message::NewConnection(id, rx, name) => {
-                    self.client_list.insert(id, rx);
                     info!("Player {} has connected on socket {}", name, id);
+                    self.client_list.values().for_each(|(_, tx)| {
+                        tx.send(Message::Data(id, format!("{} has joined the chat.", name)))
+                            .unwrap();
+                    });
+                    self.client_list.insert(id, (name, rx));
                 }
-                Message::Data(message) => {
-                    info!("Received message: {}", message);
+                Message::CloseConnection(id) => {
+                    if let Some((name, _)) = self.client_list.remove(&id) {
+                        info!("Player {} has disconnected on socket {}", name, id);
+                        self.client_list.values().for_each(|(_, tx)| {
+                            tx.send(Message::Data(id, format!("{} has left the chat.", name)))
+                                .unwrap();
+                        });
+                    }
+                }
+                Message::Data(id, message) => {
+                    if let Some((name, _)) = self.client_list.get(&id) {
+                        info!("Received message from {}: {}", name, message);
+                        self.client_list.values().for_each(|(_, tx)| {
+                            tx.send(Message::Data(id, format!("{}: {}", name, message)))
+                                .unwrap();
+                        });
+                    }
                 }
             }
         }
         // Main loop ends
 
-        // Wait for the networking to shut down
-        executor.join().unwrap();
         // Clean up
         Ok(())
     }

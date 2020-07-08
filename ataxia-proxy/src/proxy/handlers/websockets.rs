@@ -1,13 +1,13 @@
 //! Telnet contains code specifically to handle network I/O for a telnet connection
 //!
 use crate::proxy::{Message, Rx, Tx};
-use crossbeam::crossbeam_channel::unbounded;
 use futures::prelude::*;
 use log::{error, info};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use tokio::net::TcpListener;
 use tokio::prelude::*;
+use tokio::sync::mpsc;
 use uuid::Uuid;
 
 /// A player connection
@@ -96,7 +96,7 @@ impl Server {
                             stream.peer_addr().unwrap()
                         );
                         // Create a channel for this player
-                        let (tx, rx) = unbounded();
+                        let (tx, rx) = mpsc::unbounded_channel();
                         main_tx
                             .send(Message::NewConnection(client_id, tx, "Unknown".to_string()))
                             .unwrap();

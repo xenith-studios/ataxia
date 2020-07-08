@@ -1,13 +1,14 @@
 //! Telnet contains code specifically to handle network I/O for a telnet connection
 //!
 use crate::proxy::{Message, Rx, Tx};
-use crossbeam::crossbeam_channel::unbounded;
 use futures::prelude::*;
 use log::{error, info};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use tokio::net::TcpListener;
-use tokio::prelude::*;
+//use tokio::prelude::*;
+use tokio::sync::mpsc;
+use tokio_util::codec::{Framed, LinesCodec};
 use uuid::Uuid;
 
 /// A player connection
@@ -15,7 +16,7 @@ use uuid::Uuid;
 pub struct Socket {
     uuid: Uuid,
     id: usize,
-    stream: tokio::net::TcpStream,
+    stream: Framed<tokio::net::TcpStream, LinesCodec>,
     rx: Rx,
     main_tx: Tx,
 }
@@ -27,7 +28,12 @@ impl Socket {
     /// # Arguments
     ///
     /// * `stream` - A `TcpStream` from Tokio
-    pub fn new(stream: tokio::net::TcpStream, id: usize, rx: Rx, main_tx: Tx) -> Self {
+    pub fn new(
+        stream: Framed<tokio::net::TcpStream, LinesCodec>,
+        id: usize,
+        rx: Rx,
+        main_tx: Tx,
+    ) -> Self {
         Self {
             uuid: Uuid::new_v4(),
             id,
@@ -40,8 +46,28 @@ impl Socket {
     /// Handle a connection
     pub async fn handle(mut self) {
         self.stream
-            .write_all(b"You have connected. Goodbye!\r\n")
+            .send("You have connected. Goodbye!")
             .await
+            .unwrap();
+        loop {
+            futures::select! {
+                data = self.rx.recv().fuse() => {
+                    if let Some(message) = data {
+                        match message {
+                            Message::Data(_, message) => self.stream.send(message).await.unwrap(),
+                            _ => error!("Oops"),
+                        }
+                    }
+                },
+                data = self.stream.next().fuse() => {
+                    if let Some(message) = data {
+                        self.main_tx.send(Message::Data(self.id, message.unwrap()));
+                    }
+                },
+            };
+        }
+        self.main_tx
+            .send(Message::CloseConnection(self.id))
             .unwrap();
     }
 }
@@ -89,19 +115,29 @@ impl Server {
                 Ok(stream) => {
                     let client_id = self.id_counter.fetch_add(1, Ordering::Relaxed);
                     let main_tx = self.main_tx.clone();
+                    let addr = stream.peer_addr().unwrap();
+                    let mut frames = Framed::new(stream, LinesCodec::new());
                     tokio::spawn(async move {
                         info!(
                             "Telnet client connected: ID: {}, remote_addr: {}",
-                            client_id,
-                            stream.peer_addr().unwrap()
+                            client_id, addr
                         );
                         // Create a channel for this player
-                        let (tx, rx) = unbounded();
+                        let (tx, rx) = mpsc::unbounded_channel();
+                        frames.send("Please enter your username:").await.unwrap();
+                        let username = match frames.next().await {
+                            Some(Ok(line)) => line,
+                            // We didn't get a line so we return early here.
+                            Some(Err(_)) | None => {
+                                info!("Failed to get username from {}. Client disconnected.", addr);
+                                return;
+                            }
+                        };
                         main_tx
-                            .send(Message::NewConnection(client_id, tx, "Unknown".to_string()))
+                            .send(Message::NewConnection(client_id, tx, username))
                             .unwrap();
                         // Create account/socket struct
-                        let socket = Socket::new(stream, client_id, rx, main_tx);
+                        let socket = Socket::new(frames, client_id, rx, main_tx);
                         socket.handle().await;
                     });
                 }
