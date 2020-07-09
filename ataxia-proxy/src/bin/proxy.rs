@@ -92,6 +92,9 @@ fn main() -> Result<(), anyhow::Error> {
 
     // Start main loop
     if let Err(e) = runtime.block_on(server.run()) {
+        // If we enter this block, the system has crashed and we don't know why
+        // Do some minor cleanup before exiting, but leave the PID file in place to signal an
+        // unclean shutdown
         error!("Unresolved system error: {}", e);
         std::process::exit(1);
     }

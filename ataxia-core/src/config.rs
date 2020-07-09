@@ -51,12 +51,31 @@ impl Config {
     pub fn new() -> Result<Self, anyhow::Error> {
         let cli = Config::from_args();
 
+        // TODO: This is a very simplistic method that should be improved/strengthened
+        let process_name = std::env::args()
+            .next()
+            .unwrap()
+            .split("/")
+            .last()
+            .unwrap()
+            .to_string();
+
         let mut input = String::new();
         File::open(&cli.config_file)?.read_to_string(&mut input)?;
         let mut config = toml::from_str::<Self>(&input)?;
 
         if let Some(pid_file) = cli.pid_file {
             config.pid_file = Some(pid_file);
+        } else if config.pid_file == None {
+            // The PID file wasn't specified. Default to proccess name
+            config.pid_file = Some(format!("data/{}.pid", process_name));
+        }
+
+        if let Some(log_file) = cli.log_file {
+            config.log_file = Some(log_file);
+        } else if config.log_file == None {
+            // The log file wasn't specified. Default to proccess name
+            config.log_file = Some(format!("logs/{}.log", process_name));
         }
 
         if let Some(ws_addr) = cli.ws_addr {
