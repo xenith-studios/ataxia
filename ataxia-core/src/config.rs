@@ -55,7 +55,7 @@ impl Config {
         let process_name = std::env::args()
             .next()
             .unwrap()
-            .split("/")
+            .split('/')
             .last()
             .unwrap()
             .to_string();

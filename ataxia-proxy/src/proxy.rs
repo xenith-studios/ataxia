@@ -76,7 +76,7 @@ impl Proxy {
     ///
     /// * Does not currently return any errors
     pub async fn run(mut self) -> Result<(), anyhow::Error> {
-        // Start the network I/O and put the executor into a background thread
+        // Start the network I/O servers
         tokio::spawn(self.telnet_server.run());
         tokio::spawn(self.ws_server.run());
 
@@ -108,9 +108,11 @@ impl Proxy {
                 Message::Data(id, message) => {
                     if let Some((name, _)) = self.client_list.get(&id) {
                         info!("Received message from {}: {}", name, message);
-                        self.client_list.values().for_each(|(_, tx)| {
-                            tx.send(Message::Data(id, format!("{}: {}", name, message)))
-                                .unwrap();
+                        self.client_list.values().for_each(|(tx_name, tx)| {
+                            if tx_name != name {
+                                tx.send(Message::Data(id, format!("{}: {}", name, message)))
+                                    .unwrap();
+                            }
                         });
                     }
                 }

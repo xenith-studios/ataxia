@@ -46,7 +46,7 @@ $ make
 
 This will install all library dependencies and build ataxia. (Make will automatically call `cargo build` as needed.)
 
-Modify the configuration files in `data/proxy.toml` and `data/engine.toml`
+Modify the configuration file in `data/ataxia.toml`
 
 Run Ataxia:
 

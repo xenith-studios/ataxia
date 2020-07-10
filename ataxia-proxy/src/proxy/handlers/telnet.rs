@@ -46,7 +46,7 @@ impl Socket {
     /// Handle a connection
     pub async fn handle(mut self) {
         self.stream
-            .send("You have connected. Goodbye!")
+            .send("You have connected. Welcome to the Ataxia Chat Room.")
             .await
             .unwrap();
         loop {
@@ -57,11 +57,24 @@ impl Socket {
                             Message::Data(_, message) => self.stream.send(message).await.unwrap(),
                             _ => error!("Oops"),
                         }
+                    } else {
+                        // The main loop closed our channel, assume this means the game is shutting
+                        // down
+                        self.stream.send("The game is shutting down, goodbye!").await.unwrap();
+                        break;
                     }
                 },
                 data = self.stream.next().fuse() => {
                     if let Some(message) = data {
-                        self.main_tx.send(Message::Data(self.id, message.unwrap()));
+                        if let Err(e) = self.main_tx.send(Message::Data(self.id, message.unwrap())) {
+                            // The main loop channel was closed, assume this means the main loop
+                            // crashed
+                            self.stream.send("The game has crashed, sorry! Please try again.").await.unwrap();
+                            break;
+                        }
+                    } else {
+                        // Received None, the other end closed the connection. Nothing left to do.
+                        break;
                     }
                 },
             };
