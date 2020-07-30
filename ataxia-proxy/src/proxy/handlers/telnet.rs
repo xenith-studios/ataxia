@@ -6,7 +6,6 @@ use log::{error, info};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use tokio::net::TcpListener;
-//use tokio::prelude::*;
 use tokio::sync::mpsc;
 use tokio_util::codec::{Framed, LinesCodec};
 use uuid::Uuid;
@@ -19,6 +18,7 @@ pub struct Socket {
     stream: Framed<tokio::net::TcpStream, LinesCodec>,
     rx: Rx,
     main_tx: Tx,
+    addr: String,
 }
 
 impl Socket {
@@ -33,6 +33,7 @@ impl Socket {
         id: usize,
         rx: Rx,
         main_tx: Tx,
+        addr: String,
     ) -> Self {
         Self {
             uuid: Uuid::new_v4(),
@@ -40,48 +41,47 @@ impl Socket {
             stream,
             rx,
             main_tx,
+            addr,
         }
     }
 
     /// Handle a connection
-    pub async fn handle(mut self) {
-        self.stream
-            .send("You have connected. Welcome to the Ataxia Chat Room.")
-            .await
-            .unwrap();
+    ///
+    /// # Arguments
+    ///
+    /// # Errors
+    #[allow(clippy::mut_mut)]
+    pub async fn handle(mut self) -> Result<(), anyhow::Error> {
         loop {
             futures::select! {
                 data = self.rx.recv().fuse() => {
                     if let Some(message) = data {
                         match message {
-                            Message::Data(_, message) => self.stream.send(message).await.unwrap(),
+                            Message::Data(_, message) => self.stream.send(message).await?,
                             _ => error!("Oops"),
                         }
                     } else {
-                        // The main loop closed our channel, assume this means the game is shutting
-                        // down
-                        self.stream.send("The game is shutting down, goodbye!").await.unwrap();
+                        // The main loop closed our channel to signal system shutdown
+                        self.stream.send("The game is shutting down, goodbye!").await?;
                         break;
                     }
                 },
                 data = self.stream.next().fuse() => {
                     if let Some(message) = data {
-                        if let Err(e) = self.main_tx.send(Message::Data(self.id, message.unwrap())) {
-                            // The main loop channel was closed, assume this means the main loop
-                            // crashed
-                            self.stream.send("The game has crashed, sorry! Please try again.").await.unwrap();
+                        if let Err(e) = self.main_tx.send(Message::Data(self.id, message?)) {
+                            // The main loop channel was closed, most likely this signals a crash
+                            self.stream.send("The game has crashed, sorry! Please try again.").await?;
                             break;
                         }
                     } else {
-                        // Received None, the other end closed the connection. Nothing left to do.
+                        // The other end closed the connection. Nothing left to do.
                         break;
                     }
                 },
             };
         }
-        self.main_tx
-            .send(Message::CloseConnection(self.id))
-            .unwrap();
+        self.main_tx.send(Message::CloseConnection(self.id))?;
+        Ok(())
     }
 }
 
@@ -107,12 +107,12 @@ impl Server {
     /// * Returns `tokio::io::Error` if the server can't bind to the listen port
     ///
     pub async fn new(
-        address: String,
+        address: &str,
         id_counter: Arc<AtomicUsize>,
         tx: Tx,
     ) -> Result<Self, anyhow::Error> {
-        let listener = TcpListener::bind(&address).await?;
-        info!("Listening for telnet clients on {}", address);
+        let listener = TcpListener::bind(address).await?;
+        info!("Listening for telnet clients on {:?}", address);
         Ok(Self {
             listener,
             id_counter,
@@ -128,8 +128,11 @@ impl Server {
                 Ok(stream) => {
                     let client_id = self.id_counter.fetch_add(1, Ordering::Relaxed);
                     let main_tx = self.main_tx.clone();
-                    let addr = stream.peer_addr().unwrap();
-                    let mut frames = Framed::new(stream, LinesCodec::new());
+                    let addr: String = match stream.peer_addr() {
+                        Ok(addr) => addr.to_string(),
+                        Err(_) => "Unknown".to_string(),
+                    };
+                    let mut stream = Framed::new(stream, LinesCodec::new());
                     tokio::spawn(async move {
                         info!(
                             "Telnet client connected: ID: {}, remote_addr: {}",
@@ -137,8 +140,9 @@ impl Server {
                         );
                         // Create a channel for this player
                         let (tx, rx) = mpsc::unbounded_channel();
-                        frames.send("Please enter your username:").await.unwrap();
-                        let username = match frames.next().await {
+                        stream.send("Welcome to the Ataxia Portal.").await.unwrap();
+                        stream.send("Please enter your username:").await.unwrap();
+                        let username = match stream.next().await {
                             Some(Ok(line)) => line,
                             // We didn't get a line so we return early here.
                             Some(Err(_)) | None => {
@@ -146,12 +150,18 @@ impl Server {
                                 return;
                             }
                         };
+                        stream
+                            .send(format!("Welcome, {}!", username))
+                            .await
+                            .unwrap();
                         main_tx
                             .send(Message::NewConnection(client_id, tx, username))
                             .unwrap();
                         // Create account/socket struct
-                        let socket = Socket::new(frames, client_id, rx, main_tx);
-                        socket.handle().await;
+                        let socket = Socket::new(stream, client_id, rx, main_tx, addr);
+                        if let Err(e) = socket.handle().await {
+                            error!("Client error: {}", e);
+                        };
                     });
                 }
             }

@@ -23,7 +23,7 @@ engine: lint
 
 lint:
 	$(CARGO) $(CARGO_OPTS) fmt
-	env CARGO_TARGET_DIR=./target/clippy $(CARGO) $(CARGO_OPTS) clippy
+	env CARGO_TARGET_DIR=./target/clippy $(CARGO) $(CARGO_OPTS) clippy --workspace --all-targets
 
 bootstrap:
 	rustup component add --toolchain nightly rustfmt-preview

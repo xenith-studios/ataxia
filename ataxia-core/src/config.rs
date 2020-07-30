@@ -67,14 +67,14 @@ impl Config {
         if let Some(pid_file) = cli.pid_file {
             config.pid_file = Some(pid_file);
         } else if config.pid_file == None {
-            // The PID file wasn't specified. Default to proccess name
+            // The PID file wasn't specified. Default to process name
             config.pid_file = Some(format!("data/{}.pid", process_name));
         }
 
         if let Some(log_file) = cli.log_file {
             config.log_file = Some(log_file);
         } else if config.log_file == None {
-            // The log file wasn't specified. Default to proccess name
+            // The log file wasn't specified. Default to process name
             config.log_file = Some(format!("logs/{}.log", process_name));
         }
 
@@ -100,7 +100,11 @@ impl Config {
     /// Returns the listen address player telnet connections
     #[must_use]
     pub fn telnet_addr(&self) -> &str {
-        self.telnet_addr.as_ref().unwrap()
+        if let Some(telnet_addr) = self.telnet_addr.as_ref() {
+            telnet_addr
+        } else {
+            ""
+        }
     }
     /// Set the listen address for player telnet connections
     pub fn set_telnet_addr(&mut self, addr: String) {
@@ -110,7 +114,11 @@ impl Config {
     /// Returns the listen address for player websocket connections
     #[must_use]
     pub fn ws_addr(&self) -> &str {
-        self.ws_addr.as_ref().unwrap()
+        if let Some(ws_addr) = self.ws_addr.as_ref() {
+            ws_addr
+        } else {
+            ""
+        }
     }
     /// Set the listen address for player websocket connections
     pub fn set_ws_addr(&mut self, addr: String) {
@@ -120,7 +128,11 @@ impl Config {
     /// Returns the listen address of the message queue
     #[must_use]
     pub fn mq_addr(&self) -> &str {
-        self.mq_addr.as_ref().unwrap()
+        if let Some(mq_addr) = self.mq_addr.as_ref() {
+            mq_addr
+        } else {
+            ""
+        }
     }
     /// Set the listen address of the message queue
     pub fn set_mq_addr(&mut self, addr: String) {
@@ -130,7 +142,11 @@ impl Config {
     /// Returns the file path to the pid file
     #[must_use]
     pub fn pid_file(&self) -> &str {
-        self.pid_file.as_ref().unwrap()
+        if let Some(pid_file) = self.pid_file.as_ref() {
+            pid_file
+        } else {
+            ""
+        }
     }
     /// Set the file path to the pid file
     pub fn set_pid_file(&mut self, file: String) {
@@ -140,7 +156,11 @@ impl Config {
     /// Returns the file path to the log file
     #[must_use]
     pub fn log_file(&self) -> &str {
-        self.log_file.as_ref().unwrap()
+        if let Some(log_file) = self.log_file.as_ref() {
+            log_file
+        } else {
+            ""
+        }
     }
     /// Set the file path to the log file
     pub fn set_log_file(&mut self, file: String) {

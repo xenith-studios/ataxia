@@ -64,8 +64,9 @@ impl Proxy {
         Ok(Self {
             config,
             client_list,
-            telnet_server: telnet::Server::new(telnet_addr, id_counter.clone(), tx.clone()).await?,
-            ws_server: websockets::Server::new(ws_addr, id_counter, tx).await?,
+            telnet_server: telnet::Server::new(&telnet_addr, id_counter.clone(), tx.clone())
+                .await?,
+            ws_server: websockets::Server::new(&ws_addr, id_counter, tx).await?,
             rx,
         })
     }
