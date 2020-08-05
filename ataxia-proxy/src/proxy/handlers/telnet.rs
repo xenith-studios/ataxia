@@ -1,6 +1,7 @@
 //! Telnet contains code specifically to handle network I/O for a telnet connection
 //!
 use crate::proxy::{Message, Rx, Tx};
+use anyhow::anyhow;
 use futures::prelude::*;
 use log::{error, info};
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -22,34 +23,55 @@ pub struct Socket {
 }
 
 impl Socket {
-    #[must_use]
     /// Returns a new Socket
     ///
     /// # Arguments
     ///
     /// * `stream` - A `TcpStream` from Tokio
-    pub fn new(
-        stream: Framed<tokio::net::TcpStream, LinesCodec>,
+    /// * `id` - A unique incrementing connection identifier
+    /// * `main_tx` - Transmit channel to communicate with the main task
+    ///
+    /// # Errors
+    ///
+    /// * This function will return an error if any send/recv operations fail on any channel or
+    /// stream, which would signal a connection error and disconnect the client.
+    pub async fn new(
+        stream: tokio::net::TcpStream,
         id: usize,
-        rx: Rx,
         main_tx: Tx,
-        addr: String,
-    ) -> Self {
-        Self {
+    ) -> Result<Self, anyhow::Error> {
+        let addr = match stream.peer_addr() {
+            Ok(addr) => addr.to_string(),
+            Err(_) => "Unknown".to_string(),
+        };
+        info!("Telnet client connected: ID: {}, remote_addr: {}", id, addr);
+        let mut stream = Framed::new(stream, LinesCodec::new());
+        let (tx, rx) = mpsc::unbounded_channel();
+        stream.send("Welcome to the Ataxia Portal.").await?;
+        stream.send("Please enter your username:").await?;
+        let username = match stream.next().await {
+            Some(Ok(line)) => line,
+            Some(Err(_)) | None => {
+                return Err(anyhow!("Failed to get username from {}.", addr));
+            }
+        };
+        stream.send(format!("Welcome, {}!", username)).await?;
+        main_tx.send(Message::NewConnection(id, tx, username))?;
+        Ok(Self {
             uuid: Uuid::new_v4(),
             id,
             stream,
             rx,
             main_tx,
             addr,
-        }
+        })
     }
 
     /// Handle a connection
     ///
-    /// # Arguments
-    ///
     /// # Errors
+    ///
+    /// * This function will return an error and disconnect the client if any send/recv fails.
     #[allow(clippy::mut_mut)]
     pub async fn handle(mut self) -> Result<(), anyhow::Error> {
         loop {
@@ -128,39 +150,17 @@ impl Server {
                 Ok(stream) => {
                     let client_id = self.id_counter.fetch_add(1, Ordering::Relaxed);
                     let main_tx = self.main_tx.clone();
-                    let addr: String = match stream.peer_addr() {
-                        Ok(addr) => addr.to_string(),
-                        Err(_) => "Unknown".to_string(),
-                    };
-                    let mut stream = Framed::new(stream, LinesCodec::new());
                     tokio::spawn(async move {
-                        info!(
-                            "Telnet client connected: ID: {}, remote_addr: {}",
-                            client_id, addr
-                        );
-                        // Create a channel for this player
-                        let (tx, rx) = mpsc::unbounded_channel();
-                        stream.send("Welcome to the Ataxia Portal.").await.unwrap();
-                        stream.send("Please enter your username:").await.unwrap();
-                        let username = match stream.next().await {
-                            Some(Ok(line)) => line,
-                            // We didn't get a line so we return early here.
-                            Some(Err(_)) | None => {
-                                info!("Failed to get username from {}. Client disconnected.", addr);
+                        let socket = match Socket::new(stream, client_id, main_tx).await {
+                            Ok(socket) => socket,
+                            Err(e) => {
+                                error!("Client disconnected: {}", e);
                                 return;
                             }
                         };
-                        stream
-                            .send(format!("Welcome, {}!", username))
-                            .await
-                            .unwrap();
-                        main_tx
-                            .send(Message::NewConnection(client_id, tx, username))
-                            .unwrap();
-                        // Create account/socket struct
-                        let socket = Socket::new(stream, client_id, rx, main_tx, addr);
                         if let Err(e) = socket.handle().await {
                             error!("Client error: {}", e);
+                            return;
                         };
                     });
                 }
