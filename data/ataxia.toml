@@ -1,12 +1,12 @@
 # Ataxia Configuration file
 
-# The proxy process listens on this address for player telnet connections
+# The portal process listens on this address for player telnet connections
 telnet_addr = "0.0.0.0:9000"
 
-# The proxy process listens on this address for player websockets connections
+# The portal process listens on this address for player websockets connections
 ws_addr = "0.0.0.0:9001"
 
-# Both the proxy and engine processes connect to the message queue listening on this address
+# Both the portal and engine processes connect to the message queue listening on this address
 mq_addr = "[::1]:9005"
 
 # Location of the PID file

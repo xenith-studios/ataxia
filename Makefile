@@ -3,23 +3,23 @@ CARGO_OPTS =+stable
 
 debug:
 	$(CARGO) $(CARGO_OPTS) build
-	cp -f target/debug/proxy bin/ataxia-proxy
-	cp -f target/debug/engine bin/ataxia-engine
+	cp -f target/debug/portal bin/portal
+	cp -f target/debug/engine bin/engine
 
 release:
 	$(CARGO) $(CARGO_OPTS) build --release
-	cp -f target/release/proxy bin/ataxia-proxy
-	cp -f target/release/engine bin/ataxia-engine
+	cp -f target/release/portal bin/portal
+	cp -f target/release/engine bin/engine
 
 full: lint debug doc
 
-proxy: lint
-	$(CARGO) $(CARGO_OPTS) build --bin proxy
-	cp -f target/debug/proxy bin/ataxia-proxy
+portal: lint
+	$(CARGO) $(CARGO_OPTS) build --bin portal
+	cp -f target/debug/portal bin/portal
 
 engine: lint
 	$(CARGO) $(CARGO_OPTS) build --bin engine
-	cp -f target/debug/engine bin/ataxia-engine
+	cp -f target/debug/engine bin/engine
 
 lint:
 	$(CARGO) $(CARGO_OPTS) fmt
@@ -31,7 +31,7 @@ bootstrap:
 
 clean:
 	$(CARGO) $(CARGO_OPTS) clean
-	rm -f bin/ataxia-{engine,proxy}
+	rm -f bin/{engine,portal}
 
 check:
 	$(CARGO) $(CARGO_OPTS) check
@@ -45,4 +45,4 @@ bench:
 doc:
 	$(CARGO) $(CARGO_OPTS) doc
 
-.PHONY: quick full proxy engine build-proxy build-engine lint-proxy lint-engine bootstrap clean check test bench doc
+.PHONY: quick full portal engine lint bootstrap clean check test bench doc

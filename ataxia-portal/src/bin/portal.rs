@@ -1,5 +1,5 @@
-//! Binary source for the network proxy
-//! There should be minimal functionality in this file. It exists mainly to set up the proxy and
+//! Binary source for the network portal
+//! There should be minimal functionality in this file. It exists mainly to set up the portal and
 //! call out to the library code.
 #![warn(
     trivial_casts,
@@ -56,7 +56,7 @@ fn main() -> Result<(), anyhow::Error> {
         ),
     ])?;
     info!(
-        "Loading Ataxia Network Proxy, compiled on {}",
+        "Loading Ataxia Network portal, compiled on {}",
         ATAXIA_COMPILED
     );
 
@@ -82,11 +82,11 @@ fn main() -> Result<(), anyhow::Error> {
     let mut runtime =
         tokio::runtime::Runtime::new().expect("Unable to initialize the Tokio Runtime");
 
-    // Initialize proxy and networking subsystems
+    // Initialize portal and networking subsystems
     let server = runtime
-        .block_on(ataxia_proxy::Proxy::new(config))
+        .block_on(ataxia_portal::Portal::new(config))
         .unwrap_or_else(|err| {
-            error!("Unable to initialize the proxy: {}", err);
+            error!("Unable to initialize the portal: {}", err);
             std::process::exit(1);
         });
 

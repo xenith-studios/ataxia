@@ -1,4 +1,4 @@
-//! Proxy module and related methods
+//! Portal module and related methods
 
 pub mod handlers;
 
@@ -30,9 +30,9 @@ pub enum Message {
     CloseConnection(usize),
 }
 
-/// Proxy data structure contains all related low-level data for running the network proxy
+/// portal data structure contains all related low-level data for running the network portal
 #[derive(Debug)]
-pub struct Proxy {
+pub struct Portal {
     config: Config,
     client_list: BTreeMap<usize, (String, Tx)>,
     telnet_server: telnet::Server,
@@ -40,9 +40,9 @@ pub struct Proxy {
     rx: Rx,
 }
 
-impl Proxy {
+impl Portal {
     #![allow(clippy::new_ret_no_self, clippy::eval_order_dependence)]
-    /// Returns a new fully initialized `Proxy` server
+    /// Returns a new fully initialized `portal` server
     ///
     /// # Arguments
     ///
@@ -53,13 +53,13 @@ impl Proxy {
     ///
     /// * Returns an error if the `Server` fails to initialize
     pub async fn new(config: Config) -> Result<Self, anyhow::Error> {
-        // Initialize the proxy
+        // Initialize the portal
         let id_counter = Arc::new(AtomicUsize::new(1));
         let client_list = BTreeMap::new();
         let telnet_addr = config.telnet_addr().to_string();
         let ws_addr = config.ws_addr().to_string();
         let (tx, rx) = mpsc::unbounded_channel();
-        //TODO: Set proxy start time
+        //TODO: Set portal start time
 
         Ok(Self {
             config,

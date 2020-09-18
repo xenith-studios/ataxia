@@ -2,7 +2,7 @@
 members = [
   "ataxia-core",
   "ataxia-engine",
-  "ataxia-proxy",
+  "ataxia-portal",
 ]
 
 [profile.release]

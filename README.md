@@ -2,7 +2,7 @@
 
 ## About
 
-Ataxia is a modern MUD/MUSH engine written in [Rust](https://www.rust-lang.org/). It utilizes Lua for commands and game logic. It uses separate processes for the game engine and network proxy.
+Ataxia is a modern MUD/MUSH engine written in [Rust](https://www.rust-lang.org/). It utilizes Lua for commands and game logic. It uses separate processes for the game engine and network portal.
 
 PLEASE NOTE THAT CURRENTLY THERE IS VERY LITTLE CODE/FEATURES WRITTEN.
 
@@ -12,19 +12,19 @@ The separate process model allows Ataxia to support the following features:
 
 - Reload the engine process without disconnecting players. Avoids common "copyover/hotboot" hacks.
   - Adds the ability to rollback players to a previous version of code if needed
-- The proxy can support various different communication protocols such as:
+- The portal can support various different communication protocols such as:
   - telnet (with or without tls)
   - ssh
   - websockets (to enable an HTML client)
-- Allows the network proxy to present a unified front-end to allow connecting to multiple backend game engines through a single connection/port:
+- Allows the network portal to present a unified front-end to allow connecting to multiple backend game engines through a single connection/port:
   - Live game
   - Test game (for feature/bug testing)
   - Building interface
   - Admin interface
-- The network proxy will manage the account and login/permissions system:
+- The network portal will manage the account and login/permissions system:
   - Allows granting permissions (building interface, test access) on a per-account basis
   - Allows tying multiple characters to a single account/login
-- If you really want to, you can run the network proxy on a different server than the game engine
+- If you really want to, you can run the network portal on a different server than the game engine
 
 ## Install
 

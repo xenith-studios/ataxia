@@ -1,6 +1,6 @@
-//! Telnet contains code specifically to handle network I/O for a telnet connection
+//! Websockets contains code specifically to handle network I/O for a websocket connection
 //!
-use crate::proxy::{Message, Rx, Tx};
+use crate::portal::{Message, Rx, Tx};
 use anyhow::anyhow;
 use futures::prelude::*;
 use log::{error, info};
@@ -44,7 +44,10 @@ impl Socket {
             Ok(addr) => addr.to_string(),
             Err(_) => "Unknown".to_string(),
         };
-        info!("Telnet client connected: ID: {}, remote_addr: {}", id, addr);
+        info!(
+            "Websocket client connected: ID: {}, remote_addr: {}",
+            id, addr
+        );
         let mut stream = Framed::new(stream, LinesCodec::new());
         let (tx, rx) = mpsc::unbounded_channel();
         stream.send("Welcome to the Ataxia Portal.").await?;
@@ -134,7 +137,7 @@ impl Server {
         tx: Tx,
     ) -> Result<Self, anyhow::Error> {
         let listener = TcpListener::bind(address).await?;
-        info!("Listening for telnet clients on {:?}", address);
+        info!("Listening for websocket clients on {:?}", address);
         Ok(Self {
             listener,
             id_counter,

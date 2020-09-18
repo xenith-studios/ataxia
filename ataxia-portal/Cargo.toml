@@ -1,5 +1,5 @@
 [package]
-name          = "ataxia-proxy"
+name          = "ataxia-portal"
 version       = "0.0.1-dev"
 license       = "MIT/Apache-2.0"
 authors       = ["Justin Seabrook-Rocha <xenith@xenith.org>"]

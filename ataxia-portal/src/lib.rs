@@ -13,6 +13,6 @@
 // Disable this lint due to Tokio using the binding name _task_context
 #![recursion_limit = "256"]
 
-pub mod proxy;
+pub mod portal;
 
-pub use crate::proxy::Proxy;
+pub use crate::portal::Portal;
