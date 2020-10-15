@@ -100,71 +100,53 @@ impl Config {
     /// Returns the listen address player telnet connections
     #[must_use]
     pub fn telnet_addr(&self) -> &str {
-        if let Some(telnet_addr) = self.telnet_addr.as_ref() {
-            telnet_addr
-        } else {
-            ""
-        }
+        self.telnet_addr
+            .as_ref()
+            .map_or("", |telnet_addr| telnet_addr)
     }
     /// Set the listen address for player telnet connections
     pub fn set_telnet_addr(&mut self, addr: String) {
-        self.telnet_addr = Some(addr);
+        self.telnet_addr = Some(addr)
     }
 
     /// Returns the listen address for player websocket connections
     #[must_use]
     pub fn ws_addr(&self) -> &str {
-        if let Some(ws_addr) = self.ws_addr.as_ref() {
-            ws_addr
-        } else {
-            ""
-        }
+        self.ws_addr.as_ref().map_or("", |ws_addr| ws_addr)
     }
     /// Set the listen address for player websocket connections
     pub fn set_ws_addr(&mut self, addr: String) {
-        self.ws_addr = Some(addr);
+        self.ws_addr = Some(addr)
     }
 
     /// Returns the listen address of the message queue
     #[must_use]
     pub fn mq_addr(&self) -> &str {
-        if let Some(mq_addr) = self.mq_addr.as_ref() {
-            mq_addr
-        } else {
-            ""
-        }
+        self.mq_addr.as_ref().map_or("", |mq_addr| mq_addr)
     }
     /// Set the listen address of the message queue
     pub fn set_mq_addr(&mut self, addr: String) {
-        self.mq_addr = Some(addr);
+        self.mq_addr = Some(addr)
     }
 
     /// Returns the file path to the pid file
     #[must_use]
     pub fn pid_file(&self) -> &str {
-        if let Some(pid_file) = self.pid_file.as_ref() {
-            pid_file
-        } else {
-            ""
-        }
+        self.pid_file.as_ref().map_or("", |pid_file| pid_file)
     }
     /// Set the file path to the pid file
     pub fn set_pid_file(&mut self, file: String) {
-        self.pid_file = Some(file);
+        self.pid_file = Some(file)
     }
 
     /// Returns the file path to the log file
     #[must_use]
     pub fn log_file(&self) -> &str {
-        if let Some(log_file) = self.log_file.as_ref() {
-            log_file
-        } else {
-            ""
-        }
+        self.log_file.as_ref().map_or("", |log_file| log_file)
     }
     /// Set the file path to the log file
     pub fn set_log_file(&mut self, file: String) {
-        self.log_file = Some(file);
+        self.log_file = Some(file)
     }
 
     /// Returns true if the debug CLI flag was specified
