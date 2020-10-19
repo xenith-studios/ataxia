@@ -79,8 +79,7 @@ fn main() -> Result<(), anyhow::Error> {
     //   Database
 
     // Initialize Tokio async runtime and spin up the worker threadpool
-    let mut runtime =
-        tokio::runtime::Runtime::new().expect("Unable to initialize the Tokio Runtime");
+    let runtime = tokio::runtime::Runtime::new().expect("Unable to initialize the Tokio Runtime");
 
     // Initialize portal and networking subsystems
     let server = runtime

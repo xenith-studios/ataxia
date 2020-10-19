@@ -146,8 +146,7 @@ impl Server {
     }
     /// Start the listener loop, which will spawn individual connections into the runtime
     pub async fn run(mut self) {
-        let mut incoming = self.listener.incoming();
-        while let Some(connection) = incoming.next().await {
+        while let Some(connection) = self.listener.next().await {
             match connection {
                 Err(e) => error!("Accept failed: {:?}", e),
                 Ok(stream) => {
