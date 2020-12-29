@@ -93,6 +93,7 @@ impl Socket {
                         if let Err(e) = self.main_tx.send(Message::Data(self.id, message?)) {
                             // The main loop channel was closed, most likely this signals a crash
                             self.stream.send("The game has crashed, sorry! Please try again.").await?;
+                            error!("Connection error due to game crash? {}", e);
                             break;
                         }
                     } else {
@@ -142,15 +143,15 @@ impl Server {
         })
     }
     /// Start the listener loop, which will spawn individual connections into the runtime
-    pub async fn run(mut self) {
-        while let Some(connection) = self.listener.next().await {
+    pub async fn run(self) {
+        while let connection = self.listener.accept().await {
             match connection {
                 Err(e) => error!("Accept failed: {:?}", e),
                 Ok(stream) => {
                     let client_id = self.id_counter.fetch_add(1, Ordering::Relaxed);
                     let main_tx = self.main_tx.clone();
                     tokio::spawn(async move {
-                        let socket = match Socket::new(stream, client_id, main_tx).await {
+                        let socket = match Socket::new(stream.0, client_id, main_tx).await {
                             Ok(socket) => socket,
                             Err(e) => {
                                 error!("Client disconnected: {}", e);

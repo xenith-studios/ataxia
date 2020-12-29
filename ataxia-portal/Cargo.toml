@@ -15,12 +15,12 @@ edition       = "2018"
 [dependencies]
 ataxia-core = { path = "../ataxia-core" }
 log = "^0.4"
-simplelog = "^0.8"
+simplelog = "^0.9"
 anyhow = "^1.0"
 uuid = { version = "^0.8", features = ["v4"] }
 futures = "^0.3"
-tokio = { version = "^0.3", features = ["net", "rt",  "rt-multi-thread", "io-util", "stream", "sync"] }
-tokio-util = { version = "^0.4", features = ["codec"] }
+tokio = { version = "^1", features = ["net", "rt",  "rt-multi-thread", "io-util", "sync"] }
+tokio-util = { version = "^0.6", features = ["codec"] }
 #rand = "^0.7"
 
 [build-dependencies]

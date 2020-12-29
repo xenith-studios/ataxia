@@ -9,6 +9,7 @@
     unused_qualifications,
     clippy::all
 )]
+#![forbid(unsafe_code)]
 #![warn(missing_docs, clippy::pedantic)]
 // Disable this lint due to Tokio using the binding name _task_context
 #![recursion_limit = "256"]

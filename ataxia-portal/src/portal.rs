@@ -6,7 +6,8 @@ use std::collections::BTreeMap;
 use std::sync::atomic::AtomicUsize;
 use std::sync::Arc;
 
-use self::handlers::{telnet, websockets};
+//use self::handlers::{telnet, websockets};
+use self::handlers::telnet;
 use ataxia_core::Config;
 use log::info;
 use tokio::sync::mpsc;
@@ -36,7 +37,7 @@ pub struct Portal {
     config: Config,
     client_list: BTreeMap<usize, (String, Tx)>,
     telnet_server: telnet::Server,
-    ws_server: websockets::Server,
+    //ws_server: websockets::Server,
     rx: Rx,
 }
 
@@ -57,7 +58,7 @@ impl Portal {
         let id_counter = Arc::new(AtomicUsize::new(1));
         let client_list = BTreeMap::new();
         let telnet_addr = config.telnet_addr().to_string();
-        let ws_addr = config.ws_addr().to_string();
+        //let ws_addr = config.ws_addr().to_string();
         let (tx, rx) = mpsc::unbounded_channel();
         //TODO: Set portal start time
 
@@ -66,7 +67,7 @@ impl Portal {
             client_list,
             telnet_server: telnet::Server::new(&telnet_addr, id_counter.clone(), tx.clone())
                 .await?,
-            ws_server: websockets::Server::new(&ws_addr, id_counter, tx).await?,
+            //ws_server: websockets::Server::new(&ws_addr, id_counter, tx).await?,
             rx,
         })
     }
@@ -79,7 +80,7 @@ impl Portal {
     pub async fn run(mut self) -> Result<(), anyhow::Error> {
         // Start the network I/O servers
         tokio::spawn(self.telnet_server.run());
-        tokio::spawn(self.ws_server.run());
+        //tokio::spawn(self.ws_server.run());
 
         // Main loop
         while let Some(message) = self.rx.recv().await {

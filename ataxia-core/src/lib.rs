@@ -12,6 +12,7 @@
     clippy::perf,
     clippy::style
 )]
+#![forbid(unsafe_code)]
 #![warn(missing_docs)]
 
 pub mod config;

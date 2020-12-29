@@ -12,8 +12,9 @@
     clippy::perf,
     clippy::style
 )]
+#![forbid(unsafe_code)]
 
-// Include this file to get access to the datetime of the last time we compiled
+// Include this file to get access to the timestamp of the compilation
 include!(concat!(env!("OUT_DIR"), "/version.rs"));
 
 use std::fs::File;
@@ -56,18 +57,18 @@ fn main() -> Result<(), anyhow::Error> {
         ),
     ])?;
     info!(
-        "Loading Ataxia Network portal, compiled on {}",
+        "Loading Ataxia Network Portal, compiled on {}",
         ATAXIA_COMPILED
     );
 
-    // TODO: Figure out a system for catching/handling signals (SIGINT, SIGQUIT, SIGHUP)
+    // TODO: Set up signal handlers (SIGINT, SIGQUIT, SIGHUP)
 
     // Clean up from previous unclean shutdown if necessary
 
     // Write PID to file
     // TODO: Acquire lock on PID file as additional method of insuring only a single instance is running?
     let pid_file = PathBuf::from(config.pid_file());
-    // FIXME: Remove once we have a startup/supervisor system in place to handle unclean shutdown
+    // FIXME: Remove this block once we have a supervisor system in place to handle unclean shutdown
     if pid_file.exists() {
         std::fs::remove_file(&pid_file)?;
     }
@@ -92,14 +93,14 @@ fn main() -> Result<(), anyhow::Error> {
     // Start main loop
     if let Err(e) = runtime.block_on(server.run()) {
         // If we enter this block, the system has crashed and we don't know why
-        // Do some minor cleanup before exiting, but leave the PID file in place to signal an
+        // TODO: Do some cleanup before exiting, but leave the PID file in place to signal an
         // unclean shutdown
         error!("Unresolved system error: {}", e);
         std::process::exit(1);
     }
 
     // If the loop exited without an error, we have a clean shutdown
-    // Flush pending database writes and close database connection
+    // TODO: Flush pending database writes and close database connection
     // Remove the PID file
     if pid_file.exists() {
         std::fs::remove_file(&pid_file)?;
