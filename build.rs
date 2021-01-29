@@ -1,4 +1,4 @@
-extern crate time;
+use chrono::prelude::*;
 
 use std::env;
 use std::fs::File;
@@ -10,10 +10,7 @@ fn main() {
     let dest_path = Path::new(&out_dir).join("version.rs");
     let mut f = File::create(&dest_path).unwrap();
 
-    let output: String = format!(
-        "static ATAXIA_COMPILED: &str = \"{}\";",
-        time::OffsetDateTime::now_utc().format("%c")
-    );
+    let output: String = format!("static ATAXIA_COMPILED: &str = \"{}\";", Utc::now());
 
     f.write_all(output.as_bytes()).unwrap();
 }

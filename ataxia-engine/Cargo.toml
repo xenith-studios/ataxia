@@ -22,4 +22,4 @@ specs = "^0.16"
 #rlua = "0.17"
 
 [build-dependencies]
-time = "^0.2"
+chrono = "0.4"

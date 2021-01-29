@@ -24,4 +24,4 @@ tokio-util = { version = "^0.6", features = ["codec"] }
 #rand = "^0.7"
 
 [build-dependencies]
-time = "^0.2"
+chrono = "0.4"
