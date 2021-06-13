@@ -77,6 +77,10 @@ impl Portal {
     /// # Errors
     ///
     /// * Does not currently return any errors
+    ///
+    /// # Panics
+    ///
+    /// TODO: add possible panics
     pub async fn run(mut self) -> Result<(), anyhow::Error> {
         // Start the network I/O servers
         tokio::spawn(self.telnet_server.run());

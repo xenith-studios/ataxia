@@ -22,7 +22,9 @@ use std::path::PathBuf;
 use std::process;
 
 use log::{error, info};
-use simplelog::{CombinedLogger, Config, LevelFilter, TermLogger, TerminalMode, WriteLogger};
+use simplelog::{
+    ColorChoice, CombinedLogger, Config, LevelFilter, TermLogger, TerminalMode, WriteLogger,
+};
 
 fn main() -> Result<(), anyhow::Error> {
     // Load settings from config file while allowing command-line overrides
@@ -43,6 +45,7 @@ fn main() -> Result<(), anyhow::Error> {
             },
             Config::default(),
             TerminalMode::Mixed,
+            ColorChoice::Auto,
         ),
         WriteLogger::new(
             if config.debug() {

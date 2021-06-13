@@ -38,7 +38,7 @@ impl Engine {
     ///
     /// * Does not currently return any errors
     pub fn run(self) -> Result<(), anyhow::Error> {
-        let _ = self;
+        let _engine = self;
         // Main game loop
         /*loop {
             // Read network input channel and process all pending external events

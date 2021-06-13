@@ -72,6 +72,10 @@ impl Socket {
     /// # Errors
     ///
     /// * This function will return an error and disconnect the client if any send/recv fails.
+    ///
+    /// # Panics
+    ///
+    /// TODO: add possible panics
     #[allow(clippy::mut_mut)]
     pub async fn handle(mut self) -> Result<(), anyhow::Error> {
         loop {

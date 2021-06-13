@@ -48,6 +48,9 @@ impl Config {
     /// * Returns `std::io::Error` if the config file can't be opened or read
     /// * Returns `toml::de::Error` if TOML parsing fails
     ///
+    /// # Panics
+    ///
+    /// TODO: add possible panics here
     pub fn new() -> Result<Self, anyhow::Error> {
         let cli = Config::from_args();
 

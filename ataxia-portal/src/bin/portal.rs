@@ -23,7 +23,9 @@ use std::path::PathBuf;
 use std::process;
 
 use log::{error, info};
-use simplelog::{CombinedLogger, Config, LevelFilter, TermLogger, TerminalMode, WriteLogger};
+use simplelog::{
+    ColorChoice, CombinedLogger, Config, LevelFilter, TermLogger, TerminalMode, WriteLogger,
+};
 
 #[allow(clippy::too_many_lines)]
 fn main() -> Result<(), anyhow::Error> {
@@ -45,6 +47,7 @@ fn main() -> Result<(), anyhow::Error> {
             },
             Config::default(),
             TerminalMode::Mixed,
+            ColorChoice::Auto,
         ),
         WriteLogger::new(
             if config.debug() {
