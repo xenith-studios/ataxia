@@ -109,7 +109,7 @@ impl Config {
     }
     /// Set the listen address for player telnet connections
     pub fn set_telnet_addr(&mut self, addr: String) {
-        self.telnet_addr = Some(addr)
+        self.telnet_addr = Some(addr);
     }
 
     /// Returns the listen address for player websocket connections
@@ -119,7 +119,7 @@ impl Config {
     }
     /// Set the listen address for player websocket connections
     pub fn set_ws_addr(&mut self, addr: String) {
-        self.ws_addr = Some(addr)
+        self.ws_addr = Some(addr);
     }
 
     /// Returns the listen address of the message queue
@@ -129,7 +129,7 @@ impl Config {
     }
     /// Set the listen address of the message queue
     pub fn set_mq_addr(&mut self, addr: String) {
-        self.mq_addr = Some(addr)
+        self.mq_addr = Some(addr);
     }
 
     /// Returns the file path to the pid file
@@ -139,7 +139,7 @@ impl Config {
     }
     /// Set the file path to the pid file
     pub fn set_pid_file(&mut self, file: String) {
-        self.pid_file = Some(file)
+        self.pid_file = Some(file);
     }
 
     /// Returns the file path to the log file
@@ -149,7 +149,7 @@ impl Config {
     }
     /// Set the file path to the log file
     pub fn set_log_file(&mut self, file: String) {
-        self.log_file = Some(file)
+        self.log_file = Some(file);
     }
 
     /// Returns true if the debug CLI flag was specified
