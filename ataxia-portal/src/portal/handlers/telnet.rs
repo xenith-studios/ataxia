@@ -147,6 +147,7 @@ impl Server {
         })
     }
     /// Start the listener loop, which will spawn individual connections into the runtime
+    #[allow(clippy::needless_return)]
     pub async fn run(self) {
         loop {
             let connection = self.listener.accept().await;

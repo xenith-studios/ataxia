@@ -10,7 +10,7 @@ homepage      = "https://github.com/xenith-studios/ataxia"
 repository    = "https://github.com/xenith-studios/ataxia"
 readme        = "README.md"
 build         = "build.rs"
-edition       = "2018"
+edition       = "2021"
 
 [dependencies]
 ataxia-core = { path = "../ataxia-core" }
