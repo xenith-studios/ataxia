@@ -1,5 +1,5 @@
 CARGO = cargo
-CARGO_OPTS =+stable
+CARGO_OPTS =
 
 debug:
 	$(CARGO) $(CARGO_OPTS) build
