@@ -42,7 +42,7 @@ pub struct Portal {
 }
 
 impl Portal {
-    #![allow(clippy::new_ret_no_self, clippy::eval_order_dependence)]
+    #![allow(clippy::new_ret_no_self, clippy::mixed_read_write_in_expression)]
     /// Returns a new fully initialized `portal` server
     ///
     /// # Arguments

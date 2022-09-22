@@ -5,6 +5,18 @@ members = [
   "ataxia-portal",
 ]
 
+[workspace.package]
+version       = "0.0.1-dev"
+license       = "MIT/Apache-2.0"
+authors       = ["Justin Seabrook-Rocha <xenith@xenith.org>"]
+description   = """
+A modern MUD engine using Lua for scripting and game logic
+"""
+homepage      = "https://github.com/xenith-studios/ataxia"
+repository    = "https://github.com/xenith-studios/ataxia"
+readme        = "README.md"
+edition       = "2021"
+
 [profile.release]
 lto = true
 codegen-units = 1

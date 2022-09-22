@@ -39,7 +39,6 @@ pub struct Config {
     verbose: bool,
 }
 impl Config {
-    #![allow(clippy::new_ret_no_self)]
     /// Returns a new Config
     /// Read configuration from the file path specified in the Clap arguments struct.
     ///
@@ -100,7 +99,7 @@ impl Config {
         Ok(config)
     }
 
-    /// Returns the listen address player telnet connections
+    /// Returns the listen address for player telnet connections
     #[must_use]
     pub fn telnet_addr(&self) -> &str {
         self.telnet_addr
@@ -122,12 +121,12 @@ impl Config {
         self.ws_addr = Some(addr);
     }
 
-    /// Returns the listen address of the message queue
+    /// Returns the listen address for the message queue
     #[must_use]
     pub fn mq_addr(&self) -> &str {
         self.mq_addr.as_ref().map_or("", |mq_addr| mq_addr)
     }
-    /// Set the listen address of the message queue
+    /// Set the listen address for the message queue
     pub fn set_mq_addr(&mut self, addr: String) {
         self.mq_addr = Some(addr);
     }
