@@ -68,14 +68,14 @@ impl Config {
 
         if let Some(pid_file) = cli.pid_file {
             config.pid_file = Some(pid_file);
-        } else if config.pid_file == None {
+        } else if config.pid_file.is_none() {
             // The PID file wasn't specified. Default to process name
             config.pid_file = Some(format!("data/{}.pid", process_name));
         }
 
         if let Some(log_file) = cli.log_file {
             config.log_file = Some(log_file);
-        } else if config.log_file == None {
+        } else if config.log_file.is_none() {
             // The log file wasn't specified. Default to process name
             config.log_file = Some(format!("logs/{}.log", process_name));
         }
