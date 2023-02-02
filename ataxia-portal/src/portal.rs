@@ -97,7 +97,7 @@ impl Portal {
                 Message::NewConnection(id, rx, name) => {
                     info!("Player {} has connected on socket {}", name, id);
                     self.client_list.values().for_each(|(_, tx)| {
-                        tx.send(Message::Data(id, format!("{} has joined the chat.", name)))
+                        tx.send(Message::Data(id, format!("{name} has joined the chat.")))
                             .unwrap();
                     });
                     self.client_list.insert(id, (name, rx));
@@ -106,7 +106,7 @@ impl Portal {
                     if let Some((name, _)) = self.client_list.remove(&id) {
                         info!("Player {} has disconnected on socket {}", name, id);
                         self.client_list.values().for_each(|(_, tx)| {
-                            tx.send(Message::Data(id, format!("{} has left the chat.", name)))
+                            tx.send(Message::Data(id, format!("{name} has left the chat.")))
                                 .unwrap();
                         });
                     }
@@ -116,7 +116,7 @@ impl Portal {
                         info!("Received message from {}: {}", name, message);
                         self.client_list.values().for_each(|(tx_name, tx)| {
                             if tx_name != name {
-                                tx.send(Message::Data(id, format!("{}: {}", name, message)))
+                                tx.send(Message::Data(id, format!("{name}: {message}")))
                                     .unwrap();
                             }
                         });

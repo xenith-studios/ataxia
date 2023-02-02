@@ -44,7 +44,7 @@ impl Socket {
             Ok(addr) => addr.to_string(),
             Err(_) => "Unknown".to_string(),
         };
-        info!("Telnet client connected: ID: {}, remote_addr: {}", id, addr);
+        info!("Telnet client connected: ID: {id}, remote_addr: {addr}");
         let mut stream = Framed::new(stream, LinesCodec::new());
         let (tx, rx) = mpsc::unbounded_channel();
         stream.send("Welcome to the Ataxia Portal.").await?;
@@ -52,10 +52,10 @@ impl Socket {
         let username = match stream.next().await {
             Some(Ok(line)) => line,
             Some(Err(_)) | None => {
-                return Err(anyhow!("Failed to get username from {}.", addr));
+                return Err(anyhow!("Failed to get username from {addr}."));
             }
         };
-        stream.send(format!("Welcome, {}!", username)).await?;
+        stream.send(format!("Welcome, {username}!")).await?;
         main_tx.send(Message::NewConnection(id, tx, username))?;
         Ok(Self {
             uuid: Uuid::new_v4(),

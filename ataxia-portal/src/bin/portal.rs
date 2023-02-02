@@ -31,7 +31,7 @@ use simplelog::{
 fn main() -> Result<(), anyhow::Error> {
     // Load settings from config file while allowing command-line overrides
     let config = ataxia_core::Config::new().unwrap_or_else(|err| {
-        eprintln!("Unable to load the configuration file: {}", err);
+        eprintln!("Unable to load the configuration file: {err}");
         std::process::exit(1);
     });
 

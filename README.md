@@ -91,7 +91,7 @@ $ make test
     logs/
         Log files
     tools/
-        Helper scripts and tools for developers
+        Helper scripts and tools for developers and game admins
     data/
         On-disk data files (ex. config files, world files)
     scripts/
