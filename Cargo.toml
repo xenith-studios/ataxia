@@ -4,6 +4,7 @@ members = [
   "ataxia-engine",
   "ataxia-portal",
 ]
+resolver = "2"
 
 [workspace.package]
 version       = "0.0.1-dev"

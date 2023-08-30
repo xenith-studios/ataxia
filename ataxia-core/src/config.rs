@@ -1,40 +1,34 @@
 //! Configuration module for Ataxia
+use clap::Parser;
 use serde::Deserialize;
 use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;
-use structopt::StructOpt;
 
 /// Config structure for holding internal and external configuration data
-#[derive(Debug, Deserialize, StructOpt)]
-#[structopt(name = "Ataxia MUD",
+#[derive(Debug, Deserialize, Parser)]
+#[command(name = "Ataxia MUD",
     about = env!("CARGO_PKG_DESCRIPTION"),
     version = env!("CARGO_PKG_VERSION"),
-    global_setting = structopt::clap::AppSettings::ColoredHelp
 )]
 pub struct Config {
-    #[structopt(
-        parse(from_os_str),
-        short = "c",
-        long = "config",
-        default_value = "data/ataxia.toml"
-    )]
+    #[arg(short = 'c', long = "config", default_value = "data/ataxia.toml")]
     #[serde(default)]
     config_file: PathBuf,
-    #[structopt(short = "p", long = "pid")]
+    #[arg(short = 'p', long = "pid")]
     pid_file: Option<String>,
-    #[structopt(short = "T", long)]
+    #[arg(short = 'T', long)]
     telnet_addr: Option<String>,
-    #[structopt(short = "W", long)]
+    #[arg(short = 'W', long)]
     ws_addr: Option<String>,
-    #[structopt(short = "M", long)]
+    #[arg(short = 'M', long)]
     mq_addr: Option<String>,
-    #[structopt(short = "L", long)]
+    #[arg(short = 'L', long)]
     log_file: Option<String>,
-    #[structopt(short, long)]
+    #[arg(short, long)]
     #[serde(default)]
     debug: bool,
-    #[structopt(short, long)]
+    #[arg(short, long)]
     #[serde(default)]
     verbose: bool,
 }
@@ -51,7 +45,7 @@ impl Config {
     ///
     /// TODO: add possible panics here
     pub fn new() -> Result<Self, anyhow::Error> {
-        let cli = Config::from_args();
+        let cli = Config::parse();
 
         // TODO: This is a very simplistic method that should be improved/strengthened
         let process_name = std::env::args()
